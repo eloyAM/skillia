@@ -2,12 +2,13 @@ package com.example.application.security;
 
 import com.example.application.views.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 
 @EnableWebSecurity // <1>
 @Configuration
@@ -17,9 +18,14 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth ->
-                auth.requestMatchers(
-                    AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/images/*.png")).permitAll());  // <3>
+        http.authorizeHttpRequests(auth -> {
+            auth.requestMatchers(
+//                    PathRequest.toH2Console(),
+                    PathRequest.toStaticResources().atCommonLocations()
+            ).permitAll();
+        });  // <3>
+        http.csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console())); // This allows the h2 console access (connect / test connection, etc)
+        http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));    // This allows the different frames of the h2 console to be rendered
         super.configure(http);
         setLoginView(http, LoginView.class); // <4>
     }
