@@ -3,6 +3,7 @@ package com.example.application.data.entity;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.Formula;
 
@@ -10,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@Table(name = "company")
 public class Company extends AbstractEntity {
     @NotBlank
     private String name;
@@ -18,7 +20,9 @@ public class Company extends AbstractEntity {
     @Nullable
     private List<Contact> employees = new LinkedList<>();
 
-    @Formula("(select count(c.id) from Contact c where c.company_id = id)")
+    // IMPORTANT: take special care when using native queries.
+    // With h2, hsql, and postgres, 'Contact' works, but not with mysql, it requires 'contact' instead
+    @Formula("(select count(c.id) from contact c where c.company_id = id)")
     private int employeeCount;
 
     public String getName() {
