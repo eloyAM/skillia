@@ -12,6 +12,10 @@ node_modules/
 frontend/generated/
 pnpmfile.js
 vite.generated.ts
+# Custom rule. src/main/dev-bundle contains pre-compiled frontend files/resources for the project
+# As Vaadin says, "It should be commited, so that other developers do not have to compile it again."
+# But as generated files in a smalll, single-person project, I prefer to not commit them
+src/main/dev-bundle/
 
 # Browser drivers for local integration tests
 drivers/
