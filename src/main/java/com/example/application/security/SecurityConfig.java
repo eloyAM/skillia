@@ -1,6 +1,6 @@
 package com.example.application.security;
 
-import com.example.application.views.LoginView;
+import com.example.application.view.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
