@@ -1,4 +1,4 @@
-package com.example.application;
+package com.example.application.utils;
 
 import com.example.application.dto.PersonDto;
 import com.example.application.dto.SkillDto;
@@ -6,15 +6,11 @@ import com.example.application.entity.PersonSkill;
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.PersonService;
 import com.example.application.service.SkillService;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
 
-@Component
-public class DbInit implements ApplicationRunner {
+public class DbInit {
 
     private final PersonService personService;
     private final SkillService skillService;
@@ -30,8 +26,7 @@ public class DbInit implements ApplicationRunner {
         this.personSkillRepo = personSkillRepo;
     }
 
-    @Override
-    public void run(ApplicationArguments args) {
+    public void run() {
         List<PersonDto> persons = createPersons();
         PersonDto firstPerson = persons.get(0);
         PersonDto secondPerson = persons.get(1);

@@ -23,7 +23,8 @@ public class Skill {
     // Using @NonNull gets very tricky -> get rid of it
     @NotNull
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "skill_id_gen")
+    @SequenceGenerator(name = "skill_id_gen", sequenceName = "skill_id_seq", allocationSize = 1, initialValue = 50)
     @Column(name = "id", nullable = false)
     private Long id;
 
