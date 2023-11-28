@@ -48,7 +48,7 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
                 .ldapAuthentication()
                 .userDnPatterns(ldapProperties.getUserDnPatterns())
                 .userSearchBase(ldapProperties.getUserSearchBase())
-                .userSearchFilter(ldapProperties.getUserSearchFilter())
+                .userSearchFilter(ldapProperties.getUserLoginFilter())
                 .groupSearchBase(ldapProperties.getGroupSearchBase())
 //                .groupSearchFilter("")  // TODO Could be interesting to allow this
 //                .groupRoleAttribute("cn")   // Default is "cn", currently seems ok

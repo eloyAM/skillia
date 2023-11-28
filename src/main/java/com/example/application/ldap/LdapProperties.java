@@ -18,6 +18,6 @@ public class LdapProperties {
     private String userObjectClass;
     private String userDnPatterns;
     private String userSearchBase;
-    private String userSearchFilter;
+    private String userLoginFilter;
     private String groupSearchBase;
 }
