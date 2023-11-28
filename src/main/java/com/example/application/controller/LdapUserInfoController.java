@@ -1,7 +1,7 @@
 package com.example.application.controller;
 
-import com.example.application.ldap.LdapUserInfo;
-import com.example.application.ldap.LdapUserRepository;
+import com.example.application.dto.PersonDto;
+import com.example.application.service.LdapService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,19 +11,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ldap")
 public class LdapUserInfoController {
-    private final LdapUserRepository ldapUserRepository;
+    private final LdapService ldapService;
 
-    public LdapUserInfoController(LdapUserRepository ldapUserRepository) {
-        this.ldapUserRepository = ldapUserRepository;
+    public LdapUserInfoController(LdapService ldapService) {
+        this.ldapService = ldapService;
     }
 
     @GetMapping("/users")
-    public List<LdapUserInfo> get() {
-        List<LdapUserInfo> users = ldapUserRepository.findAll();
+    public List<PersonDto> get() {
+        var users = ldapService.findAllUsers();
         return users;
-        /*
-        return users.stream()
-                .map(LdapUserInfo::toString)
-                .collect(Collectors.joining("\n\n"));*/
     }
 }

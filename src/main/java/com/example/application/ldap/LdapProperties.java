@@ -14,6 +14,7 @@ public class LdapProperties {
     private String bindPassword;
     private String passwordAttribute;
     private String usernameAttribute;
+    private String departmentAttribute;
     private String userObjectClass;
     private String userDnPatterns;
     private String userSearchBase;
