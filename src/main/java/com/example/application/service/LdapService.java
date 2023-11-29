@@ -6,7 +6,6 @@ import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.naming.InvalidNameException;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import java.util.List;
@@ -16,7 +15,7 @@ public class LdapService {
     private final LdapTemplate ldapTemplate;
     private final LdapProperties ldapProperties;
 
-    public LdapService(LdapTemplate ldapTemplate, LdapProperties ldapProperties) throws InvalidNameException {
+    public LdapService(LdapTemplate ldapTemplate, LdapProperties ldapProperties) {
         this.ldapTemplate = ldapTemplate;
         this.ldapProperties = ldapProperties;
     }

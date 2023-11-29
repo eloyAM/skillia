@@ -1,6 +1,7 @@
 package com.example.application.view;
 
 import com.example.application.dto.SkillDto;
+import com.example.application.security.SecConstants;
 import com.example.application.service.SkillService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -16,13 +17,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.Route;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
 
-@PermitAll
+@RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skillsmanagement")
 public class SkillsManagementView extends VerticalLayout {
 

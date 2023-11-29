@@ -34,7 +34,6 @@ public class PersonService {
             .map(DtoEntityMapping::mapPersonEntityToPersonDto).toList();
     }
 
-    @Secured("ROLE_DEVELOPERS")
     public List<PersonDto> findAllPerson() {
         return personRepo.findBy();
     }

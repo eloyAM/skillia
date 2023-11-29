@@ -3,6 +3,7 @@ package com.example.application.view;
 import com.example.application.dto.PersonDto;
 import com.example.application.dto.PersonSkillBasicDto;
 import com.example.application.dto.SkillDto;
+import com.example.application.security.SecConstants;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;
 import com.example.application.service.SkillService;
@@ -25,13 +26,14 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
-@PermitAll
+@RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skillsassignment")
 public class SkillsAssignmentView extends TabSheet {
 
