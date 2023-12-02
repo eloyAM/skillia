@@ -52,6 +52,7 @@ public class SkillsAssignmentView extends TabSheet {
     }
 
     private void createUi() {
+        setSizeFull();
         add(new Tab("By skill"), assignBySkillTab());
         add(new Tab("By person"), assignByPersonTab());
     }
@@ -71,8 +72,10 @@ public class SkillsAssignmentView extends TabSheet {
         skillsComboBox.addValueChangeListener(
             event -> skillAndPeopleWithLevelGrid.updateItemsFromDb(event.getValue()));
 
-        return new VerticalLayout(skillsComboBox, personMultiSelectComboBox, skillLevelSelector,
+        var layout = new VerticalLayout(skillsComboBox, personMultiSelectComboBox, skillLevelSelector,
             saveButton, skillAndPeopleWithLevelGrid);
+        layout.setSizeFull();
+        return layout;
     }
 
     private VerticalLayout assignByPersonTab() {
@@ -89,8 +92,10 @@ public class SkillsAssignmentView extends TabSheet {
         personComboBox.addValueChangeListener(
             event -> personAndSkillsGrid.updateItemsFromDb(event.getValue()));
 
-        return new VerticalLayout(personComboBox, skillsComboBox, skillLevelSelector, saveButton,
+        var layout = new VerticalLayout(personComboBox, skillsComboBox, skillLevelSelector, saveButton,
             personAndSkillsGrid);
+        layout.setSizeFull();
+        return layout;
     }
 
     private Button createAssignBySkillTabSaveButton(

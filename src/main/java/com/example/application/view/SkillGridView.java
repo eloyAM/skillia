@@ -21,6 +21,7 @@ public class SkillGridView extends VerticalLayout {
     }
 
     private void createUi() {
+        setSizeFull();
         Grid<SkillDto> skillGrid = new Grid<>(SkillDto.class, false);
         skillGrid.addColumn(SkillDto::getId).setHeader("Id");
         skillGrid.addColumn(SkillDto::getName).setHeader("Name");

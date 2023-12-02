@@ -35,6 +35,7 @@ public class SkillsManagementView extends VerticalLayout {
     }
 
     private void createUi() {
+        setSizeFull();
         Grid<SkillDto> skillGrid = new Grid<>(SkillDto.class, false);
 
         skillGrid.addColumn(SkillDto::getName)
@@ -136,7 +137,7 @@ public class SkillsManagementView extends VerticalLayout {
     private ConfirmDialog createDeleteSkillDialog(SkillDto selectedSkill,
                                                   Grid<SkillDto> skillGrid) {
         ConfirmDialog confirmDialog = new ConfirmDialog();
-        confirmDialog.setHeader("Delete skill \"" + selectedSkill.getName() + "\"?");
+        confirmDialog.setHeader("Delete skill \"" + selectedSkill.getName() + "\"");
         confirmDialog.setText("Are you sure you want to permanently delete this item?\r\n"
             + "Any associations with this skill will be removed as well.");
         confirmDialog.setConfirmText("Delete");

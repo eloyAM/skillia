@@ -21,6 +21,7 @@ public class PersonSkillGridView extends VerticalLayout {
     }
 
     private void createUi() {
+        setSizeFull();
         Grid<PersonSkillBasicDto> personSkillGrid = new Grid<>(PersonSkillBasicDto.class, false);
         personSkillGrid.addColumn(PersonSkillBasicDto::getPersonId).setHeader("Person id");
         personSkillGrid.addColumn(PersonSkillBasicDto::getSkillId).setHeader("Skill id");

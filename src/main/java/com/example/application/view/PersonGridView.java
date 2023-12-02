@@ -23,6 +23,7 @@ public class PersonGridView extends VerticalLayout {
     }
 
     private void createUi() {
+        setSizeFull();
         Grid<PersonDto> personGrid = new Grid<>(PersonDto.class, false);
         personGrid.addColumn(PersonDto::getUsername).setHeader("Username");
         personGrid.addColumn(PersonDto::getFullName).setHeader("Name");
