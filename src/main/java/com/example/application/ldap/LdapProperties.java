@@ -10,11 +10,15 @@ import org.springframework.stereotype.Component;
 public class LdapProperties {
     private String url;
     private String base;
+
     private String bindUser;
     private String bindPassword;
+
     private String passwordAttribute;
     private String usernameAttribute;
     private String departmentAttribute;
+    private String fullNameAttribute;
+
     private String userObjectClass;
     private String userDnPatterns;
     private String userSearchBase;
