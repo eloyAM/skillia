@@ -23,7 +23,7 @@ public class PersonAndSkillsGrid extends Grid<PersonWithSkillsDto> {
     public PersonAndSkillsGrid(@NonNull PersonSkillService personSkillService) {
         this.personSkillService = personSkillService;
         addColumn(
-            personWithSkills -> personWithSkills.getPerson().getDisplayName()
+            personWithSkills -> personWithSkills.getPerson().getFullName()
         ).setHeader("Person");
         addColumn(skillsRenderer).setHeader("Skills");
     }

@@ -20,7 +20,7 @@ VALUES (1, 'C++'),
        (6, 'Open source'),
        (7, 'Python');
 
-INSERT INTO person (username, email, display_name, title, department)
+INSERT INTO person (username, email, full_name, title, department)
 VALUES ('eloy.abellan', 'eloy.abellan@example.com', 'Eloy Abellán Mayor', 'Junior Engineer', 'Innovation'),
        ('juan.canovas', 'juan.canovas@example.com', 'Juan Cánovas Hernández', 'Senior Engineer', 'Development'),
        ('jacob.smith', 'jacob.smith@example.com', 'Jacob Smith', 'Head Of Accounting', 'Accounting'),

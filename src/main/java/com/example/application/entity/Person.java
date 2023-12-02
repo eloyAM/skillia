@@ -25,8 +25,8 @@ public class Person {
     @NotBlank
     private String username;
 
-    @Column(name = "display_name")
-    private String displayName;
+    @Column(name = "full_name")
+    private String fullName;
 
     @Column(name = "email")
     private String email;

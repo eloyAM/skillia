@@ -7,7 +7,6 @@ import com.example.application.dto.SkillDto;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;
 import com.example.application.service.SkillService;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/dbController")
 public class DbController {
-    // TODO "retrieve" methods on repositories using projections to get directly DTOs
     private final PersonService personService;
     private final SkillService skillService;
     private final PersonSkillService personSkillService;

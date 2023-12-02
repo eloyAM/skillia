@@ -23,7 +23,7 @@ public class PersonDto implements Serializable {
     @NonNull
     @NotBlank
     private String username;
-    private String displayName;
+    private String fullName;
     @Email
     private String email;
     private String title;

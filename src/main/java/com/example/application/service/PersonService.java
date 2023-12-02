@@ -5,7 +5,6 @@ import com.example.application.entity.Person;
 import com.example.application.mapper.DtoEntityMapping;
 import com.example.application.repo.PersonRepo;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

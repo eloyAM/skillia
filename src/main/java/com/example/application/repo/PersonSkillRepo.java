@@ -36,7 +36,7 @@ public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillI
     List<AcquiredSkillDto> findAllAcquiredSkillByPersonId(String personId);
 
     @Query("select new com.example.application.dto.PersonWithLevelDto(p.personSkillId.personId"
-        + ", p.person.displayName, p.person.email, p.person.title, p.person.department"
+        + ", p.person.fullName, p.person.email, p.person.title, p.person.department"
         + ", p.level)"
         + " from PersonSkill p where p.personSkillId.skillId = :skillId")
     List<PersonWithLevelDto> findAllPersonWithLevelBySkillId(Long skillId);

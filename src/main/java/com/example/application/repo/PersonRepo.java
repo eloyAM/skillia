@@ -12,12 +12,12 @@ import java.util.List;
 @Repository
 public interface PersonRepo extends JpaRepository<Person, String> {
     @Query("select new com.example.application.dto.PersonDto("
-        + "p.username, p.displayName, p.email, p.title, p.department)"
+        + "p.username, p.fullName, p.email, p.title, p.department)"
         + " from Person p")
     List<PersonDto> findBy();
 
     @Query("select new com.example.application.dto.PersonDto("
-        + "p.username, p.displayName, p.email, p.title, p.department)"
+        + "p.username, p.fullName, p.email, p.title, p.department)"
         + " from Person p")
     List<PersonDto> findBy(Pageable pageable);
 }

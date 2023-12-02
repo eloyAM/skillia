@@ -25,7 +25,6 @@ import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.router.Route;
-import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -237,7 +236,7 @@ public class SkillsAssignmentView extends TabSheet {
 
     private static final ItemLabelGenerator<PersonDto> personDtoItemLabelGenerator = person ->
         MessageFormat.format("{0} ({1})",
-            person.getDisplayName(), person.getUsername()
+            person.getFullName(), person.getUsername()
         );
 
     private static RadioButtonGroup<Integer> skillSelectorRadioButtonGroup() {
@@ -256,7 +255,7 @@ public class SkillsAssignmentView extends TabSheet {
 
     private static final Renderer<PersonDto> personComboBoxRenderer = new ComponentRenderer<>(
         person -> {
-            Span displayName = new Span(person.getDisplayName());
+            Span fullName = new Span(person.getFullName());
             Div details = new Div();
             details.setText(MessageFormat.format("({0} - {1} - {2})",
                 person.getUsername(), person.getTitle(), person.getDepartment()
@@ -264,7 +263,7 @@ public class SkillsAssignmentView extends TabSheet {
             details.getStyle()
                 .set("font-size", "var(--lumo-font-size-s)")
                 .set("color", "var(--lumo-secondary-text-color)");
-            return new Div(displayName, details);
+            return new Div(fullName, details);
         });
 
     @NonNull

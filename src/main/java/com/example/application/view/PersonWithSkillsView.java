@@ -102,9 +102,9 @@ public class PersonWithSkillsView extends VerticalLayout {
         return new ComponentRenderer<>(personWithSkillsDto -> {
             var person = personWithSkillsDto.getPerson();
 
-            var displayNameDiv = new Div();
-            displayNameDiv.setText(person.getDisplayName());
-            displayNameDiv.getStyle().set("font-weight", "bold");
+            var fullNameDiv = new Div();
+            fullNameDiv.setText(person.getFullName());
+            fullNameDiv.getStyle().set("font-weight", "bold");
 
             var personTitleDiv = new Div();
             personTitleDiv.setText(person.getTitle());
@@ -117,7 +117,7 @@ public class PersonWithSkillsView extends VerticalLayout {
             deparmentDiv.getStyle()
                 .set("font-size", "var(--lumo-font-size-s)")
                 .set("font-style", "italic");
-            return new Div(displayNameDiv, personTitleDiv, deparmentDiv);
+            return new Div(fullNameDiv, personTitleDiv, deparmentDiv);
         });
     }
 

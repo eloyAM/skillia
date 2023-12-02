@@ -19,7 +19,7 @@ public final class Comparators {
         if (person == null) {
             return false;
         }
-        return StringUtils.containsIgnoreCase(person.getDisplayName(), filterValue)
+        return StringUtils.containsIgnoreCase(person.getFullName(), filterValue)
             || StringUtils.containsIgnoreCase(person.getUsername(), filterValue)
             || StringUtils.containsIgnoreCase(person.getTitle(), filterValue)
             || StringUtils.containsIgnoreCase(person.getDepartment(), filterValue)

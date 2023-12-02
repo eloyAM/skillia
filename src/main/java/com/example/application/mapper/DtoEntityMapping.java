@@ -17,7 +17,7 @@ public final class DtoEntityMapping {
     public static Person mapPersonDtoToPersonEntity(PersonDto personDto) {
         return new Person(personDto.getUsername())
             .setEmail(personDto.getEmail())
-            .setDisplayName(personDto.getDisplayName())
+            .setFullName(personDto.getFullName())
             .setDepartment(personDto.getDepartment())
             .setTitle(personDto.getTitle());
     }
@@ -25,7 +25,7 @@ public final class DtoEntityMapping {
     public static PersonDto mapPersonEntityToPersonDto(Person personEntity) {
         return new PersonDto(personEntity.getUsername())
             .setEmail(personEntity.getEmail())
-            .setDisplayName(personEntity.getDisplayName())
+            .setFullName(personEntity.getFullName())
             .setDepartment(personEntity.getDepartment())
             .setTitle(personEntity.getTitle());
     }

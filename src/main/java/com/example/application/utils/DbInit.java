@@ -62,17 +62,17 @@ public class DbInit {
         List<PersonDto> persons = List.of(
             new PersonDto("eloy.abellan")
                 .setEmail("eloy.abellan@example.com")
-                .setDisplayName("Eloy Abellán Mayor")
+                .setFullName("Eloy Abellán Mayor")
                 .setTitle("Junior Engineer")
                 .setDepartment("Innovation"),
             new PersonDto("juan.canovas")
                 .setEmail("juan.canovas@example.com")
-                .setDisplayName("Juan Cánovas Hernández")
+                .setFullName("Juan Cánovas Hernández")
                 .setTitle("Senior Engineer")
                 .setDepartment("Development"),
             new PersonDto("jacob.smith")
                 .setEmail("jacob.smith@example.com")
-                .setDisplayName("Jacob Smith")
+                .setFullName("Jacob Smith")
                 .setTitle("Head Of Accounting")
                 .setDepartment("Accounting"),
             new PersonDto("hernan.cortes")

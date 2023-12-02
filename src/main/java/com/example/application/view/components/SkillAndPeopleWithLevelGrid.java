@@ -54,7 +54,7 @@ public class SkillAndPeopleWithLevelGrid extends Grid<SkillAndPeopleWithLevel> {
                 levelIndicatorDiv.getStyle().set("padding-bottom", "var(--lumo-space-s");
                 PersonDto person = personAndLevel.getPerson();
                 componentDiv.add(
-                    new Text(person.getDisplayName()),
+                    new Text(person.getFullName()),
                     levelIndicatorDiv
                 );
             }

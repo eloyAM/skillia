@@ -31,13 +31,13 @@ public class PersonWithLevelDto implements Serializable {
     private Integer level;
 
     public PersonWithLevelDto(
-        @NonNull @NotBlank String username, String displayName, String email, String title,
+        @NonNull @NotBlank String username, String fullName, String email, String title,
         String department,
         @Min(1) @Max(5) @NonNull Integer level
     ) {
         this.person = PersonDto.builder()
             .username(username)
-            .displayName(displayName)
+            .fullName(fullName)
             .email(email)
             .title(title)
             .department(department).build();
