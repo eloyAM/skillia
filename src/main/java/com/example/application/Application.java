@@ -9,18 +9,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * The entry point of the Spring Boot application.
- *
- * Use the @PWA annotation make the application installable on phones, tablets
+ * Use the @PWA annotation to make the application installable on phones, tablets
  * and some desktop browsers.
- *
  */
 @SpringBootApplication
 @Theme(themeClass = Lumo.class, variant = Lumo.DARK)
 @PWA(
-        name = "Vaadin CRM",
-        shortName = "CRM",
-        offlinePath="offline.html",
-        offlineResources = { "images/offline.png" }
+        name = "Skillia",
+        shortName = "Skillia",
+        offlinePath = "offline.html",
+        offlineResources = {"images/offline.png"}
 )
 public class Application implements AppShellConfigurator {
 
