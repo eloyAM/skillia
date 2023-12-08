@@ -6,12 +6,15 @@ import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @EnableWebSecurity // <1>
 @Configuration
@@ -24,9 +27,23 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
             auth.requestMatchers(
 //                    PathRequest.toH2Console(),
                     PathRequest.toStaticResources().atCommonLocations()
-            ).permitAll();
+            ).permitAll()   // permitAll() allows both anonymous and authenticated access
+            .requestMatchers(
+                    antMatcher(HttpMethod.GET, "/api/auth/**"),
+                    antMatcher(HttpMethod.POST, "/api/auth/**"),
+                    antMatcher(HttpMethod.OPTIONS, "/api/auth/**")
+            ).anonymous()   // anonymous() allows anonymous, but not authenticated access
+            ;
         });  // <3>
-        http.csrf(csrf -> csrf.ignoringRequestMatchers(PathRequest.toH2Console())); // This allows the h2 console access (connect / test connection, etc)
+
+        http.csrf(csrf -> csrf
+                .ignoringRequestMatchers(
+                        PathRequest.toH2Console(),  // This allows the h2 console access (connect / test connection, etc)
+                        antMatcher(HttpMethod.GET, "/api/auth/**"),
+                        antMatcher(HttpMethod.POST, "/api/auth/**"),
+                        antMatcher(HttpMethod.OPTIONS, "/api/auth/**")
+                )
+        );
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));    // This allows the different frames of the h2 console to be rendered
         super.configure(http);
         setLoginView(http, LoginView.class); // <4>
@@ -44,8 +61,6 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
             AuthenticationManagerBuilder auth, LdapContextSource contextSource, LdapProperties ldapProperties
     ) throws Exception {
         //@formatter:off
-        // TODO the other LDAP parameters should be configurable as well
-        //  (userDnPatterns, userSearchBase, userSearchFilter, groupSearchBase, passwordAttribute)
         auth
                 .ldapAuthentication()
                 .userDnPatterns(ldapProperties.getUserDnPatterns())
@@ -57,6 +72,7 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
                 .contextSource(contextSource)
                 .passwordCompare()
                 .passwordAttribute(ldapProperties.getPasswordAttribute())
+//                .passwordEncoder()    // TODO currently relying on plain text passwords. Also check encoder used with OpenLDAP, AD, etc
         //.passwordEncoder(NoOpPasswordEncoder.getInstance())    // Plain text password encoder (default one, same as not providing it). Deprecation warning is actually a security matter, no plan from Spring to remove it
         ;
         //@formatter:on

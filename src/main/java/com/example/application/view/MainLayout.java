@@ -64,6 +64,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void createDrawer() {
+        // TODO maybe add icons to the links
         // Actual links
         addToDrawer(new VerticalLayout(new RouterLink("Person With Skills", PersonWithSkillsView.class)));
 
