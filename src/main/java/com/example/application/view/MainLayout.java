@@ -1,6 +1,5 @@
 package com.example.application.view;
 
-import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -17,8 +16,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLink;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 
 @CssImport("./styles/shared-styles.css")
 @JsModule("./js/light-dark-theme-chooser.js")
@@ -53,9 +51,16 @@ public class MainLayout extends AppLayout {
         header.add(themeSwitcher);
 
         // TODO remove. this is only for dev purposes
-        UserDetails user = securityService.getAuthenticatedUser();
-        header.add(new Div(new Text("user: " + user.getUsername())));
-        header.add(new Div(new Text("roles: " + user.getAuthorities().toString())));
+//        UserDetails user = securityService.getAuthenticatedUser();
+        Authentication authentication = securityService.getAuthentication();
+        header.add(new Div(new Text("user: "
+//                + user.getUsername()
+                + authentication.getName()
+        )));
+        header.add(new Div(new Text("roles: "
+//                + user.getAuthorities().toString()
+                + authentication.getAuthorities().toString()
+        )));
 
         Button logout = new Button("Log out", e -> securityService.logout()); // <2>
         header.add(logout);
@@ -68,13 +73,13 @@ public class MainLayout extends AppLayout {
         // Actual links
         addToDrawer(new VerticalLayout(new RouterLink("Person With Skills", PersonWithSkillsView.class)));
 
-        UserDetails user = securityService.getAuthenticatedUser();
-        var userAuthorities = user.getAuthorities();
-        SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
-        if (userAuthorities.contains(rhAuthority)) {
-            addToDrawer(new VerticalLayout(new RouterLink("Skills Management", SkillsManagementView.class)));
-            addToDrawer(new VerticalLayout(new RouterLink("Skills Assignment", SkillsAssignmentView.class)));
-        }
+//        UserDetails user = securityService.getAuthenticatedUser();
+//        var userAuthorities = user.getAuthorities();
+//        SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
+//        if (userAuthorities.contains(rhAuthority)) {
+        addToDrawer(new VerticalLayout(new RouterLink("Skills Management", SkillsManagementView.class)));
+        addToDrawer(new VerticalLayout(new RouterLink("Skills Assignment", SkillsAssignmentView.class)));
+//        }
 
         // TODO remove this views (might be useful while developing)
         addToDrawer(new VerticalLayout(new RouterLink("Person Grid", PersonGridView.class)));

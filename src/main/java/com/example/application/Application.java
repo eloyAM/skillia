@@ -6,6 +6,8 @@ import com.vaadin.flow.theme.Theme;
 import com.vaadin.flow.theme.lumo.Lumo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * The entry point of the Spring Boot application.
@@ -23,7 +25,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        ConfigurableApplicationContext applicationContext = SpringApplication.run(Application.class, args);
+        displayAllBeans(applicationContext);
     }
 
+    private static void displayAllBeans(ApplicationContext applicationContext) {
+        String[] allBeanNames = applicationContext.getBeanDefinitionNames();
+        for(String beanName : allBeanNames) {
+            System.out.println(beanName);
+        }
+    }
 }
