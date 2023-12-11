@@ -1,27 +1,52 @@
 package com.example.application.security;
 
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.JWSKeySelector;
+import com.nimbusds.jose.proc.JWSVerificationKeySelector;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.*;
 
 import javax.crypto.SecretKey;
 
 @Configuration
 class CustomJwtDecoder implements JwtDecoder {
 
-    private final NimbusJwtDecoder jwtDecoder;
+    private final JwtDecoder jwtDecoder;
+    private static final JWSAlgorithm jwsAlgorithm = JWSAlgorithm.parse(SecretKeyConfig.JWT_MAC_ALGORITHM_NAME);
 
     public CustomJwtDecoder(SecretKey secretKey) {
-        this.jwtDecoder = NimbusJwtDecoder
-                .withSecretKey(secretKey)
-                .macAlgorithm(SecretKeyConfig.JWT_MAC_ALGORITHM)
-                .build();
+        this.jwtDecoder = getJwtDecoder(SecretKeyConfig.JWT_ISSUER, getJWKSource(secretKey, jwsAlgorithm));
     }
 
     @Override
     public Jwt decode(String token) throws JwtException {
         return jwtDecoder.decode(token);
+    }
+
+    private static JwtDecoder getJwtDecoder(String issuer, JWKSource<SecurityContext> jwkSource) {
+        DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
+        jwtProcessor.setJWTClaimsSetVerifier((claimsSet, context) -> {
+            // No-op, Spring Security’s NimbusJwtDecoder uses its own validator
+        });
+
+        JWSKeySelector<SecurityContext> jwsKeySelector = new JWSVerificationKeySelector<>(jwsAlgorithm, jwkSource);
+        jwtProcessor.setJWSKeySelector(jwsKeySelector);
+        NimbusJwtDecoder nimbusJwtDecoder = new NimbusJwtDecoder(jwtProcessor);
+        nimbusJwtDecoder.setJwtValidator(
+                issuer != null ? JwtValidators.createDefaultWithIssuer(issuer)
+                        : JwtValidators.createDefault());
+        return nimbusJwtDecoder;
+    }
+
+    private static JWKSource<SecurityContext> getJWKSource(SecretKey secretKey, Algorithm alg) {
+        OctetSequenceKey key = new OctetSequenceKey.Builder(secretKey).algorithm(alg).build();
+        JWKSet jwkSet = new JWKSet(key);
+        return (jwkSelector, context) -> jwkSelector.select(jwkSet);
     }
 }
