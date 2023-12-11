@@ -66,7 +66,7 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
         AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver = request -> authenticationManagerBuilder.getOrBuild();
         BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter = new BearerTokenAuthenticationFilter(authenticationManagerResolver);
         http.addFilterBefore(bearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        super.setStatelessAuthentication(http, secretKey, SecretKeyBean.JWT_ISSUER);
+        super.setStatelessAuthentication(http, secretKey, SecretKeyConfig.JWT_ISSUER);
 
         super.configure(http);
         setLoginView(http, LoginView.class); // <4>

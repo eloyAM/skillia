@@ -1,7 +1,6 @@
 package com.example.application.security;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
@@ -17,7 +16,7 @@ class CustomJwtDecoder implements JwtDecoder {
     public CustomJwtDecoder(SecretKey secretKey) {
         this.jwtDecoder = NimbusJwtDecoder
                 .withSecretKey(secretKey)
-                .macAlgorithm(MacAlgorithm.HS256)   // TODO difference between JwsAlgorithm and MacAlgorithm?
+                .macAlgorithm(SecretKeyConfig.JWT_MAC_ALGORITHM)
                 .build();
     }
 
