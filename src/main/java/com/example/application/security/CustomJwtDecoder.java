@@ -9,16 +9,16 @@ import com.nimbusds.jose.proc.JWSKeySelector;
 import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.*;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 
-@Configuration
+@Component
 class CustomJwtDecoder implements JwtDecoder {
 
     private final JwtDecoder jwtDecoder;
-    private static final JWSAlgorithm jwsAlgorithm = JWSAlgorithm.parse(SecretKeyConfig.JWT_MAC_ALGORITHM_NAME);
+    public static final JWSAlgorithm jwsAlgorithm = JWSAlgorithm.parse(SecretKeyConfig.JWT_MAC_ALGORITHM_NAME);
 
     public CustomJwtDecoder(SecretKey secretKey) {
         this.jwtDecoder = getJwtDecoder(SecretKeyConfig.JWT_ISSUER, getJWKSource(secretKey, jwsAlgorithm));
@@ -44,7 +44,7 @@ class CustomJwtDecoder implements JwtDecoder {
         return nimbusJwtDecoder;
     }
 
-    private static JWKSource<SecurityContext> getJWKSource(SecretKey secretKey, Algorithm alg) {
+    public static JWKSource<SecurityContext> getJWKSource(SecretKey secretKey, Algorithm alg) {
         OctetSequenceKey key = new OctetSequenceKey.Builder(secretKey).algorithm(alg).build();
         JWKSet jwkSet = new JWKSet(key);
         return (jwkSelector, context) -> jwkSelector.select(jwkSet);

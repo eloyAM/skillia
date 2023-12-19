@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.util.Arrays;
+
 /**
  * The entry point of the Spring Boot application.
  * Use the @PWA annotation to make the application installable on phones, tablets
@@ -31,8 +33,6 @@ public class Application implements AppShellConfigurator {
 
     private static void displayAllBeans(ApplicationContext applicationContext) {
         String[] allBeanNames = applicationContext.getBeanDefinitionNames();
-        for(String beanName : allBeanNames) {
-            System.out.println(beanName);
-        }
+        System.out.println(Arrays.toString(allBeanNames));
     }
 }

@@ -44,7 +44,6 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
                     PathRequest.toStaticResources().atCommonLocations()
             ).permitAll()   // permitAll() allows both anonymous and authenticated access
             .requestMatchers(
-                    antMatcher(HttpMethod.GET, "/api/auth/**"),
                     antMatcher(HttpMethod.POST, "/api/auth/**"),
                     antMatcher(HttpMethod.OPTIONS, "/api/auth/**")
             ).anonymous()   // anonymous() allows anonymous, but not authenticated access
@@ -54,7 +53,6 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers(
                         PathRequest.toH2Console(),  // This allows the h2 console access (connect / test connection, etc)
-                        antMatcher(HttpMethod.GET, "/api/auth/**"),
                         antMatcher(HttpMethod.POST, "/api/auth/**"),
                         antMatcher(HttpMethod.OPTIONS, "/api/auth/**")
                 )

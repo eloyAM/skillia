@@ -9,8 +9,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 
 @Configuration
 public class JwtAuthenticationProviderConfig {
-    private static final String ROLES_CLAIM = "roles";
-    private static final String ROLE_AUTHORITY_PREFIX = "ROLE_";
+    public static final String ROLES_CLAIM = "roles";
+    public static final String ROLE_AUTHORITY_PREFIX = "ROLE_";
 
     @Bean
     public JwtAuthenticationProvider jwtAuthenticationProvider(JwtDecoder jwtDecoder) {
