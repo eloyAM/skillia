@@ -87,4 +87,8 @@ public final class DtoEntityMapping {
             )
             .toList();
     }
+
+    public static PersonSkillId mapPersonSkillIdDtoToPersonSkillIdEntity(PersonSkillIdDto personSkillIdDto) {
+        return new PersonSkillId(personSkillIdDto.getPersonId(), personSkillIdDto.getSkillId());
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 @Configuration
 public class RestConfig implements WebMvcConfigurer {
+    // This affects also the OpenAI docs, so instead of /v3/api-docs we automatically have /v3/api/api-docs
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix("/api", HandlerTypePredicate.forAnnotation(RestController.class));

@@ -1,8 +1,9 @@
 package com.example.application.dto;
 
+import com.example.application.entity.PersonSkillId;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.example.application.entity.PersonSkillId}.
+ * DTO for {@link PersonSkillId}
  */
 @Data
 @AllArgsConstructor
@@ -21,13 +22,11 @@ import java.io.Serializable;
 @Builder
 @Accessors(chain = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PersonSkillBasicDto implements Serializable {
+public class PersonSkillIdDto implements Serializable {
     @NonNull
-    private String personId;
+    @NotBlank
+    String personId;
     @NonNull
-    private Long skillId;
-    @NonNull
-    @Min(1)
-    @Max(5)
-    private Integer level;
+    @NotNull
+    Long skillId;
 }

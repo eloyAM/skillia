@@ -1,10 +1,8 @@
 package com.example.application.service;
 
-import com.example.application.dto.AcquiredSkillDto;
-import com.example.application.dto.PersonSkillBasicDto;
-import com.example.application.dto.PersonWithLevelDto;
-import com.example.application.dto.PersonWithSkillsDto;
+import com.example.application.dto.*;
 import com.example.application.entity.PersonSkill;
+import com.example.application.entity.PersonSkillId;
 import com.example.application.mapper.DtoEntityMapping;
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.utils.FunctionalUtils;
@@ -80,5 +78,10 @@ public class PersonSkillService {
     @NonNull
     public static List<Integer> getLevels() {
         return List.of(1, 2, 3, 4, 5);
+    }
+
+    public void deletePersonSkillById(PersonSkillIdDto idDto) {
+        PersonSkillId entityId = DtoEntityMapping.mapPersonSkillIdDtoToPersonSkillIdEntity(idDto);
+        personSkillRepo.deleteById(entityId);
     }
 }

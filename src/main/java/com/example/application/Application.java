@@ -28,7 +28,7 @@ public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext applicationContext = SpringApplication.run(Application.class, args);
-        displayAllBeans(applicationContext);
+//        displayAllBeans(applicationContext);
     }
 
     private static void displayAllBeans(ApplicationContext applicationContext) {

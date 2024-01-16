@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
@@ -21,6 +22,7 @@ import org.springframework.security.oauth2.server.resource.web.authentication.Be
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.crypto.SecretKey;
+import java.util.Objects;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -30,31 +32,36 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 public class SecurityConfig extends VaadinWebSecurity { // <2>
     private final AuthenticationProvider jwtAuthenticationProvider;
     private final SecretKey secretKey;
+    private final Environment env;
 
-    public SecurityConfig(SecretKey secretKey, JwtAuthenticationProvider jwtAuthenticationProvider) {
+    public SecurityConfig(SecretKey secretKey, JwtAuthenticationProvider jwtAuthenticationProvider, Environment env) {
         this.secretKey = secretKey;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
+        this.env = env;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        final String apiDocsPath = Objects.requireNonNull(
+                env.getProperty("springdoc.api-docs.path"),
+                "springdoc.api-docs.path property required to allow anonymous access");
         http.authorizeHttpRequests(auth -> {
             auth.requestMatchers(
 //                    PathRequest.toH2Console(),
-                    PathRequest.toStaticResources().atCommonLocations()
+                    PathRequest.toStaticResources().atCommonLocations(),
+                    antMatcher("/api/auth/**"), // Allow login
+                    antMatcher(HttpMethod.GET, "/api" + apiDocsPath),    // api-docs (json)
+                    antMatcher(HttpMethod.GET, "/api" + apiDocsPath + ".yaml") // api-docs.yaml
             ).permitAll()   // permitAll() allows both anonymous and authenticated access
-            .requestMatchers(
-                    antMatcher(HttpMethod.POST, "/api/auth/**"),
-                    antMatcher(HttpMethod.OPTIONS, "/api/auth/**")
-            ).anonymous()   // anonymous() allows anonymous, but not authenticated access
+                           // anonymous() allows anonymous, but not authenticated access
             ;
         });  // <3>
 
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers(
                         PathRequest.toH2Console(),  // This allows the h2 console access (connect / test connection, etc)
-                        antMatcher(HttpMethod.POST, "/api/auth/**"),
-                        antMatcher(HttpMethod.OPTIONS, "/api/auth/**")
+                        antMatcher("/api/**"),
+                        antMatcher("/swagger-ui/**")
                 )
         );
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));    // This allows the different frames of the h2 console to be rendered
