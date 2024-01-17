@@ -1,6 +1,9 @@
 package com.example.application.view;
 
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -40,7 +43,14 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         login.setI18n(i18n);
 
-        add(new H1("Skillia"), login);
+        add(logoImage(), new H1("Skillia"), new Text("Skills tracker"), login);
+    }
+
+    private static Image logoImage() {
+        Image logoImg = new Image("icons/icon.png", "Skillia logo");
+        logoImg.setHeight(128, Unit.PIXELS);
+        logoImg.setWidth(128, Unit.PIXELS);
+        return logoImg;
     }
 
     @Override
