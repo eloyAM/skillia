@@ -37,6 +37,35 @@ public class MainLayout extends AppLayout {
         HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), logo);
         header.addClassName("app-header");
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+
+//        _addUserInfo(header, securityService); // TODO remove. this is only for dev purposes
+
+        Div spacer = new Div();
+        spacer.getStyle().set("flexGrow", "1");
+        header.add(spacer);
+
+        header.add(createThemeSwitcher());
+
+        header.add(new Button("Log out", e -> securityService.logout()));
+
+        addToNavbar(header);
+    }
+
+    // only for dev purposes
+    private static void _addUserInfo(HorizontalLayout header, SecurityService securityService1) {
+        //        UserDetails user = securityService.getAuthenticatedUser();
+        Authentication authentication = securityService1.getAuthentication();
+        header.add(new Div(new Text("user: "
+//                + user.getUsername()
+                + authentication.getName()
+        )));
+        header.add(new Div(new Text("roles: "
+//                + user.getAuthorities().toString()
+                + authentication.getAuthorities().toString()
+        )));
+    }
+
+    private static Button createThemeSwitcher() {
         Button themeSwitcher = new Button(VaadinIcon.ADJUST.create());
         themeSwitcher.setTooltipText("Switch theme");
         themeSwitcher.addThemeVariants(ButtonVariant.LUMO_ICON);
@@ -47,25 +76,7 @@ public class MainLayout extends AppLayout {
                 + "document.documentElement.setAttribute('theme', newTheme);"
                 + "localStorage.setItem('app-theme', newTheme);"
         ));
-
-        header.add(themeSwitcher);
-
-        // TODO remove. this is only for dev purposes
-//        UserDetails user = securityService.getAuthenticatedUser();
-        Authentication authentication = securityService.getAuthentication();
-        header.add(new Div(new Text("user: "
-//                + user.getUsername()
-                + authentication.getName()
-        )));
-        header.add(new Div(new Text("roles: "
-//                + user.getAuthorities().toString()
-                + authentication.getAuthorities().toString()
-        )));
-
-        Button logout = new Button("Log out", e -> securityService.logout()); // <2>
-        header.add(logout);
-
-        addToNavbar(header);
+        return themeSwitcher;
     }
 
     private void createDrawer() {
