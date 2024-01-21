@@ -12,6 +12,7 @@
     <properties>
         <java.version>17</java.version>
         <vaadin.version>24.2.2</vaadin.version>
+        <activated.profile>h2</activated.profile>
     </properties>
 
     <parent>
@@ -259,7 +260,17 @@
                         </executions>
                     </plugin>
                 </plugins>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
             </build>
+            <properties>
+<!--                <spring.profiles.active>prod</spring.profiles.active>-->
+                <activated.profile>prod</activated.profile>
+            </properties>
         </profile>
 
         <profile>

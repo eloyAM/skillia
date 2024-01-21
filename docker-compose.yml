@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    #image: skillia:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+      - openldap
+    networks:
+      - app-network
+  db:
+    image: postgres:16.1-alpine3.18
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=skillia
+    networks:
+      - app-network
+  openldap:
+    image: bitnami/openldap:2.6.6-debian-11-r59
+    ports:
+      - 1389:1389
+      - 1636:1636
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_ROOT=dc=example,dc=org
+      - LDAP_ADMIN_DN=cn=admin,dc=example,dc=org
+    volumes:
+      - ./skillia.ldif:/ldifs/skillia.ldif
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
