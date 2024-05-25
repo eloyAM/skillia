@@ -80,7 +80,9 @@ public class MainLayout extends AppLayout {
     }
 
     private void createDrawer() {
-        // TODO maybe add icons to the links
+        // TODO add icons to the links
+        // TODO hide links based on user roles
+        // TODO custom view for access denied
         // Actual links
         addToDrawer(new VerticalLayout(new RouterLink("Person With Skills", PersonWithSkillsView.class)));
 
@@ -93,7 +95,7 @@ public class MainLayout extends AppLayout {
 //        }
 
         // TODO remove this views (might be useful while developing)
-        addToDrawer(new VerticalLayout(new RouterLink("Person Grid", PersonGridView.class)));
+        addToDrawer(new VerticalLayout(new RouterLink("Users list", PersonGridView.class)));
         addToDrawer(new VerticalLayout(new RouterLink("Person Skill Grid", PersonSkillGridView.class)));
         addToDrawer(new VerticalLayout(new RouterLink("Skill Grid", SkillGridView.class)));
     }

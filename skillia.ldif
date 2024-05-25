@@ -30,60 +30,24 @@ sn: Somesurname
 uid: otherou.user
 userPassword:: MTIzNA==
 
-dn: uid=hugo.reyes,ou=users,dc=example,dc=org
+dn: uid=usr1,ou=users,dc=example,dc=org
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person
 objectClass: top
-cn: Hugo Reyes Herrero
-sn: Reyes Herrero
-departmentNumber: Human Resources
-givenName: Hugo
-mail: hugo.reyes@example.org
-title: HR Manager
-uid: hugo.reyes
+cn: User1 
+sn: snUsr1
+uid: usr1
 userPassword:: MTIzNA==
 
-dn: uid=raquel.huerta,ou=users,dc=example,dc=org
+dn: uid=usr2,ou=users,dc=example,dc=org
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person
 objectClass: top
-cn: Raquel Huerta Hidalgo
-sn: Huerta Hidalgo
-departmentNumber: Human Resources
-givenName: Raquel
-mail: raquel.huerta@example.org
-title: HR Assistant
-uid: raquel.huerta
-userPassword:: MTIzNA==
-
-dn: uid=andrea.riquelme,ou=users,dc=example,dc=org
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Andrea Riquelme Ruiz
-sn: Riquelme Ruiz
-departmentNumber: Innovation
-givenName: Andrea
-mail: andrea.riquelme@example.org
-title: Software Engineer
-uid: andrea.riquelme
-userPassword:: MTIzNA==
-
-dn: uid=paz.vidal,ou=users,dc=example,dc=org
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Paz Vidal Gil
-sn: Vidal Gil
-departmentNumber: Development
-givenName: Paz
-mail: paz.vidal@example.org
-title: Junior Software Engineer
-uid: paz.vidal
+cn: User2
+sn: snUsr2
+uid: usr2
 userPassword:: MTIzNA==
 
 dn: uid=juan.lararomero,ou=users,dc=example,dc=org
@@ -93,86 +57,22 @@ objectClass: person
 objectClass: top
 cn: Juan Lara Romero
 sn: Lara Romero
-departmentNumber: Development
+departmentNumber: Tooling
 givenName: Juan
 mail: juan.lararomero@example.org
-title: Senior Software Engineer
+title: Software Engineer
 uid: juan.lararomero
-userPassword:: MTIzNA==
-
-dn: uid=pedro.morales,ou=users,dc=example,dc=org
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Pedro Morales Ruiz
-sn: Morales Ruiz
-departmentNumber: Development
-givenName: Pedro
-mail: pedro.morales@example.org
-title: Software Engineer
-uid: pedro.morales
-userPassword:: MTIzNA==
-
-dn: uid=jacob.smith,ou=users,dc=example,dc=org
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Jacob Smith
-sn: Smith
-departmentNumber: Tooling
-givenName: Jacob
-mail: jacob.smith@example.org
-title: Software Engineer
-uid: jacob.smith
-userPassword:: MTIzNA==
-
-dn: uid=james.wilson,ou=users,dc=example,dc=org
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: James Wilson
-sn: Wilson
-departmentNumber: IT
-givenName: James
-mail: james.wilson@example.org
-title: Head of IT
-uid: james.wilson
-userPassword:: MTIzNA==
-
-dn: uid=elisa.schubert,ou=users,dc=example,dc=org
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Elisa Schubert
-sn: Schubert
-departmentNumber: IT
-givenName: Elisa
-mail: elisa.schubert@example.org
-title: IT Support
-uid: elisa.schubert
-userPassword:: MTIzNA==
-
-dn: uid=elena.cruz,ou=finance,dc=example,dc=org
-objectClass: inetOrgPerson
-objectClass: organizationalPerson
-objectClass: person
-objectClass: top
-cn: Elena Cruz Hermoso
-sn: Cruz Hermoso
-departmentNumber: Finance
-givenName: Elena
-mail: elena.cruz@example.org
-title: Accountant
-uid: elena.cruz
 userPassword:: MTIzNA==
 
 dn: cn=hr,ou=groups,dc=example,dc=org
 objectClass: groupOfUniqueNames
 objectClass: top
 cn: hr
-uniqueMember: uid=hugo.reyes,ou=users,dc=example,dc=org
-uniqueMember: uid=raquel.huerta,ou=users,dc=example,dc=org
+uniqueMember: uid=usr1,ou=users,dc=example,dc=org
+
+dn: cn=group01,ou=groups,dc=example,dc=org
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: group01
+uniqueMember: uid=usr2,ou=users,dc=example,dc=org
+

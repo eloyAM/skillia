@@ -11,8 +11,8 @@ import jakarta.annotation.security.PermitAll;
 import java.util.List;
 
 @PermitAll
-@Route(layout = MainLayout.class, value = "persongrid")
-@PageTitle("Person Grid | Vaadin Demo")
+@Route(layout = MainLayout.class, value = "users")
+@PageTitle("Users")
 public class PersonGridView extends VerticalLayout {
 
     private final PersonService personService;
