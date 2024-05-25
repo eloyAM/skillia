@@ -13,3 +13,7 @@ a[highlight] {
     font-size: 1em;
     margin: var(--lumo-space-m);
 }
+
+.menu-link span {
+    padding-left: 5px;
+}

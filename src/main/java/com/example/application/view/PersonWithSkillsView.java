@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 
 @PermitAll
-@Route(layout = MainLayout.class, value = "personwithskills")
+@Route(layout = MainLayout.class, value = "skillsmatrix")
 public class PersonWithSkillsView extends VerticalLayout {
 
     private final PersonSkillService personSkillService;
