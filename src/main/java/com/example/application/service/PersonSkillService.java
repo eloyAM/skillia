@@ -8,8 +8,10 @@ import com.example.application.repo.PersonSkillRepo;
 import com.example.application.utils.FunctionalUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,11 +25,15 @@ public class PersonSkillService {
 
     @Nullable
     public PersonSkillBasicDto savePersonSkill(PersonSkillBasicDto dto) {
-        return Optional.of(dto)
-            .map(DtoEntityMapping::mapPersonSkillDtoToPersonSkillEntity)
-            .map(personSkillRepo::save)
-            .map(DtoEntityMapping::mapPersonSkillEntityToPersonSkillDto)
-            .orElse(null);
+        try {
+            return Optional.of(dto)
+                .map(DtoEntityMapping::mapPersonSkillDtoToPersonSkillEntity)
+                .map(personSkillRepo::save)
+                .map(DtoEntityMapping::mapPersonSkillEntityToPersonSkillDto)
+                .orElse(null);
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     public List<PersonSkillBasicDto> savePersonSkill(Iterable<PersonSkillBasicDto> dtoIterable) {
@@ -35,9 +41,13 @@ public class PersonSkillService {
             FunctionalUtils.iterableToStream(dtoIterable)
                 .map(DtoEntityMapping::mapPersonSkillDtoToPersonSkillEntity)
         );
-        return personSkillRepo.saveAll(entitiesFromDtos).stream()
-            .map(DtoEntityMapping::mapPersonSkillEntityToPersonSkillDto)
-            .toList();
+        try {
+            return personSkillRepo.saveAll(entitiesFromDtos).stream()
+                .map(DtoEntityMapping::mapPersonSkillEntityToPersonSkillDto)
+                .toList();
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
     }
 
     public List<PersonSkillBasicDto> getAllPersonSkillBasic() {

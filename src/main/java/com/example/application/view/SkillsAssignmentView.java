@@ -107,12 +107,7 @@ public class SkillsAssignmentView extends TabSheet {
         return new Button("Save", event -> {
             if (personMultiSelectComboBox.isEmpty() || skillsComboBox.isEmpty()
                 || skillLevelSelector.isEmpty()) {
-                // TODO put a message in the form instead of a notification
-                Notification notification =
-                    new Notification("Please fill all required fields", 5000,
-                        Notification.Position.TOP_CENTER);
-                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                notification.open();
+                notificationTopCenter("Please fill all required fields", false).open();
                 return;
             }
             // Input data
@@ -128,20 +123,12 @@ public class SkillsAssignmentView extends TabSheet {
                 .toList();
             List<PersonSkillBasicDto> savedPersonSkills =
                 personSkillService.savePersonSkill(personSkills);
-            // TODO try some error cases. What to do? Exception / empty result.
-            // NOTE: seems to be ok, specifying a new level for an existing relation, updates it
-            // Error case: skill/person deleted during the process
             boolean savedPersonSkillsIsEmpty = savedPersonSkills.isEmpty();
-            Notification notification;
             if (savedPersonSkillsIsEmpty) {
-                notification = notificationTopCenter("No person skills saved", false);
+                notificationTopCenter("Some error occurred while saving", false).open();
             } else {
-                // TODO probably, only show OK notification, not the saved items
-                notification =
-                    notificationTopCenter("Saved person skills: {0}" + savedPersonSkills, true);
-
+                notificationTopCenter("Saved successfully", true).open();
             }
-            notification.open();
             if (!savedPersonSkillsIsEmpty) {
                 // Clean the data (not the skill, as you might want to add the same skill
                 // to other people with different level)
@@ -161,12 +148,7 @@ public class SkillsAssignmentView extends TabSheet {
         return new Button("Save", e -> {
             if (personComboBox.isEmpty() || skillsComboBox.isEmpty()
                 || skillLevelSelector.isEmpty()) {
-                // TODO put a message in the form instead of a notification
-                Notification notification =
-                    new Notification("Please fill all required fields", 5000,
-                        Notification.Position.TOP_CENTER);
-                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                notification.open();
+                notificationTopCenter("Please fill all required fields", false).open();
                 return;
             }
             // Input data
@@ -179,19 +161,13 @@ public class SkillsAssignmentView extends TabSheet {
                 .skillId(skill.getId())
                 .level(skillLevel).build();
             PersonSkillBasicDto savedPersonSkill = personSkillService.savePersonSkill(personSkill);
-            // TODO try some error cases. What to do? Exception / empty result.
-            // NOTE: seems to be ok, specifying a new level for an existing relation, updates it
             // Error case: skill/person deleted during the process
             boolean savedPersonSkillIsNull = savedPersonSkill == null;
-            Notification notification;
             if (savedPersonSkillIsNull) {
-                notification = notificationTopCenter("No person skill saved", false);
+                notificationTopCenter("Some error occurred while saving", false).open();
             } else {
-                // TODO probably, only show OK notification, not the saved item
-                notification =
-                    notificationTopCenter("Saved person skill: {0}" + savedPersonSkill, true);
+                notificationTopCenter("Saved successfully", true).open();
             }
-            notification.open();
             if (!savedPersonSkillIsNull) {
                 // Clean the data (not the person, as you might want to add more skills
                 // to the same person)
