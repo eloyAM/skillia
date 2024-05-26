@@ -35,7 +35,6 @@ public class PersonWithSkillsView extends VerticalLayout {
 
     private void createUi() {
         setSizeFull();
-        // TODO check column widths
         var personSkillGrid = new Grid<>(PersonWithSkillsDto.class, false);
         personSkillGrid.addColumn(createPersonRenderer()).setHeader("Person")
             .setKey("person");

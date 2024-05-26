@@ -83,7 +83,7 @@ public class SkillsManagementView extends VerticalLayout {
             if (newSkill.isPresent()) {
                 listDataView.addItem(newSkill.get());
             } else {
-                // TODO notification if skill already exists
+                ViewUtils.notificationTopCenter("The skill already exists", true).open();
                 System.out.println("Couldn't create skill '" + text + "'");
             }
             skillNameTextField.clear();
