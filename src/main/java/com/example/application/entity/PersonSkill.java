@@ -42,14 +42,14 @@ public class PersonSkill {
     @NonNull
     @ManyToOne
     @MapsId("personId")
-    @JoinColumn(name = "person_id")
+    @JoinColumn(name = "person_id", foreignKey = @ForeignKey(name = "FK__person_skill__person"))
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Person person;
 
     @NonNull
     @ManyToOne
     @MapsId("skillId")
-    @JoinColumn(name = "skill_id")
+    @JoinColumn(name = "skill_id", foreignKey = @ForeignKey(name = "FK__person_skill__skill"))
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Skill skill;
 
