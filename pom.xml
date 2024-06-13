@@ -165,7 +165,16 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -338,6 +347,14 @@
             </build>
             <properties>
                 <activated.profile>postgres</activated.profile>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>postgres</id>
+            <properties>
+                <activated.profile>postgres</activated.profile>
+                <spring.profiles.active>postgres</spring.profiles.active>
             </properties>
         </profile>
 

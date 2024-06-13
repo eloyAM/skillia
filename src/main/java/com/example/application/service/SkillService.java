@@ -65,4 +65,9 @@ public class SkillService {
         // This silently fails if there's no entity with the given id
         skillRepo.deleteById(id);
     }
+
+    public Optional<SkillDto> getSkillById(Long id) {
+        return skillRepo.findById(id)
+                .map(DtoEntityMapping::mapSkillEntityToSkillDto);
+    }
 }

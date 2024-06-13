@@ -11,7 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.util.List;
+import java.util.Map;
+
+import static org.springframework.http.ResponseEntity.created;
 
 @Tag(name = "Skill")
 @RestController
@@ -24,20 +28,36 @@ public class SkillController {
     }
 
     @Operation(description = "Find all skills")
-    @GetMapping("/find")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Existing skills")
+    })
+    @GetMapping("")
     public List<SkillDto> findAllSkill() {
         return skillService.getAllSkill();
     }
 
+    @Operation(description = "Get a skill by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Skill found"),
+            @ApiResponse(responseCode = "404", description = "Skill not found")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<SkillDto> getSkill(@PathVariable Long id) {
+        return skillService.getSkillById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @Operation(description = "Create a skill with the given name")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Skill created"),
+            @ApiResponse(responseCode = "201", description = "Skill created"),
             @ApiResponse(responseCode = "204", description = "Skill already exists")
     })
-    @PostMapping("/create")
-    public ResponseEntity<SkillDto> createSkill(@RequestBody String skillName) {
+    @PostMapping("")
+    public ResponseEntity<SkillDto> createSkill(@RequestBody Map<String, String> body) {
+        final String skillName = body.get("name");
         return skillService.saveSkill(new SkillDto(skillName))
-                .map(ResponseEntity::ok)
+                .map(skill -> created(URI.create("/api/skill/" + skill.getId())).body(skill))
                 .orElse(ResponseEntity.noContent().build());
     }
 
@@ -46,7 +66,7 @@ public class SkillController {
             @ApiResponse(responseCode = "200", description = "Skills created"),
             @ApiResponse(responseCode = "400", description = "Some skill already exists. No element created")
     })
-    @PostMapping("/createAll")
+    @PostMapping("/bulk")
     public List<SkillDto> createSkillAll(@RequestBody List<String> body) {
         List<SkillDto> dtoList = body.stream().map(SkillDto::new).toList();
         List<SkillDto> saved = skillService.saveSkill(dtoList);
@@ -56,20 +76,27 @@ public class SkillController {
         return saved;
     }
 
+    @Operation(description = "Update a skill (name) by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Skill updated"),
-            @ApiResponse(responseCode = "400", description = "No skill found to update with the given id")
+            @ApiResponse(responseCode = "400",
+                    description = "No skill matching the id or there is already a skill with the same name")
     })
-    @PutMapping("/update/{id}")
-    public SkillDto updateSkill(@PathVariable Long id, @RequestBody String skillName) {
+    @PatchMapping("/{id}")
+    public SkillDto updateSkill(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        final String skillName = body.get("name");
         return skillService.updateSkill(id, skillName)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "No skill found to update with the given id " + id));
     }
 
     @Operation(description = "Delete the skill with the given id. No error thrown if the skill doesn't exist")
-    @DeleteMapping("/delete/{id}")
-    public void deleteSkill(@PathVariable Long id) {
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Deleted (or not found)")
+    })
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSkill(@PathVariable Long id) {
         skillService.deleteSkillById(id);
+        return ResponseEntity.noContent().build();
     }
 }

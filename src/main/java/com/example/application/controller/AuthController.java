@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,7 +41,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Could not create the JWT token", content = @Content(mediaType = "text/plain"))
     })
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UsrPwdDto body) {
+    public ResponseEntity<String> login(@Valid @RequestBody UsrPwdDto body) {
         UsernamePasswordAuthenticationToken usrPwdtoken = new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword());
         final Authentication authentication;
         try {
