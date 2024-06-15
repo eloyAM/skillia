@@ -14,12 +14,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SkillControllerTest {
-    @Autowired
-    private WebTestClient wtc;
-    @Autowired
-    private TestRestTemplate testRestTemplate;
+    private final WebTestClient wtc;
+    private final TestRestTemplate testRestTemplate;
     private String bearerToken = null;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    public SkillControllerTest(WebTestClient wtc, TestRestTemplate testRestTemplate) {
+        this.wtc = wtc;
+        this.testRestTemplate = testRestTemplate;
+    }
 
     @BeforeEach
     void setUp() {

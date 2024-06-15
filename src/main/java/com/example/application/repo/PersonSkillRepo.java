@@ -1,14 +1,14 @@
 package com.example.application.repo;
 
-import com.example.application.dto.AcquiredSkillDto;
-import com.example.application.dto.PersonSkillBasicDto;
-import com.example.application.dto.PersonWithLevelDto;
+import com.example.application.dto.*;
 import com.example.application.entity.PersonSkill;
 import com.example.application.entity.PersonSkillId;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillId> {
     /*
@@ -41,4 +41,5 @@ public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillI
         + " from PersonSkill p where p.personSkillId.skillId = :skillId")
     List<PersonWithLevelDto> findAllPersonWithLevelBySkillId(Long skillId);
 
+    Optional<PersonSkill> findByPersonSkillId_PersonIdAndPersonSkillId_SkillId(String personId, Long skillId);
 }

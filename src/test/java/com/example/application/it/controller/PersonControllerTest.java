@@ -23,7 +23,7 @@ public class PersonControllerTest {
 
     @Test
     void someResultAfterDbInit() throws Exception {
-        wtc.get().uri("/api/person/find")
+        wtc.get().uri("/api/person")
                 .headers(h -> h.setBearerAuth(bearerToken))
                 .exchange()
                 .expectStatus().isOk()

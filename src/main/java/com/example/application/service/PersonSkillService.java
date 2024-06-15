@@ -67,6 +67,13 @@ public class PersonSkillService {
         return personSkillRepo.findAllAcquiredSkillByPersonId(personId);
     }
 
+    public Optional<AcquiredSkillDto> findPersonSkillBasicByPersonIdAndSkillId(PersonSkillIdDto personSkillIdD) {
+        return personSkillRepo.findByPersonSkillId_PersonIdAndPersonSkillId_SkillId(
+                        personSkillIdD.getPersonId(), personSkillIdD.getSkillId()
+                )
+                .map(DtoEntityMapping::mapPersonSkillEntityToAcquiredSkillDto);
+    }
+
 
     // Static utilities
 
