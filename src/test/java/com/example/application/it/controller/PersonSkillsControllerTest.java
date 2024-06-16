@@ -43,17 +43,17 @@ public class PersonSkillsControllerTest {
     @Test
     void happyPathCrud() throws Exception {
         final String skillName = "Git";
-        final int skillLevel = 3;
-        Long skillId = createSkill01(skillName);
-        String personId = getFirstPerson();
+        final Long skillLevel = 3L;
+        final Long skillId = createSkill01(skillName);
+        final String personId = getFirstPerson();
 
+        // 1st step -> CREATE a skill assigment
         ObjectNode jsonBodyNode = objectMapper.createObjectNode()
-                .put("personId", personId)
-                .put("skillId", skillId)
                 .put("level", skillLevel);
 
-        final String skillAssignationLocation = MessageFormat.format("/api/personSkills/person/{0}/skill/{1}", personId, skillId);
-        wtc.put().uri("/api/personSkills/assignSkill")
+        final String skillAssignationLocation = MessageFormat.format(
+                "/api/personSkills/person/{0}/skill/{1}", personId, skillId);
+        wtc.put().uri(skillAssignationLocation)
                 .headers(h -> h.setBearerAuth(bearerToken))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -68,6 +68,7 @@ public class PersonSkillsControllerTest {
                 .jsonPath("$.level").isEqualTo(skillLevel)
                 .consumeWith(System.out::println);
 
+        // 2nd step -> RETRIEVE the created element
         wtc.get().uri(skillAssignationLocation)
                 .headers(h -> h.setBearerAuth(bearerToken))
                 .accept(MediaType.APPLICATION_JSON)
@@ -78,7 +79,53 @@ public class PersonSkillsControllerTest {
                 .jsonPath("$.level").isEqualTo(skillLevel)
                 .jsonPath("$.skill.id").isEqualTo(skillId)
                 .consumeWith(System.out::println);
-        // TODO continue
+
+        // 3rd step -> UPDATE the created element (with the PUT idempotency is the same as the creation)
+        final Long skillLevelUpdated = skillLevel + 1;
+        jsonBodyNode.put("level", skillLevelUpdated);
+        wtc.put().uri(skillAssignationLocation)
+                .headers(h -> h.setBearerAuth(bearerToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(jsonBodyNode))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().location(skillAssignationLocation)
+                .expectBody()
+                .jsonPath("$.personId").isEqualTo(personId)
+                .jsonPath("$.skillId").isEqualTo(skillId)
+                .jsonPath("$.level").isEqualTo(skillLevelUpdated)
+                .consumeWith(System.out::println);
+
+        wtc.get().uri(skillAssignationLocation)
+                .headers(h -> h.setBearerAuth(bearerToken))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.level").isEqualTo(skillLevelUpdated)
+                .jsonPath("$.skill.id").isEqualTo(skillId)
+                .consumeWith(System.out::println);
+
+        // 4th step -> DELETE the element
+        wtc.delete().uri(skillAssignationLocation)
+                .headers(h -> h.setBearerAuth(bearerToken))
+                .exchange()
+                .expectStatus().isNoContent()
+                .expectBody()
+                .consumeWith(System.out::println)
+                .isEmpty();
+
+        wtc.get().uri(skillAssignationLocation)
+                .headers(h -> h.setBearerAuth(bearerToken))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .consumeWith(System.out::println)
+                .isEmpty();
     }
 
     //
