@@ -1,5 +1,6 @@
 package com.example.application.it.controller;
 
+import com.jayway.jsonpath.JsonPath;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,12 +13,13 @@ public class ControllerTestUtils {
     public static String getBearerToken(TestRestTemplate testRestTemplate, String jsonCredentials) {
         HttpHeaders headers = createHeaders(h -> {
             h.setContentType(MediaType.APPLICATION_JSON);
-            h.setAccept(List.of(MediaType.TEXT_PLAIN));
+            h.setAccept(List.of(MediaType.APPLICATION_JSON));
         });
         HttpEntity<String> request = new HttpEntity<>(jsonCredentials, headers);
-        return testRestTemplate
+        String body = testRestTemplate
                 .postForEntity("/api/auth/login", request, String.class)
                 .getBody();
+        return JsonPath.read(body, "$.token");
     }
 
     public static String getBearerToken(TestRestTemplate testRestTemplate) {

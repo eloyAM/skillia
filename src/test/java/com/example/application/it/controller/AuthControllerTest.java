@@ -26,69 +26,70 @@ public class AuthControllerTest {
                         .content("{\"username\": \"hugo.reyes\", \"password\":  \"1234\"}")
                 )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
-                .andExpect(MockMvcResultMatchers.content().string(Matchers.matchesRegex(JWT_REGEX)))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").isString())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.token").value(Matchers.matchesRegex(JWT_REGEX)))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void loginWithInvalidCredentialsKo4xx() throws Exception {
+    void loginWithInvalidCredentialsKo401() throws Exception {
         mvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"username\": \"invented.user\", \"password\":  \"randomPassword\"}")
                 )
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
-                .andExpect(MockMvcResultMatchers.content().string("Could not authenticate"))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid credentials"))
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void loginWithInvalidBodySchemaIncludingSomeValidPropKo4xx() throws Exception {
+    void loginWithInvalidBodySchemaIncludingSomeValidPropKo400() throws Exception {
         mvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"user\": \"invented.user\", \"password\":  \"randomPassword\"}")
                 )
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
-                .andExpect(MockMvcResultMatchers.content().string("Could not authenticate"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").isNotEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void loginWithInvalidBodySchemaKo4xx() throws Exception {
+    void loginWithInvalidBodySchemaKo400() throws Exception {
         mvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"randomprop1\": \"monday\", \"randomprop2\":  \"tuesday\"}")
                 )
                 .andExpect(MockMvcResultMatchers.status().is4xxClientError())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
-                .andExpect(MockMvcResultMatchers.content().string("Could not authenticate"))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").isNotEmpty())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void loginWithContentTypeMissingBodyKo4xx() throws Exception {
+    void loginWithContentTypeMissingBodyKo400() throws Exception {
         mvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void loginWithBodyMissingContentTypeKoKo4xx() throws Exception {
+    void loginWithBodyMissingContentTypeKoKo400() throws Exception {
         mvc.perform(post("/api/auth/login")
                         .content("{\"username\": \"hugo.reyes\", \"password\":  \"1234\"}")
                 )
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.status().isUnsupportedMediaType())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void loginMissingContentTypeAndBodyKo4xx() throws Exception {
+    void loginMissingContentTypeAndBodyKo400() throws Exception {
         mvc.perform(post("/api/auth/login"))
-                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andDo(MockMvcResultHandlers.print());
     }
 }
