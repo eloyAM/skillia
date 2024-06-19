@@ -1,12 +1,11 @@
 package com.example.application.utils;
 
-import lombok.experimental.UtilityClass;
-
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@UtilityClass
 public final class FunctionalUtils {
+    private FunctionalUtils() {
+    }
 
     /**
      * Generic method to get an Iterable from a Stream.

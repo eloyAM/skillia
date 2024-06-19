@@ -43,8 +43,10 @@ public class DbInitFromLdapTest {
 
     @Test
     void dbIsInitializedFromLdap() {
+        final List<PersonDto> expectedPersonList = getExpectedPersonList();
         assertThat(personService.findAllPerson())
-                .containsExactlyInAnyOrderElementsOf(getExpectedPersonList());
+                .containsAll(expectedPersonList)
+                .containsExactlyInAnyOrderElementsOf(expectedPersonList);
     }
 
     List<PersonDto> getExpectedPersonList() {

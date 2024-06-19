@@ -42,7 +42,7 @@ public class PersonSkillsControllerTest {
 
     @Test
     void happyPathCrud() throws Exception {
-        final String skillName = "Git";
+        final String skillName = "Docker";
         final Long skillLevel = 3L;
         final Long skillId = createSkill01(skillName);
         final String personId = getFirstPerson();
