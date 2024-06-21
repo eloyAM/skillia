@@ -1,11 +1,14 @@
 package com.example.application.it.controller;
 
 import com.example.application.dto.AcquiredSkillDto;
+import com.example.application.dto.PersonWithLevelDto;
 import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.SkillDto;
+import com.example.application.it.testutils.CleanDbExtension;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.client.RestClient;
+import org.testcontainers.shaded.com.fasterxml.jackson.core.JsonProcessingException;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.ArrayNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.node.ObjectNode;
@@ -24,6 +28,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(CleanDbExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class PersonSkillsControllerTest {
     private final WebTestClient wtc;
@@ -31,15 +36,12 @@ public class PersonSkillsControllerTest {
     private String bearerToken = null;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final RestClient restClient;
-    private Long personId;
-
-    private Long skillId;
 
     @Autowired
     public PersonSkillsControllerTest(WebTestClient wtc, TestRestTemplate testRestTemplate) {
         this.wtc = wtc;
         this.testRestTemplate = testRestTemplate;
-        restClient = RestClient.create(this.testRestTemplate.getRootUri());
+        this.restClient = RestClient.create(this.testRestTemplate.getRootUri());
     }
 
     @BeforeEach
@@ -232,7 +234,89 @@ public class PersonSkillsControllerTest {
                 .isEqualTo(skillLevel2);
     }
 
-    //
+    @Test
+    void getAssignationsByPersonId() throws JsonProcessingException {
+        final String skillName01 = "Chinese";
+        final String skillName02 = "Excel";
+        final Long skillId01 = createSkill(skillName01);
+        final Long skillId02 = createSkill(skillName02);
+        final Integer skillLevel01 = 2;
+        final Integer skillLevel02 = 3;
+        final String personId = getAvailableUsernames()[0];
+
+        putSkillAssignation(personId, skillId01, skillLevel01);
+        putSkillAssignation(personId, skillId02, skillLevel02);
+
+        List<AcquiredSkillDto> responseBody = wtc.get().uri("/api/personSkills/person/{personId}/skill", personId)
+                .headers(h -> h.setBearerAuth(bearerToken))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(AcquiredSkillDto.class)
+                .hasSize(2)
+                .consumeWith(System.out::println)
+                .returnResult().getResponseBody();
+
+        List<AcquiredSkillDto> expected = List.of(
+                new AcquiredSkillDto(skillId01, skillName01, skillLevel01),
+                new AcquiredSkillDto(skillId02, skillName02, skillLevel02)
+        );
+
+        assertThat(responseBody).containsExactlyInAnyOrderElementsOf(expected);
+    }
+
+    @Test
+    void getPersonListAssignedToSkill() throws JsonProcessingException {
+        final String skillName01 = "Italian";
+        final Long skillId01 = createSkill(skillName01);
+        final Integer skillLevel01 = 2;
+        final Integer skillLevel02 = 3;
+        final String[] usernames = getAvailableUsernames();
+        assertThat(usernames).hasSizeGreaterThanOrEqualTo(2);
+
+        wtc.get().uri("/api/personSkills/skill/{skillId}", skillId01)
+                .headers(h -> h.setBearerAuth(bearerToken))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$").isArray()
+                .jsonPath("length()").isEqualTo(0)
+                .consumeWith(System.out::println);
+
+        putSkillAssignation(usernames[0], skillId01, skillLevel01);
+        putSkillAssignation(usernames[1], skillId01, skillLevel02);
+
+        List<PersonWithLevelDto> responseBody = wtc.get().uri("/api/personSkills/skill/{skillId}", skillId01)
+                .headers(h -> h.setBearerAuth(bearerToken))
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(PersonWithLevelDto.class)
+                .hasSize(2)
+                .consumeWith(System.out::println)
+                .returnResult().getResponseBody();
+
+        // assert person01
+        PersonWithLevelDto person01 = responseBody.stream()
+                .filter(dto -> usernames[0].equals(dto.getPerson().getUsername()))
+                .findFirst().orElse(null);
+        assertThat(person01.getLevel())
+                .isEqualTo(skillLevel01);
+
+        // assert person02, but in a fluent manner
+        assertThat(responseBody)
+                .filteredOn(dto -> usernames[1].equals(dto.getPerson().getUsername()))
+                .hasSize(1)
+                .first()
+                .extracting(PersonWithLevelDto::getLevel)
+                .isEqualTo(skillLevel02);
+    }
+
+    // Helpers
 
     private Long createSkill(String skillName) {
         HttpHeaders headers = ControllerTestUtils.createHeaders(h -> {
@@ -267,6 +351,28 @@ public class PersonSkillsControllerTest {
                 })
                 .retrieve().body(String.class);
         return JsonPath.parse(responseBody).read("$[*].username", String[].class);
+    }
+
+    private void putSkillAssignation(String personId, Long skillId, Integer skillLevel) throws JsonProcessingException {
+        ObjectNode jsonBodyNode = objectMapper.createObjectNode()
+                .put("level", skillLevel);
+
+        final String skillAssignationLocation = MessageFormat.format(
+                "/api/personSkills/person/{0}/skill/{1}", personId, skillId);
+        wtc.put().uri(skillAssignationLocation)
+                .headers(h -> h.setBearerAuth(bearerToken))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(objectMapper.writeValueAsString(jsonBodyNode))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().location(skillAssignationLocation)
+                .expectBody()
+                .jsonPath("$.personId").isEqualTo(personId)
+                .jsonPath("$.skillId").isEqualTo(skillId)
+                .jsonPath("$.level").isEqualTo(skillLevel)
+                .consumeWith(System.out::println);
     }
 
 }
