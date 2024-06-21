@@ -15,6 +15,9 @@
         <vaadin.version>24.3.0</vaadin.version>
         <activated.profile>h2</activated.profile>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
+        <!-- Can't use 3.6.0 due to https://issues.apache.org/jira/browse/MPIR-462 -->
+        <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
+        <maven-surefire-report-plugin.version>3.3.0</maven-surefire-report-plugin.version>
     </properties>
 
     <parent>
@@ -301,8 +304,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <!-- Can't use 3.6.0 due to https://issues.apache.org/jira/browse/MPIR-462 -->
-                <version>3.5.0</version>
+                <version>${maven-project-info-reports-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${maven-surefire-report-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -337,7 +344,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${maven-surefire-report-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven-project-info-reports-plugin.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
         </plugins>
     </reporting>
