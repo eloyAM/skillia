@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class AuthControllerTest {
     @Autowired
     private MockMvc mvc;
-    private static final String JWT_REGEX = "^((?:\\.?(?:[A-Za-z0-9-_]+)){3})$";
+    private static final String JWT_REGEX = "^[A-Za-z0-9_-]{2,}(?:\\.[A-Za-z0-9_-]{2,}){2}$";
 
     @Test
     void loginWithValidCredentialsOkReturnsToken() throws Exception {
