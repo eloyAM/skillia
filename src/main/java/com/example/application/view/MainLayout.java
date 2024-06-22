@@ -55,7 +55,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
         header.add(createThemeSwitcher());
 
-        header.add(new Button("Log out", e -> securityService.logout()));
+        Button logOutButton = new Button("Log out", e -> securityService.logout());
+        logOutButton.setId("app-logout-button");
+        header.add(logOutButton);
 
         return header;
     }
