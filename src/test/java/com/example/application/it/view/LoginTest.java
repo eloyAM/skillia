@@ -4,10 +4,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.html5.WebStorage;
@@ -53,7 +50,6 @@ public class LoginTest {
 
     @AfterEach
     void tearDown() {
-        driver.close();
         driver.quit();
     }
 
@@ -149,34 +145,44 @@ public class LoginTest {
 
         LocalStorage localStorage = ((WebStorage) driver).getLocalStorage();
 
-        // Dark theme by default
-        assertThat(getHtmlRootElement().getAttribute("theme")).isEqualTo(DARK);
+        // Theme matches the preferred color scheme of the device (light/dark)
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        Boolean prefersDarkTheme = (Boolean) js.executeScript(
+                "return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;");
+
+        ColorScheme colorScheme = prefersDarkTheme ? ColorScheme.DARK : ColorScheme.LIGHT;
+
+        assertThat(getHtmlRootElement().getAttribute("theme"))
+                .isEqualTo(colorScheme.value);
         // Local storage property is not set initially
         assertThat(localStorage.getItem("app-theme"))
                 .isNull();
 
-        // Switch to light
+        // Switch to the second theme
         clickSwitchTheme();
+        colorScheme = colorScheme.toggle();
         new WebDriverWait(driver, ofSeconds(2))
-                .until(attributeToBe(getHtmlRootElement(), "theme", LIGHT));
-        assertThat(localStorage.getItem("app-theme")).isEqualTo(LIGHT);
+                .until(attributeToBe(getHtmlRootElement(), "theme", colorScheme.value));
+        assertThat(localStorage.getItem("app-theme")).isEqualTo(colorScheme.value);
 
-        // And back to dark
+        // And back to the preferred one
         clickSwitchTheme();
+        colorScheme = colorScheme.toggle();
         new WebDriverWait(driver, ofSeconds(2))
-                .until(attributeToBe(getHtmlRootElement(), "theme", DARK));
-        assertThat(localStorage.getItem("app-theme")).isEqualTo(DARK);
+                .until(attributeToBe(getHtmlRootElement(), "theme", colorScheme.value));
+        assertThat(localStorage.getItem("app-theme")).isEqualTo(colorScheme.value);
     }
 
     // Helpers
 
-    private void waitUntilTitleIs(String Skillia) {
-        new WebDriverWait(driver, ofSeconds(5), ofSeconds(1)).until(titleIs(Skillia));
+    private void waitUntilTitleIs(String title) {
+        new WebDriverWait(driver, ofSeconds(5), ofSeconds(1)).until(titleIs(title));
     }
 
-    private void getAndWaitUntilTitleIs(String url, String Skillia) {
+    private void getAndWaitUntilTitleIs(String url, String title) {
         driver.get(url);
-        waitUntilTitleIs(Skillia);
+        waitUntilTitleIs(title);
     }
 
     private WebElement getHtmlRootElement() {
@@ -187,4 +193,24 @@ public class LoginTest {
         driver.findElement(By.id("app-theme-switcher"))
                 .click();
     }
+
+    enum ColorScheme {
+        LIGHT("light"),
+
+        DARK("dark");
+
+        final String value;
+
+        ColorScheme(String value) {
+            this.value = value;
+        }
+
+        ColorScheme toggle() {
+            return switch (this) {
+                case LIGHT -> DARK;
+                case DARK -> LIGHT;
+            };
+        }
+    }
+
 }
