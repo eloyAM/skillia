@@ -1,9 +1,13 @@
 package com.example.application.view;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.ListItem;
+import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -44,6 +48,9 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         login.setI18n(i18n);
 
         add(logoImage(), new H1("Skillia"), new Text("Skills tracker"), login);
+
+        // TODO INFO only for showcase
+        add(createAvailableUsersHint());
     }
 
     private static Image logoImage() {
@@ -78,5 +85,16 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
             return exception.getMessage();
         }
         return "Invalid credentials";
+    }
+
+    private static Component createAvailableUsersHint() {
+        return new Details(
+                "Available users hint:",
+                new UnorderedList(
+                        new ListItem("Password: 1234"),
+                        new ListItem("Fully-granted users: hugo.reyes, raquel.huerta"),
+                        new ListItem("Regular users: andrea.riquelme, paz.vidal, jacob.smith, ...")
+                )
+        );
     }
 }

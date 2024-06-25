@@ -7,8 +7,11 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.component.html.Div;
@@ -16,6 +19,8 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -55,9 +60,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
         header.add(createThemeSwitcher());
 
-        Button logOutButton = new Button("Log out", e -> securityService.logout());
-        logOutButton.setId("app-logout-button");
-        header.add(logOutButton);
+        Authentication authentication = securityService.getAuthentication();
+        String username = authentication.getName();
+        header.add(createProfileButton(username));
 
         return header;
     }
@@ -79,7 +84,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private static Button createThemeSwitcher() {
         Button themeSwitcher = new Button(VaadinIcon.ADJUST.create());
         themeSwitcher.setTooltipText("Switch theme");
-        themeSwitcher.addThemeVariants(ButtonVariant.LUMO_ICON);
+        themeSwitcher.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         themeSwitcher.setId("app-theme-switcher");
         themeSwitcher.addClickListener(e -> e.getSource().getElement().executeJs(
             "const theme = document.documentElement.getAttribute('theme');"
@@ -125,5 +130,26 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
             addToDrawer(new VerticalLayout(new RouterLink("[DEBUG] Skill Grid", SkillGridView.class)));
             _addUserInfo(header, securityService);
         }
+    }
+
+    private Component createProfileButton(String username) {
+        Avatar avatar = new Avatar();
+
+        MenuBar menuBar = new MenuBar();
+        menuBar.setId("app-profile-element");
+        menuBar.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE);
+
+        MenuItem menuItem = menuBar.addItem(avatar);
+        menuBar.setTooltipText(menuItem, username);
+        SubMenu subMenu = menuItem.getSubMenu();
+
+        Button logOutButton = new Button("Log out", VaadinIcon.SIGN_OUT.create()
+                , e -> securityService.logout());
+        logOutButton.setId("app-logout-button");
+
+        subMenu.addItem(username);
+        subMenu.add(logOutButton);
+
+        return menuBar;
     }
 }

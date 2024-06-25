@@ -23,8 +23,6 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginTest {
     private static final Logger logger = LoggerFactory.getLogger(LoginTest.class);
-    public static final String DARK = "dark";
-    public static final String LIGHT = "light";
     private WebDriver driver;
     private final String baseUrl;
     private final String loginUrl;
@@ -94,7 +92,7 @@ public class LoginTest {
     }
 
     @Test
-    void headerIsPresent() {
+    void hasHeaderElements() {
         LoginUtility.doLogin(driver, loginUrl);
         getAndWaitUntilTitleIs(homeUrl, "Skillia");
 
@@ -106,9 +104,9 @@ public class LoginTest {
                 .isEqualTo("Skillia");
 
         // Check that some elements are there
-        appHeader.findElement(By.id("app-theme-switcher"));
-        appHeader.findElement(By.id("app-logout-button"));
         appHeader.findElements(By.tagName("vaadin-drawer-toggle"));
+        appHeader.findElement(By.id("app-theme-switcher"));
+        appHeader.findElement(By.id("app-profile-element"));
     }
 
     @Test
@@ -126,9 +124,12 @@ public class LoginTest {
                 .isNotEmpty();
 
         // Click the logout button
-        WebElement appHeader = driver.findElement(By.className("app-header"));
-        appHeader.findElement(By.id("app-logout-button"))
+        driver.findElement(By.cssSelector(".app-header #app-profile-element vaadin-menu-bar-button"))
+                .click();   // Click the profile button to make the logout one available
+        driver.findElement(By.id("app-logout-button"))
                 .click();
+
+        waitUntilTitleIs("Login");
 
         // Expect the auth cookies to be cleaned
         assertThat(driver.manage().getCookies())
