@@ -7,7 +7,7 @@
     <groupId>com.example.application</groupId>
     <artifactId>skillia</artifactId>
     <name>skillia</name>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <packaging>jar</packaging>
 
     <properties>

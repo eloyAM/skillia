@@ -43,3 +43,18 @@ Some standard users are:
 - `jacob.smith`
 
 Each time the app starts, it will populate its users DB from the LDAP server.
+
+## Test it
+
+There are integration tests for both the backend and the frontend.
+Some of them use [TestContainers](https://testcontainers.com/), which requires a docker environment.
+
+There are some [Selenium](https://www.selenium.dev/) tests, which you may run in headless mode with the option
+`webdriver.headless=true` (false by default).
+
+They run on Chrome, and the binary can be supplied with the option `webdriver.chrome.binary=<chrome_binary_path>`,
+otherwise, it will try to find it based on your `PATH` and common installation locations.
+The driver will be downloaded automatically (for stable versions only).
+
+Selenium tests may fail if you use a development build, as in such a case,
+the frontend is built during runtime instead of compile time, causing a timeout.

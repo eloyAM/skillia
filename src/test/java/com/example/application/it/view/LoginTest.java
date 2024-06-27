@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.html5.WebStorage;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -41,9 +42,21 @@ public class LoginTest {
 
     @BeforeEach
     void setUp(
+            @Value("${webdriver.headless}") String isHeadless,
+            @Value("${webdriver.chrome.binary}") String chromeBinary
     ) {
-        driver = new ChromeDriver();
-        WebDriverManager.chromedriver().setup();
+        ChromeOptions chromeOptions = new ChromeOptions();
+        if (Boolean.parseBoolean(isHeadless)) {
+            String headlessArg = "--headless=new";
+            chromeOptions.addArguments(headlessArg);
+            logger.info("Headless arguments added {}", headlessArg);
+        }
+        if (chromeBinary != null && !chromeBinary.trim().isEmpty()) {
+            chromeOptions.setBinary(chromeBinary);
+            logger.info("Using specified chrome binary {}", chromeBinary);
+        }
+        WebDriverManager.chromiumdriver().setup();
+        driver = new ChromeDriver(chromeOptions);
     }
 
     @AfterEach
