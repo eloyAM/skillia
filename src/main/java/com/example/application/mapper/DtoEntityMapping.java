@@ -1,10 +1,7 @@
 package com.example.application.mapper;
 
 import com.example.application.dto.*;
-import com.example.application.entity.Person;
-import com.example.application.entity.PersonSkill;
-import com.example.application.entity.PersonSkillId;
-import com.example.application.entity.Skill;
+import com.example.application.entity.*;
 import jakarta.annotation.Nonnull;
 import lombok.experimental.UtilityClass;
 
@@ -90,5 +87,13 @@ public final class DtoEntityMapping {
 
     public static PersonSkillId mapPersonSkillIdDtoToPersonSkillIdEntity(PersonSkillIdDto personSkillIdDto) {
         return new PersonSkillId(personSkillIdDto.getPersonId(), personSkillIdDto.getSkillId());
+    }
+
+    public static SkillTagDto mapSkillTagEntityToSkillTagDto(SkillTag skillTag) {
+        return new SkillTagDto(skillTag.getId(), skillTag.getName());
+    }
+
+    public static SkillTag mapSkillTagDtoToSkillTagEntity(SkillTagDto skillTagDto) {
+        return new SkillTag(skillTagDto.getId(), skillTagDto.getName());
     }
 }

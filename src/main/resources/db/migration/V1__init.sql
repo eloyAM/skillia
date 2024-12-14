@@ -1,4 +1,5 @@
 create sequence skill_id_seq start with 50 increment by 1;
+create sequence skill_tag_id_seq start with 50 increment by 1;
 
 create table person
 (
@@ -19,6 +20,13 @@ create table person_skill
 );
 
 create table skill
+(
+    id   bigint       not null,
+    name varchar(255) not null unique,
+    primary key (id)
+);
+
+create table skill_tag
 (
     id   bigint       not null,
     name varchar(255) not null unique,
