@@ -7,6 +7,7 @@ import lombok.experimental.UtilityClass;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -28,13 +29,20 @@ public final class DtoEntityMapping {
     }
 
     public static SkillDto mapSkillEntityToSkillDto(Skill skillEntity) {
+        Set<SkillTagDto> dtoTags = skillEntity.getTags().stream()
+                .map(DtoEntityMapping::mapSkillTagEntityToSkillTagDto)
+                .collect(Collectors.toSet());
         return SkillDto.builder()
             .id(skillEntity.getId())
-            .name(skillEntity.getName()).build();
+            .name(skillEntity.getName())
+            .tags(dtoTags).build();
     }
 
     public static Skill mapSkillDtoToSkillEntity(@Nonnull SkillDto skillDto) {
-        return new Skill(skillDto.getId(), skillDto.getName());
+        Set<SkillTag> entityTags = skillDto.getTags().stream()
+                .map(DtoEntityMapping::mapSkillTagDtoToSkillTagEntity)
+                .collect(Collectors.toSet());
+        return new Skill(skillDto.getId(), skillDto.getName()).setTags(entityTags);
     }
 
     public static PersonSkill mapPersonSkillDtoToPersonSkillEntity(PersonSkillBasicDto dto) {

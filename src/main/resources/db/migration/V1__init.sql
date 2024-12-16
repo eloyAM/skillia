@@ -33,6 +33,13 @@ create table skill_tag
     primary key (id)
 );
 
+create table skill_tagging
+(
+    skill_id bigint not null,
+    tag_id   bigint not null,
+    primary key (skill_id, tag_id)
+);
+
 alter table if exists person_skill
     add constraint FK__person_skill__person
         foreign key (person_id)
@@ -41,6 +48,17 @@ alter table if exists person_skill
 
 alter table if exists person_skill
     add constraint FK__person_skill__skill
+        foreign key (skill_id)
+            references skill
+            on delete cascade;
+
+alter table skill_tagging
+    add constraint FK__skill_tagging__tag
+        foreign key (tag_id)
+            references skill_tag;   -- TODO add on delete cascade when implemented in the model
+
+alter table skill_tagging
+    add constraint FK__skill_tagging__skill
         foreign key (skill_id)
             references skill
             on delete cascade;

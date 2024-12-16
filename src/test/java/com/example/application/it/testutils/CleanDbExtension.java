@@ -28,6 +28,7 @@ public class CleanDbExtension implements BeforeEachCallback, AfterAllCallback {
         JdbcTestUtils.deleteFromTables(jdbcTemplate
                 , "person_skill"
                 , "skill"
+                , "skill_tagging"
                 , "skill_tag"
         );
     }

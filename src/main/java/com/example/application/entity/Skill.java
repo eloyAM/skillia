@@ -6,9 +6,13 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -35,6 +39,18 @@ public class Skill {
 
     @OneToMany(mappedBy = "skill")
     private Collection<PersonSkill> personSkills;
+
+    // Delete rule -> deleting a skill or a tag should delete the related record of the join table
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @NotNull
+    @ManyToMany
+    @JoinTable(
+            name = "skill_tagging",
+            joinColumns = @JoinColumn(name = "skill_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__skill")),
+            inverseJoinColumns = @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__tag"))
+    )
+    @Builder.Default
+    private Set<SkillTag> tags = new LinkedHashSet<>();
 
     public Skill(@NonNull Long id) {
         this.id = Objects.requireNonNull(id);

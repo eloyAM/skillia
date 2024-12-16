@@ -55,7 +55,7 @@ public class SkillService {
             if (rowsUpdated == 0) {
                 return Optional.empty();
             }
-            return Optional.of(new SkillDto(id, skillName));
+            return getSkillById(id);
         } catch (DataIntegrityViolationException e) {
             return Optional.empty();
         }
