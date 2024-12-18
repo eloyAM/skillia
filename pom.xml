@@ -240,6 +240,11 @@
             <version>4.22.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.unboundid</groupId>
+            <artifactId>unboundid-ldapsdk</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

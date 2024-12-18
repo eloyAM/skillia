@@ -1,0 +1,65 @@
+version: 1
+
+dn: dc=example,dc=org
+objectClass: dcObject
+objectClass: organization
+dc: example
+o: example
+
+dn: ou=users,dc=example,dc=org
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=groups,dc=example,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: groups
+
+dn: ou=otherou,dc=example,dc=org
+objectClass: organizationalUnit
+objectClass: top
+ou: otherou
+
+dn: uid=otherou.user,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Otherou User
+sn: Somesurname
+uid: otherou.user
+userPassword:: MTIzNA==
+
+dn: uid=hugo.reyes,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Hugo Reyes Herrero
+sn: Reyes Herrero
+departmentNumber: Human Resources
+givenName: Hugo
+mail: hugo.reyes@example.org
+title: HR Manager
+uid: hugo.reyes
+userPassword:: MTIzNA==
+
+dn: uid=andrea.riquelme,ou=users,dc=example,dc=org
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Andrea Riquelme Ruiz
+sn: Riquelme Ruiz
+departmentNumber: Innovation
+givenName: Andrea
+mail: andrea.riquelme@example.org
+title: Software Engineer
+uid: andrea.riquelme
+userPassword:: MTIzNA==
+
+dn: cn=hr,ou=groups,dc=example,dc=org
+objectClass: groupOfUniqueNames
+objectClass: top
+cn: hr
+uniqueMember: uid=hugo.reyes,ou=users,dc=example,dc=org

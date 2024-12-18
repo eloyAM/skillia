@@ -2,12 +2,14 @@ package com.example.application.ldap;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.ldap.repository.config.EnableLdapRepositories;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.core.support.LdapContextSource;
 
 @Configuration
 @EnableLdapRepositories("com.example.application.ldap.**")
+@Profile({"!embedded-ldap"})
 public class LdapConfig {
     private final LdapProperties ldapProperties;
 
