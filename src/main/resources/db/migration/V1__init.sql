@@ -40,13 +40,13 @@ create table skill_tagging
     primary key (skill_id, tag_id)
 );
 
-alter table if exists person_skill
+alter table person_skill
     add constraint FK__person_skill__person
         foreign key (person_id)
             references person(username)
             on delete cascade;
 
-alter table if exists person_skill
+alter table person_skill
     add constraint FK__person_skill__skill
         foreign key (skill_id)
             references skill(id)
