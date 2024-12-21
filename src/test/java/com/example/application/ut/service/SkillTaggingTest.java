@@ -77,7 +77,7 @@ class SkillTaggingTest {
         assertThatThrownBy(
                 () -> skillTagService.deleteSkillTagById(savedTag01.getId())
         ).isInstanceOf(DataIntegrityViolationException.class)
-                .hasMessageContaining("Referential integrity constraint violation");
+                .message().containsIgnoringCase("fk__skill_tagging__tag");
 
         assertThat(getSkillTaggingCount()).isEqualTo(1);    // Still the same, no deletion performed
         assertThat(skillTagService.getAllSkillTag()).containsExactlyInAnyOrder(savedTag01, savedTag02);
