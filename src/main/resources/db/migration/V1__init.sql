@@ -43,22 +43,22 @@ create table skill_tagging
 alter table if exists person_skill
     add constraint FK__person_skill__person
         foreign key (person_id)
-            references person
+            references person(username)
             on delete cascade;
 
 alter table if exists person_skill
     add constraint FK__person_skill__skill
         foreign key (skill_id)
-            references skill
+            references skill(id)
             on delete cascade;
 
 alter table skill_tagging
     add constraint FK__skill_tagging__tag
         foreign key (tag_id)
-            references skill_tag;   -- TODO add on delete cascade when implemented in the model
+            references skill_tag(id);   -- TODO add on delete cascade when implemented in the model
 
 alter table skill_tagging
     add constraint FK__skill_tagging__skill
         foreign key (skill_id)
-            references skill
+            references skill(id)
             on delete cascade;
