@@ -43,7 +43,7 @@ public class Skill {
     // Delete rule -> deleting a skill or a tag should delete the related record of the join table
     @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)    // Avoid LazyInitializationException errors when doing dto mapping
     @JoinTable(
             name = "skill_tagging",
             joinColumns = @JoinColumn(name = "skill_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__skill")),
