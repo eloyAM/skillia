@@ -247,7 +247,6 @@
         <dependency>
             <groupId>com.unboundid</groupId>
             <artifactId>unboundid-ldapsdk</artifactId>
-            <scope>test</scope>
         </dependency>
         <!-- allow using an embedded db, for testing or dev -->
         <dependency>
