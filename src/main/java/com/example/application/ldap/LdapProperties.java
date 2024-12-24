@@ -8,12 +8,6 @@ import org.springframework.stereotype.Component;
 @lombok.Data
 @lombok.NoArgsConstructor
 public class LdapProperties {
-    private String url;
-    private String base;
-
-    private String bindUser;
-    private String bindPassword;
-
     private String passwordAttribute;
     private String usernameAttribute;
     private String departmentAttribute;
