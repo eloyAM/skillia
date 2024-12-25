@@ -13,7 +13,7 @@
     <properties>
         <java.version>17</java.version>
         <vaadin.version>24.3.0</vaadin.version>
-        <activated.profile>h2</activated.profile>
+        <activeProfiles>h2</activeProfiles>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
         <!-- Can't use 3.6.0 due to https://issues.apache.org/jira/browse/MPIR-462 -->
         <maven-project-info-reports-plugin.version>3.5.0</maven-project-info-reports-plugin.version>
@@ -438,8 +438,7 @@
                 </resources>
             </build>
             <properties>
-                <!--                <spring.profiles.active>prod</spring.profiles.active>-->
-                <activated.profile>prod</activated.profile>
+                <activeProfiles>prod</activeProfiles>
             </properties>
         </profile>
 
@@ -472,15 +471,14 @@
                 </plugins>
             </build>
             <properties>
-                <activated.profile>postgres</activated.profile>
+                <activeProfiles>embedded-ldap,embedded-postgres</activeProfiles>
             </properties>
         </profile>
 
         <profile>
             <id>postgres</id>
             <properties>
-                <activated.profile>postgres</activated.profile>
-                <spring.profiles.active>postgres</spring.profiles.active>
+                <activeProfiles>postgres</activeProfiles>
             </properties>
         </profile>
 
