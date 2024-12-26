@@ -7,6 +7,7 @@ import lombok.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -28,7 +29,12 @@ public class SkillDto implements Serializable {
     @Builder.Default
     private Set<SkillTagDto> tags = new LinkedHashSet<>();
 
-    public SkillDto(@NonNull Long skillId, @NonNull @NotBlank String skillName) {
+    public SkillDto(Long skillId, @NonNull @NotBlank String skillName) {
         this(skillId, skillName, new LinkedHashSet<>());
+    }
+
+    public SkillDto(Long skillId, @NonNull @NotBlank String skillName, SkillTagDto... tags) {
+        this(skillId, skillName);
+        Collections.addAll(this.tags, tags);
     }
 }

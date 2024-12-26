@@ -2,28 +2,37 @@ package com.example.application.utils;
 
 import com.example.application.dto.PersonDto;
 import com.example.application.dto.SkillDto;
+import com.example.application.dto.SkillTagDto;
 import com.example.application.entity.PersonSkill;
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.PersonService;
 import com.example.application.service.SkillService;
+import com.example.application.service.SkillTagService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DbInit {
 
     private final PersonService personService;
     private final SkillService skillService;
     private final PersonSkillRepo personSkillRepo;
+    private final SkillTagService skillTagService;
 
     public DbInit(
         PersonService personService,
         SkillService skillService,
-        PersonSkillRepo personSkillRepo
+        PersonSkillRepo personSkillRepo,
+        SkillTagService skillTagService
     ) {
         this.personService = personService;
         this.skillService = skillService;
         this.personSkillRepo = personSkillRepo;
+        this.skillTagService = skillTagService;
     }
 
     public void run() {
@@ -32,7 +41,9 @@ public class DbInit {
         PersonDto secondPerson = persons.get(1);
         PersonDto thirdPerson = persons.get(2);
 
-        List<SkillDto> skills = createSkills();
+        Set<SkillTagDto> skillTags = createSkillTags();
+
+        List<SkillDto> skills = createSkills(skillTags);
         SkillDto firstSkill = skills.get(0);
         SkillDto secondSkill = skills.get(1);
 
@@ -46,14 +57,30 @@ public class DbInit {
         personSkillRepo.saveAll(personSkills);
     }
 
-    private List<SkillDto> createSkills() {
+    private List<SkillDto> createSkills(Set<SkillTagDto> skillTags) {
+        Map<String, SkillTagDto> tagsByName = skillTags.stream()
+            .collect(Collectors.toMap(SkillTagDto::getName, Function.identity()));
         Iterable<SkillDto> skills = List.of(
-            SkillDto.builder().name("C++").build(),
-            SkillDto.builder().name("Java").build(),
-            SkillDto.builder().name("English").build(),
+            SkillDto.builder().name("C++")
+                .tags(Set.of(tagsByName.get("Programming Languages")))
+                .build(),
+            SkillDto.builder().name("Java")
+                .tags(Set.of(tagsByName.get("Programming Languages")))
+                .build(),
+            SkillDto.builder().name("English")
+                .tags(Set.of(tagsByName.get("Languages")))
+                .build(),
+            new SkillDto(null, "Korean", tagsByName.get("Languages")),
             SkillDto.builder().name("Communication").build(),
             SkillDto.builder().name("Testing").build(),
-            SkillDto.builder().name("Open source").build()
+            SkillDto.builder().name("Open source").build(),
+            SkillDto.builder().name("JUnit")
+                .tags(Set.of(tagsByName.get("Unit Testing"), tagsByName.get("Java")))
+                .build(),
+            new SkillDto(null,
+                "MS Project",
+                tagsByName.get("Project Management"), tagsByName.get("Tools")
+            )
         );
         return skillService.saveSkill(skills);
     }
@@ -79,4 +106,22 @@ public class DbInit {
         );
         return personService.savePerson(persons);
     }
+
+    private Set<SkillTagDto> createSkillTags() {
+        return Set.of(
+                SkillTagDto.builder().name("Programming Languages").build(),
+                SkillTagDto.builder().name("Languages").build(),
+                SkillTagDto.builder().name("Project Management").build(),
+                SkillTagDto.builder().name("Tools").build(),
+                SkillTagDto.builder().name("Unit Testing").build(),
+                SkillTagDto.builder().name("Java").build()
+            )
+            .stream()
+            .map(item -> skillTagService
+                .saveSkillTag(item)
+                .orElseThrow()
+            )
+            .collect(Collectors.toSet());
+    }
+
 }

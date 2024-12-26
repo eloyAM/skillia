@@ -46,7 +46,9 @@ public class SkillService {
     }
 
     public List<SkillDto> getAllSkill() {
-        return skillRepo.findAllBy();
+        return skillRepo.findAll().stream()
+            .map(DtoEntityMapping::mapSkillEntityToSkillDto)
+            .toList();
     }
 
     public Optional<SkillDto> updateSkill(Long id, String skillName) {

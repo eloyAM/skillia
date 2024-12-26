@@ -1,9 +1,11 @@
 package com.example.application.view;
 
 import com.example.application.dto.SkillDto;
+import com.example.application.dto.SkillTagDto;
 import com.example.application.security.SecConstants;
 import com.example.application.service.SkillService;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -11,8 +13,9 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -40,20 +43,44 @@ public class SkillsManagementView extends VerticalLayout {
 
         skillGrid.addColumn(SkillDto::getName)
             .setHeader("Name")
-            .setKey("name");
+            .setKey("name")
+            .setFrozen(true);
+        skillGrid.addComponentColumn(skillDto -> {
+            FlexLayout tagsContainer = skillDto.getTags().stream()
+                .map(SkillTagDto::getName)
+                .map(name -> {
+                    Span span = new Span(name);
+                    span.getElement().getThemeList().add("badge contrast pill");
+                    return span;
+                })
+                .collect(FlexLayout::new, HasComponents::add, HasComponents::add);
+            tagsContainer.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+            tagsContainer.getStyle()
+                .set("gap", "var(--lumo-space-s)")
+                .set("padding-top", "var(--lumo-space-s)")
+                .set("padding-bottom", "var(--lumo-space-s)");
+            return tagsContainer;
+        })
+            .setHeader("Tags")
+            .setKey("tags");
         GridListDataView<SkillDto> listDataView = skillGrid.getListDataView();
         // Actions column
         skillGrid.addComponentColumn(selectedSkill -> {
+            // Edit
             Dialog editSkillDialog = createEditSkillDialog(selectedSkill, skillGrid);
-            Button editButton =
-                new Button("Edit", VaadinIcon.EDIT.create(), e -> editSkillDialog.open());
+            Button editButton = new Button(VaadinIcon.EDIT.create(), e -> editSkillDialog.open());
             editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            // Delete
             ConfirmDialog deleteSkillDialog = createDeleteSkillDialog(selectedSkill, skillGrid);
-            Button deleteButton = new Button("Delete", e -> deleteSkillDialog.open());
-            deleteButton.setPrefixComponent(VaadinIcon.TRASH.create());
+            Button deleteButton = new Button(VaadinIcon.TRASH.create(), e -> deleteSkillDialog.open());
             deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-            return new HorizontalLayout(editButton, deleteButton);
-        }).setHeader("Actions");
+            // Result
+            FlexLayout result = new FlexLayout(editButton, deleteButton);
+            result.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+            return result;
+        })
+            .setHeader("Actions")
+            .setKey("actions");
 
         List<SkillDto> skillAll = skillService.getAllSkill();
         skillGrid.setItems(skillAll);
@@ -134,8 +161,10 @@ public class SkillsManagementView extends VerticalLayout {
         return dialog;
     }
 
-    private ConfirmDialog createDeleteSkillDialog(SkillDto selectedSkill,
-                                                  Grid<SkillDto> skillGrid) {
+    private ConfirmDialog createDeleteSkillDialog(
+            SkillDto selectedSkill,
+            Grid<SkillDto> skillGrid
+    ) {
         ConfirmDialog confirmDialog = new ConfirmDialog();
         confirmDialog.setHeader("Delete skill \"" + selectedSkill.getName() + "\"");
         confirmDialog.setText("Are you sure you want to permanently delete this item?\r\n"
