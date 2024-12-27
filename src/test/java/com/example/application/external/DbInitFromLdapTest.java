@@ -2,13 +2,16 @@ package com.example.application.external;
 
 import com.example.application.dto.PersonDto;
 import com.example.application.service.PersonService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -19,7 +22,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ActiveProfiles("h2")   // Be careful to don't runt it with the embedded postgres or LDAP to avoid conflicts
+@Slf4j
+@EnabledIf("isDockerAvailable")
+@ActiveProfiles("default")   // Be careful to don't runt it with the embedded postgres or LDAP to avoid conflicts
 @SpringBootTest
 @Testcontainers
 public class DbInitFromLdapTest {
@@ -49,6 +54,13 @@ public class DbInitFromLdapTest {
         registry.add("spring.ldap.base", () -> LDAP_BASE);
         registry.add("spring.ldap.username", () -> LDAP_ADMIN_DN);
         registry.add("spring.ldap.password", () -> LDAP_ADMIN_PWD);
+    }
+
+    static boolean isDockerAvailable() {
+        log.info("Checking if docker available");
+        boolean dockerAvailable = DockerClientFactory.instance().isDockerAvailable();
+        log.info("Docker available? : {}", dockerAvailable);
+        return dockerAvailable;
     }
 
     @Test
