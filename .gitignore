@@ -1,4 +1,4 @@
-/target/
+target/
 .idea/
 .settings
 .project
@@ -16,6 +16,7 @@ vite.generated.ts
 # As Vaadin says, "It should be commited, so that other developers do not have to compile it again."
 # But as generated files in a smalll, single-person project, I prefer to not commit them
 src/main/dev-bundle/
+src/main/bundles/
 
 # Browser drivers for local integration tests
 drivers/
