@@ -565,17 +565,14 @@
 
         <profile>
             <id>checkerframework</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.checkerframework</groupId>
-                    <artifactId>checker</artifactId>
-                    <version>${checker.version}</version>
-                    <scope>provided</scope>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
+                    <plugin>
+                        <!-- Trick: add as plugin instead of a provided/optional dependency, which would require a spring-boot-maven-plugin exclusion to not get included in the package -->
+                        <groupId>org.checkerframework</groupId>
+                        <artifactId>checker</artifactId>
+                        <version>${checker.version}</version>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
