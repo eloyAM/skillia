@@ -14,6 +14,7 @@
         <java.version>17</java.version>
         <vaadin.version>24.3.0</vaadin.version>
         <activeProfiles>h2,embedded-ldap</activeProfiles>
+        <useEmbeddedMariaDB>false</useEmbeddedMariaDB>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
         <!-- Can't use 3.6.0 due to https://issues.apache.org/jira/browse/MPIR-462 -->
         <maven-project-info-reports-plugin.version>3.8.0</maven-project-info-reports-plugin.version>
@@ -24,8 +25,10 @@
         <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
         <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <maven-help-plugin.version>3.5.1</maven-help-plugin.version>
         <checker.version>3.42.0</checker.version>
         <mapstruct.version>1.6.3</mapstruct.version>
+        <zonky-embedded-postgres-runner.version>2.1.0</zonky-embedded-postgres-runner.version>
     </properties>
 
     <parent>
@@ -259,20 +262,28 @@
             <version>4.22.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.unboundid</groupId>
-            <artifactId>unboundid-ldapsdk</artifactId>
-        </dependency>
         <!-- allow using an embedded db, for testing or dev -->
         <dependency>
             <groupId>io.zonky.test</groupId>
             <artifactId>embedded-postgres</artifactId>
-            <version>2.1.0</version>
+            <version>${zonky-embedded-postgres-runner.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+            <!-- Only "core" dependency by default, sub-dependencies (binaries) are excluded -->
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ch.vorburger.mariaDB4j</groupId>
-            <artifactId>mariaDB4j</artifactId>
+            <!-- Only "core" dependency by default, sub-dependencies (binaries) are excluded -->
+            <artifactId>mariaDB4j-core</artifactId>
             <version>3.1.0</version>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
@@ -410,6 +421,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+                <version>${maven-help-plugin.version}</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -513,13 +529,6 @@
         </profile>
 
         <profile>
-            <id>postgres</id>
-            <properties>
-                <activeProfiles>postgres</activeProfiles>
-            </properties>
-        </profile>
-
-        <profile>
             <id>jacoco</id>
             <build>
                 <plugins>
@@ -612,6 +621,82 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <profile>
+            <id>embedded-mariadb-windows</id>
+            <activation>
+                <property>
+                    <name>useEmbeddedMariaDB</name>
+                    <value>true</value>
+                </property>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.vorburger.mariaDB4j</groupId>
+                    <artifactId>mariaDB4j-db-winx64</artifactId>
+                    <version>10.11.5-fix1</version>
+                </dependency>
+            </dependencies>
+            <properties>
+                <activeProfiles>embedded-ldap,embedded-mariadb</activeProfiles>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>embedded-mariadb-linux</id>
+            <activation>
+                <property>
+                    <name>useEmbeddedMariaDB</name>
+                    <value>true</value>
+                </property>
+                <os>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>ch.vorburger.mariaDB4j</groupId>
+                    <artifactId>mariaDB4j-db-linux64</artifactId>
+                    <version>10.11.5</version>
+                </dependency>
+            </dependencies>
+            <properties>
+                <activeProfiles>embedded-ldap,embedded-mariadb</activeProfiles>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>embedded-postgres</id>
+            <dependencies>
+                <dependency>
+                    <groupId>io.zonky.test</groupId>
+                    <artifactId>embedded-postgres</artifactId>
+                    <version>${zonky-embedded-postgres-runner.version}</version>
+                    <exclusions>
+                        <!-- All excluded by default, no exclusions when using this profile -->
+                    </exclusions>
+                </dependency>
+            </dependencies>
+            <properties>
+                <activeProfiles>embedded-ldap,embedded-postgres</activeProfiles>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>embedded-ldap</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>com.unboundid</groupId>
+                    <artifactId>unboundid-ldapsdk</artifactId>
+                </dependency>
+            </dependencies>
         </profile>
 
     </profiles>
