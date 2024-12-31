@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,5 +25,6 @@ public class PersonWithSkillsDto implements Serializable {
     @NonNull
     private PersonDto person;
     @NonNull
-    private List<AcquiredSkillDto> skills;
+    @Builder.Default
+    private List<AcquiredSkillDto> skills = new ArrayList<>();
 }

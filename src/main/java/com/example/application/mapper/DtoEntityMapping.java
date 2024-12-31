@@ -5,9 +5,7 @@ import com.example.application.entity.*;
 import jakarta.annotation.Nonnull;
 import lombok.experimental.UtilityClass;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @UtilityClass
@@ -66,6 +64,7 @@ public final class DtoEntityMapping {
             .build();
     }
 
+    // TODO not used
     public static PersonWithSkillsDto mapPersonSkillEntityToPersonWithSkillsDto(
         PersonSkill personSkill) {
         return PersonWithSkillsDto.builder()
@@ -77,20 +76,31 @@ public final class DtoEntityMapping {
     public static List<PersonWithSkillsDto> mapPersonSkillEntityToPersonWithSkillsDto(
         List<PersonSkill> personSkillList
     ) {
-        Map<Person, List<PersonSkill>> skillsByPerson = personSkillList.stream()
-            .collect(Collectors.groupingBy(PersonSkill::getPerson));
-        return skillsByPerson.entrySet().stream()
-            .map(entry -> PersonWithSkillsDto.builder()
+        if (personSkillList == null) {
+            return null;
+        }
+        Map<Person, List<PersonSkill>> skillsByPerson = new LinkedHashMap<>();
+        for (PersonSkill personSkill : personSkillList) {
+            Person person = personSkill.getPerson();
+            if (!skillsByPerson.containsKey(person)) {
+                skillsByPerson.put(person, new ArrayList<>());
+            }
+            skillsByPerson.get(person).add(personSkill);
+        }
+        List<PersonWithSkillsDto> result = new ArrayList<>(skillsByPerson.size());
+        for (Map.Entry<Person, List<PersonSkill>> entry : skillsByPerson.entrySet()) {
+            List<AcquiredSkillDto> skills = entry.getValue().stream()
+                .map(ps -> AcquiredSkillDto.builder()
+                    .skill(mapSkillEntityToSkillDto(ps.getSkill()))
+                    .level(ps.getLevel())
+                    .build())
+                .collect(Collectors.toList());
+            result.add(PersonWithSkillsDto.builder()
                 .person(mapPersonEntityToPersonDto(entry.getKey()))
-                .skills(entry.getValue().stream()
-                    .map(ps -> AcquiredSkillDto.builder()
-                        .skill(mapSkillEntityToSkillDto(ps.getSkill()))
-                        .level(ps.getLevel())
-                        .build())
-                    .toList())
-                .build()
-            )
-            .toList();
+                .skills(skills)
+                .build());
+        }
+        return result;
     }
 
     public static PersonSkillId mapPersonSkillIdDtoToPersonSkillIdEntity(PersonSkillIdDto personSkillIdDto) {
