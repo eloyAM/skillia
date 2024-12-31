@@ -46,6 +46,8 @@ Each time the app starts, it will populate its users DB from the LDAP server.
 
 ## Test it
 
+`./mvnw vaadin:clean-frontend clean verify -Pit,embedded-ldap,embedded-postgres`
+
 There are integration tests for both the backend and the frontend.
 Some of them use [TestContainers](https://testcontainers.com/), which requires a docker environment.
 
