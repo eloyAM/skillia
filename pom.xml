@@ -476,6 +476,10 @@
                                     <groupId>com.unboundid</groupId>
                                     <artifactId>unboundid-ldapsdk</artifactId>
                                 </exclude>
+                                <exclude>
+                                    <groupId>com.h2database</groupId>
+                                    <artifactId>h2</artifactId>
+                                </exclude>
                             </excludes>
                         </configuration>
                     </plugin>
