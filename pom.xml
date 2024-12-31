@@ -460,10 +460,11 @@
                         <version>${vaadin.version}</version>
                         <executions>
                             <execution>
+                                <id>build-frontend</id>
+                                <phase>compile</phase>
                                 <goals>
                                     <goal>build-frontend</goal>
                                 </goals>
-                                <phase>compile</phase>
                             </execution>
                         </executions>
                     </plugin>
@@ -494,6 +495,28 @@
             <properties>
                 <activeProfiles>prod</activeProfiles>
             </properties>
+        </profile>
+
+        <profile>
+            <id>clean-frontend</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>vaadin-maven-plugin</artifactId>
+                        <version>${vaadin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>clean-frontend</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean-frontend</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>
