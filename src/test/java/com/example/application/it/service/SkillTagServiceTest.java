@@ -1,4 +1,4 @@
-package com.example.application.ut.service;
+package com.example.application.it.service;
 
 import com.example.application.dto.SkillTagDto;
 import com.example.application.service.SkillTagService;

@@ -1,4 +1,4 @@
-package com.example.application.it.view;
+package com.example.application.it.view.testutils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;

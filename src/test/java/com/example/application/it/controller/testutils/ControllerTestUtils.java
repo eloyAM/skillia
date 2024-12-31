@@ -1,4 +1,4 @@
-package com.example.application.it.controller;
+package com.example.application.it.controller.testutils;
 
 import com.jayway.jsonpath.JsonPath;
 import org.springframework.boot.test.web.client.TestRestTemplate;

@@ -1,4 +1,4 @@
-package com.example.application.external;
+package com.example.application.it.external;
 
 import com.example.application.dto.PersonDto;
 import com.example.application.service.PersonService;

@@ -5,6 +5,7 @@ import com.example.application.dto.PersonWithLevelDto;
 import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.SkillDto;
 import com.example.application.it.testutils.CleanDbExtension;
+import com.example.application.it.controller.testutils.ControllerTestUtils;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

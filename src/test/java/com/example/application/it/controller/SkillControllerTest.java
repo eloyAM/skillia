@@ -2,6 +2,7 @@ package com.example.application.it.controller;
 
 import com.example.application.dto.SkillDto;
 import com.example.application.it.testutils.CleanDbExtension;
+import com.example.application.it.controller.testutils.ControllerTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

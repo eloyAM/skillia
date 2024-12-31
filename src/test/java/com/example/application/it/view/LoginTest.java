@@ -1,5 +1,6 @@
 package com.example.application.it.view;
 
+import com.example.application.it.view.testutils.LoginUtility;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ public class LoginTest {
         this.baseUrl = "http://localhost:" + localServerPort;
         this.loginUrl = baseUrl + "/login";
         this.homeUrl = baseUrl + "/";
-        logger.info("Using baseUrl '" + baseUrl + "'");
+        logger.info("Using baseUrl '{}'", baseUrl);
     }
 
     @BeforeEach

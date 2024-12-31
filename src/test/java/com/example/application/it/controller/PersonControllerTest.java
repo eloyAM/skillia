@@ -1,5 +1,6 @@
 package com.example.application.it.controller;
 
+import com.example.application.it.controller.testutils.ControllerTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
