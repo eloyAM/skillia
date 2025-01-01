@@ -16,12 +16,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.openqa.selenium.support.ui.ExpectedConditions.attributeToBe;
 import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)  // Reset the context before running the tests - sometimes the authentication context was not correctly initialized
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginTest {
     private static final Logger logger = LoggerFactory.getLogger(LoginTest.class);

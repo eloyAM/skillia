@@ -326,7 +326,7 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <excludes>
-                        <exclude>com.example.application.it.**</exclude>
+                        <exclude>**/it/**/*.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -346,7 +346,7 @@
                     <trimStackTrace>false</trimStackTrace>
                     <enableAssertions>true</enableAssertions>
                     <includes>
-                        <include>com.example.application.it.**</include>
+                        <include>**/it/**/*.java</include>
                     </includes>
                 </configuration>
             </plugin>
@@ -545,6 +545,22 @@
                     </plugin>
 
                     <!-- Runs the integration tests (*IT) after the server is started -->
+
+                    <!-- Build the frontend for UI tests - otherwise they may get a timeout as the frontend would be built on the first access -->
+                    <plugin>
+                        <groupId>com.vaadin</groupId>
+                        <artifactId>vaadin-maven-plugin</artifactId>
+                        <version>${vaadin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>build-frontend</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>build-frontend</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
             <properties>
