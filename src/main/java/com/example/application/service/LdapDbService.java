@@ -23,6 +23,6 @@ public class LdapDbService {
         List<PersonDto> ldapUsers = ldapService.findAllUsers();
         log.info("Found {} users from LDAP, proceeding to save them on the users database", ldapUsers.size());
         personService.savePerson(ldapUsers);
-        log.info("The users database have been saved successfully initialized");
+        log.info("The users database has been saved successfully initialized");
     }
 }

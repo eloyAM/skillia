@@ -4,36 +4,50 @@ import com.example.application.dto.SkillDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.security.SecConstants;
 import com.example.application.service.SkillService;
+import com.example.application.service.SkillTagService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Optional;
+
+import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WARNING;
 
 @RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skillsmanagement")
 public class SkillsManagementView extends VerticalLayout {
 
+    private static final Logger log = LoggerFactory.getLogger(SkillsManagementView.class);
     private final SkillService skillService;
+    private final SkillTagService skillTagService;
 
-    public SkillsManagementView(SkillService skillService) {
+    public SkillsManagementView(
+        SkillService skillService,
+        SkillTagService skillTagService
+    ) {
         this.skillService = skillService;
+        this.skillTagService = skillTagService;
         createUi();
     }
 
@@ -63,7 +77,6 @@ public class SkillsManagementView extends VerticalLayout {
         })
             .setHeader("Tags")
             .setKey("tags");
-        GridListDataView<SkillDto> listDataView = skillGrid.getListDataView();
         // Actions column
         skillGrid.addComponentColumn(selectedSkill -> {
             // Edit
@@ -82,38 +95,49 @@ public class SkillsManagementView extends VerticalLayout {
             .setHeader("Actions")
             .setKey("actions");
 
-        List<SkillDto> skillAll = skillService.getAllSkill();
-        skillGrid.setItems(skillAll);
+        CallbackDataProvider.FetchCallback<SkillDto, Void> fetchCallback = query -> {
+            log.debug("Fetching skills with limit: {} and page {}", query.getLimit(), query.getPage()); // TODO we are forced to use the limit and page from query, otherwise and error is thrown
+            return skillService.getAllSkill().stream();
+        };
+        skillGrid.setItems(fetchCallback);
 
-        add(createSkillAdderWithDialog(listDataView));
+        add(createSkillAdderWithDialog(skillGrid));
         add(skillGrid);
     }
 
-    private Component createSkillAdderWithDialog(GridListDataView<SkillDto> listDataView) {
+    private Component createSkillAdderWithDialog(Grid<SkillDto> skillGrid) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle("Create skill");
-        TextField skillNameTextField = new TextField("Skill name");
-        skillNameTextField.setRequired(true);
-        Binder<SkillDto> sillBinder = new Binder<>(SkillDto.class);
-        sillBinder.forField(skillNameTextField)
-            .asRequired()
-            .bind(SkillDto::getName, SkillDto::setName);
-        FormLayout formLayout = new FormLayout(skillNameTextField);
+
+        Binder<SkillDto> skillBinder = new Binder<>(SkillDto.class);
+        FormLayout formLayout = createSkillFormWithBinder(skillBinder);
         dialog.add(formLayout);
 
         Button createButton = new Button("Create", e -> {
-            String text = skillNameTextField.getValue();
-            if (StringUtils.isBlank(text)) {
+            SkillDto formDto = new SkillDto();
+            final String skillName;
+            try {
+                skillBinder.writeBean(formDto);
+                skillName = formDto.getName();
+            } catch (ValidationException ex) {
+                ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
-            Optional<SkillDto> newSkill = skillService.saveSkill(new SkillDto(text));
+            Optional<SkillDto> newSkill = skillService.saveSkill(formDto);
             if (newSkill.isPresent()) {
-                listDataView.addItem(newSkill.get());
+                skillGrid.getDataProvider().refreshAll();
+                ViewUtils.notificationTopCenter("Skill \"" + skillName + "\" created", true).open();
             } else {
-                ViewUtils.notificationTopCenter("The skill already exists", true).open();
-                System.out.println("Couldn't create skill '" + text + "'");
+                Notification notification = ViewUtils.notificationTopCenter("", LUMO_WARNING);
+                notification.removeAll();
+                notification.add(new Div(
+                    new Div("Unable to create the skill"),
+                    new Div(" \"" + skillName + "\" "),
+                    new Div("It may already exist")
+                ));
+                notification.open();
             }
-            skillNameTextField.clear();
+            skillBinder.getFields().forEach(HasValue::clear);
             dialog.close();
         });
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -129,28 +153,28 @@ public class SkillsManagementView extends VerticalLayout {
     private Dialog createEditSkillDialog(SkillDto currentSkill, Grid<SkillDto> grid) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle("Edit skill \"" + currentSkill.getName() + "\"");
-        TextField skillNameTextField = new TextField("Skill name");
-        skillNameTextField.setValue(currentSkill.getName());
-        Binder<SkillDto> sillBinder = new Binder<>(SkillDto.class);
-        sillBinder.forField(skillNameTextField)
-            .asRequired()
-            .bind(SkillDto::getName, SkillDto::setName);
-        FormLayout formLayout = new FormLayout(skillNameTextField);
+
+        Binder<SkillDto> skillBinder = new Binder<>(SkillDto.class);
+        FormLayout formLayout = createSkillFormWithBinder(skillBinder);
+        skillBinder.readBean(currentSkill);
         dialog.add(formLayout);
 
         Button saveButton = new Button("Save", e -> {
-            String newName = skillNameTextField.getValue();
-            if (StringUtils.isBlank(newName)) {
+            SkillDto formDto = new SkillDto();
+            try {
+                skillBinder.writeBean(formDto);
+                formDto.setId(currentSkill.getId());
+            } catch (ValidationException ex) {
+                ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
-            Optional<SkillDto> updatedSkill =
-                skillService.updateSkill(currentSkill.getId(), newName);
-            if (updatedSkill.isPresent()) {
-                currentSkill.setName(newName);
-                // TODO IMPROVEMENT (FIX) not updating the skill name in the grid with `refreshItem`
-                // which would be better than `refreshAll`
-                grid.getDataProvider().refreshAll();
-                skillNameTextField.clear();
+            String newName = formDto.getName();
+            Optional<SkillDto> updatedSkillOpt =
+                skillService.saveSkill(formDto);
+            if (updatedSkillOpt.isPresent()) {
+                ViewUtils.notificationTopCenter("Skill \"" + newName + "\" updated", true).open();
+                skillBinder.getFields().forEach(HasValue::clear);
+                grid.getDataProvider().refreshAll();    // TODO IMPROVEMENT how to get that single entry updated with `refreshItem` instead of `refreshAll`
                 dialog.close();
             }
         });
@@ -159,6 +183,24 @@ public class SkillsManagementView extends VerticalLayout {
         dialog.getFooter().add(cancelButton, saveButton);
 
         return dialog;
+    }
+
+    private FormLayout createSkillFormWithBinder(Binder<SkillDto> skillBinder) {
+        TextField skillNameTextField = new TextField("Skill name");
+        skillNameTextField.setRequired(true);
+        MultiSelectComboBox<SkillTagDto> tagMultiSelectComboBox = createTagMultiSelectComboBox();
+        tagMultiSelectComboBox.setRequired(false);
+
+        skillBinder.forField(skillNameTextField)
+            .asRequired()
+            .bind(SkillDto::getName, SkillDto::setName);
+        skillBinder.forField(tagMultiSelectComboBox)
+            .bind(SkillDto::getTags, SkillDto::setTags);
+
+        return new FormLayout(
+            skillNameTextField,
+            tagMultiSelectComboBox
+        );
     }
 
     private ConfirmDialog createDeleteSkillDialog(
@@ -173,9 +215,18 @@ public class SkillsManagementView extends VerticalLayout {
         confirmDialog.setConfirmButtonTheme("error primary");
         confirmDialog.addConfirmListener(e -> {
             skillService.deleteSkillById(selectedSkill.getId());
-            skillGrid.getListDataView().removeItem(selectedSkill);
+            skillGrid.getDataProvider().refreshAll();
         });
         confirmDialog.setCancelable(true);
         return confirmDialog;
     }
+
+    private MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBox() {
+        MultiSelectComboBox<SkillTagDto> tagSelector = new MultiSelectComboBox<>();
+        tagSelector.setLabel("Tags");
+        tagSelector.setItemLabelGenerator(SkillTagDto::getName);
+        tagSelector.setItems(skillTagService.getAllSkillTag());
+        return tagSelector;
+    }
+
 }

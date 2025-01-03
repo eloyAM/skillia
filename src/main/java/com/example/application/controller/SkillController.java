@@ -83,7 +83,7 @@ public class SkillController {
                     description = "No skill matching the id or there is already a skill with the same name")
     })
     @PatchMapping("/{id}")
-    public SkillDto updateSkill(@PathVariable Long id, @RequestBody Map<String, String> body) {
+    public SkillDto updateSkill(@PathVariable Long id, @RequestBody Map<String, String> body) { // TODO rename to express that this only updates the name, or modify to update tags as well
         final String skillName = body.get("name");
         return skillService.updateSkill(id, skillName)
                 .orElseThrow(() -> new ResponseStatusException(

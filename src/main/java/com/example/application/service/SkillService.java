@@ -16,12 +16,12 @@ import java.util.Optional;
 public class SkillService {
     private final SkillRepo skillRepo;
 
-    public SkillService(SkillRepo personRepo) {
-        this.skillRepo = personRepo;
+    public SkillService(SkillRepo skillRepo) {
+        this.skillRepo = skillRepo;
     }
 
-    public Optional<SkillDto> saveSkill(SkillDto person) {
-        Skill skillEntity = DtoEntityMapping.mapSkillDtoToSkillEntity(person);
+    public Optional<SkillDto> saveSkill(SkillDto skill) {
+        Skill skillEntity = DtoEntityMapping.mapSkillDtoToSkillEntity(skill);
         try {
             Skill savedSkill = skillRepo.save(skillEntity);
             return Optional.ofNullable(DtoEntityMapping.mapSkillEntityToSkillDto(savedSkill));
@@ -51,7 +51,7 @@ public class SkillService {
             .toList();
     }
 
-    public Optional<SkillDto> updateSkill(Long id, String skillName) {
+    public Optional<SkillDto> updateSkill(Long id, String skillName) {  // TODO rename to express that this only updates the name, or modify to update tags as well
         try {
             int rowsUpdated = skillRepo.updateNameById(id, skillName);
             if (rowsUpdated == 0) {

@@ -22,4 +22,12 @@ public final class ViewUtils {
         );
         return notification;
     }
+
+    @NonNull
+    static Notification notificationTopCenter(String message, NotificationVariant variant) {
+        Notification notification = new Notification(message, 5000,
+            Notification.Position.TOP_CENTER);
+        notification.addThemeVariants(variant);
+        return notification;
+    }
 }
