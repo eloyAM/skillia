@@ -54,6 +54,7 @@ public class SkillsManagementView extends VerticalLayout {
     private void createUi() {
         setSizeFull();
         Grid<SkillDto> skillGrid = new Grid<>(SkillDto.class, false);
+        skillGrid.addClassName("skills-grid");
 
         skillGrid.addColumn(SkillDto::getName)
             .setHeader("Name")
@@ -83,10 +84,12 @@ public class SkillsManagementView extends VerticalLayout {
             Dialog editSkillDialog = createEditSkillDialog(selectedSkill, skillGrid);
             Button editButton = new Button(VaadinIcon.EDIT.create(), e -> editSkillDialog.open());
             editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            editButton.addClassName("edit-skill-button");
             // Delete
             ConfirmDialog deleteSkillDialog = createDeleteSkillDialog(selectedSkill, skillGrid);
             Button deleteButton = new Button(VaadinIcon.TRASH.create(), e -> deleteSkillDialog.open());
             deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+            deleteButton.addClassName("delete-skill-button");
             // Result
             FlexLayout result = new FlexLayout(editButton, deleteButton);
             result.setFlexWrap(FlexLayout.FlexWrap.WRAP);
@@ -111,6 +114,7 @@ public class SkillsManagementView extends VerticalLayout {
 
         Binder<SkillDto> skillBinder = new Binder<>(SkillDto.class);
         FormLayout formLayout = createSkillFormWithBinder(skillBinder);
+        formLayout.addClassName("create-skill-form");
         dialog.add(formLayout);
 
         Button createButton = new Button("Create", e -> {
@@ -141,12 +145,15 @@ public class SkillsManagementView extends VerticalLayout {
             dialog.close();
         });
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        createButton.addClassName("create-skill-submit-button");
         Button cancelButton = new Button("Cancel", e -> dialog.close());
+        cancelButton.addClassName("create-skill-cancel-button");
         dialog.getFooter().add(cancelButton, createButton);
 
         Button addSkillButton =
             new Button("Add Skill", VaadinIcon.PLUS.create(), e -> dialog.open());
         addSkillButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        addSkillButton.addClassName("add-skill-button");
         return addSkillButton;
     }
 
@@ -156,6 +163,7 @@ public class SkillsManagementView extends VerticalLayout {
 
         Binder<SkillDto> skillBinder = new Binder<>(SkillDto.class);
         FormLayout formLayout = createSkillFormWithBinder(skillBinder);
+        formLayout.addClassName("edit-skill-form");
         skillBinder.readBean(currentSkill);
         dialog.add(formLayout);
 
@@ -179,7 +187,9 @@ public class SkillsManagementView extends VerticalLayout {
             }
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveButton.addClassName("edit-skill-save-button");
         Button cancelButton = new Button("Cancel", e -> dialog.close());
+        cancelButton.addClassName("edit-skill-cancel-button");
         dialog.getFooter().add(cancelButton, saveButton);
 
         return dialog;
