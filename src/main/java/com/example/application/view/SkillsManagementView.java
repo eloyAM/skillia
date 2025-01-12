@@ -20,6 +20,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
@@ -91,12 +92,14 @@ public class SkillsManagementView extends VerticalLayout {
             deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
             deleteButton.addClassName("delete-skill-button");
             // Result
-            FlexLayout result = new FlexLayout(editButton, deleteButton);
-            result.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+            HorizontalLayout result = new HorizontalLayout(editButton, deleteButton);
+            result.setSpacing(false);
             return result;
         })
             .setHeader("Actions")
-            .setKey("actions");
+            .setKey("actions")
+            .setAutoWidth(true)
+            .setFlexGrow(0);
 
         CallbackDataProvider.FetchCallback<SkillDto, Void> fetchCallback = query -> {
             log.debug("Fetching skills with limit: {} and page {}", query.getLimit(), query.getPage()); // TODO we are forced to use the limit and page from query, otherwise and error is thrown

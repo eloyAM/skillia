@@ -124,8 +124,14 @@ public class SkillTagView extends VerticalLayout {
             );
             deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
             // Result component
-            return new HorizontalLayout(editButton, deleteButton);
-        }).setHeader("Actions").setKey("actions");
+            HorizontalLayout buttonsLayout = new HorizontalLayout(editButton, deleteButton);
+            buttonsLayout.setSpacing(false);
+            return buttonsLayout;
+        })
+            .setHeader("Actions")
+            .setKey("actions")
+            .setAutoWidth(true)
+            .setFlexGrow(0);
     }
 
     private ConfirmDialog createDeleteDialog(
