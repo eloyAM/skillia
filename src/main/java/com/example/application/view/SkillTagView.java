@@ -10,12 +10,15 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
@@ -24,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skilltags")
@@ -41,13 +45,22 @@ public class SkillTagView extends VerticalLayout {
         setSizeFull();
         Grid<SkillTagDto> grid = new Grid<>(SkillTagDto.class, false);
 
-        grid.addColumn(SkillTagDto::getName).setHeader("Name").setKey("name");
-        createActionsColumn(grid);
+        Grid.Column<SkillTagDto> nameColumn = grid.addColumn(SkillTagDto::getName)
+            .setHeader("Name")
+            .setKey("name")
+            .setSortable(true);
 
         List<SkillTagDto> items = skillTagService.getAllSkillTag();
         // If the item collection is not mutable, we'll have troubles adding data dynamically
         List<SkillTagDto> fixedItems = new ArrayList<>(items);
-        grid.setItems(fixedItems);
+        GridListDataView<SkillTagDto> dataView = grid.setItems(fixedItems);
+
+        HeaderRow headerRow = grid.appendHeaderRow();
+        SkillTagFilter skillTagFilter = new SkillTagFilter(dataView);
+        headerRow.getCell(nameColumn).setComponent(
+            createFilterTextField("Search by name", skillTagFilter::setName)
+        );
+        createActionsColumn(grid);
 
         add(createAddTagButton(grid.getListDataView()));
 
@@ -100,16 +113,15 @@ public class SkillTagView extends VerticalLayout {
         grid.addComponentColumn(selectedTag -> {
             // Edit
             Dialog editDialog = createEditDialog(selectedTag, grid);
-            Button editButton = new Button("Edit", VaadinIcon.EDIT.create(),
+            Button editButton = new Button(VaadinIcon.EDIT.create(),
                     e -> editDialog.open()
             );
             editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             // Delete
             ConfirmDialog deleteDialog = createDeleteDialog(selectedTag, grid);
-            Button deleteButton = new Button("Delete",
-                    e -> deleteDialog.open()
+            Button deleteButton = new Button(VaadinIcon.TRASH.create(),
+                e -> deleteDialog.open()
             );
-            deleteButton.setPrefixComponent(VaadinIcon.TRASH.create());
             deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
             // Result component
             return new HorizontalLayout(editButton, deleteButton);
@@ -172,5 +184,52 @@ public class SkillTagView extends VerticalLayout {
         dialog.getFooter().add(cancelButton, saveButton);
 
         return dialog;
+    }
+
+    private static Component createFilterTextField(
+        String placeHolderText,
+        Consumer<String> filterChangeConsumer
+    ) {
+        TextField textField = new TextField();
+        textField.setPrefixComponent(VaadinIcon.SEARCH.create());
+        textField.setPlaceholder(placeHolderText);
+        textField.setValueChangeMode(ValueChangeMode.EAGER);
+        textField.setClearButtonVisible(true);
+        textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        textField.setWidthFull();
+        textField.setMaxWidth("100%");
+        textField.addValueChangeListener(
+            e -> filterChangeConsumer.accept(e.getValue())
+        );
+
+        return textField;
+    }
+
+
+    private static class SkillTagFilter {
+        private final GridListDataView<SkillTagDto> dataView;
+        private String name;
+
+        public SkillTagFilter(GridListDataView<SkillTagDto> dataView) {
+            this.dataView = dataView;
+            this.dataView.addFilter(this::test);
+        }
+
+        public void setName(String name) {
+            this.name = name;
+            dataView.refreshAll();
+        }
+
+        private boolean test(SkillTagDto skillTagDto) {
+            boolean matchesName = matches(skillTagDto.getName(), name);
+            // boolean matchesX = ...
+            return matchesName; // && matchesX;
+        }
+
+        private static boolean matches(String value, String searchTerm) {
+            return searchTerm == null
+                || searchTerm.isEmpty()
+                || value.toLowerCase().contains(searchTerm.toLowerCase());
+        }
     }
 }
