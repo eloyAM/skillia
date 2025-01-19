@@ -9,10 +9,7 @@ import com.example.application.service.PersonService;
 import com.example.application.service.SkillService;
 import com.example.application.service.SkillTagService;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,6 +39,8 @@ public class DbInit {
         PersonDto thirdPerson = persons.get(2);
 
         Set<SkillTagDto> skillTags = createSkillTags();
+        createSkillTagsRandom();
+        createSkillsRandom();
 
         List<SkillDto> skills = createSkills(skillTags);
         SkillDto firstSkill = skills.get(0);
@@ -122,6 +121,37 @@ public class DbInit {
                 .orElseThrow()
             )
             .collect(Collectors.toSet());
+    }
+
+
+    private void createSkillTagsRandom() {
+        int nElements = 150;
+        Set<SkillTagDto> tags = new LinkedHashSet<>(nElements);
+        for (int i = 0; i < nElements; i++) {
+            String name = String.format("Tag %03d", i);
+            tags.add(
+                SkillTagDto.builder().name(name).build()
+            );
+        }
+        for (SkillTagDto tag : tags) {
+            skillTagService.saveSkillTag(tag)
+                .orElseThrow();
+        }
+    }
+
+    private void createSkillsRandom() {
+        int nElements = 101;
+        Set<SkillDto> tags = new LinkedHashSet<>(nElements);
+        for (int i = 0; i < nElements; i++) {
+            String name = String.format("Skill %03d", i);
+            tags.add(
+                SkillDto.builder().name(name).build()
+            );
+        }
+        for (SkillDto tag : tags) {
+            skillService.saveSkill(tag)
+                .orElseThrow();
+        }
     }
 
 }
