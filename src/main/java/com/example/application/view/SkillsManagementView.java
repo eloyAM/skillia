@@ -11,10 +11,13 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBoxVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -23,15 +26,22 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.provider.CallbackDataProvider;
+import com.vaadin.flow.data.provider.*;
+import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Setter;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WARNING;
 
@@ -39,9 +49,10 @@ import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WA
 @Route(layout = MainLayout.class, value = "skillsmanagement")
 public class SkillsManagementView extends VerticalLayout {
 
-    private static final Logger log = LoggerFactory.getLogger(SkillsManagementView.class);
+    public static final String GRID_NAME_COLUMN_NAME = "name";
     private final SkillService skillService;
     private final SkillTagService skillTagService;
+    private MultiSelectComboBox<SkillTagDto> tagSelectorFilter;
 
     public SkillsManagementView(
         SkillService skillService,
@@ -56,12 +67,25 @@ public class SkillsManagementView extends VerticalLayout {
         setSizeFull();
         Grid<SkillDto> skillGrid = new Grid<>(SkillDto.class, false);
         skillGrid.addClassName("skills-grid");
+        skillGrid.addThemeVariants(
+            GridVariant.LUMO_WRAP_CELL_CONTENT
+        );
 
-        skillGrid.addColumn(SkillDto::getName)
+        SkillDtoFilter skillFilter = new SkillDtoFilter();
+        SkillDtoDataProvider dataProvider = new SkillDtoDataProvider(skillService);
+        ConfigurableFilterDataProvider<SkillDto, Void, SkillDtoFilter> filterDataProvider = dataProvider
+            .withConfigurableFilter();
+
+        // Name column
+        Grid.Column<SkillDto> nameColumn = skillGrid.addColumn(SkillDto::getName)
             .setHeader("Name")
-            .setKey("name")
-            .setFrozen(true);
-        skillGrid.addComponentColumn(skillDto -> {
+            .setKey(GRID_NAME_COLUMN_NAME)
+            .setFrozen(true)
+            .setAutoWidth(true)
+            .setSortable(true);
+
+        // Tags column
+        Grid.Column<SkillDto> tagsColumn = skillGrid.addComponentColumn(skillDto -> {
             FlexLayout tagsContainer = skillDto.getTags().stream()
                 .map(SkillTagDto::getName)
                 .map(name -> {
@@ -78,7 +102,9 @@ public class SkillsManagementView extends VerticalLayout {
             return tagsContainer;
         })
             .setHeader("Tags")
-            .setKey("tags");
+            .setKey("tags")
+            .setAutoWidth(true);
+
         // Actions column
         skillGrid.addComponentColumn(selectedSkill -> {
             // Edit
@@ -101,14 +127,31 @@ public class SkillsManagementView extends VerticalLayout {
             .setAutoWidth(true)
             .setFlexGrow(0);
 
-        CallbackDataProvider.FetchCallback<SkillDto, Void> fetchCallback = query -> {
-            log.debug("Fetching skills with limit: {} and page {}", query.getLimit(), query.getPage()); // TODO we are forced to use the limit and page from query, otherwise and error is thrown
-            return skillService.getAllSkill().stream();
-        };
-        skillGrid.setItems(fetchCallback);
+        skillGrid.setItems(filterDataProvider);
 
-        add(createSkillAdderWithDialog(skillGrid));
-        add(skillGrid);
+        HeaderRow headerRow = skillGrid.appendHeaderRow();
+
+        headerRow.getCell(nameColumn).setComponent(
+            createFilterTextField("Search by name", str -> {
+                skillFilter.setName(str);
+                filterDataProvider.setFilter(skillFilter);
+            })
+        );
+        headerRow.getCell(tagsColumn).setComponent(
+            ((Supplier<Component>) () -> {
+                tagSelectorFilter = createTagMultiSelectComboBoxFilter();
+                tagSelectorFilter.addValueChangeListener(e -> {
+                    skillFilter.setTags(tagSelectorFilter.getSelectedItems());
+                    filterDataProvider.setFilter(skillFilter);
+                });
+                return tagSelectorFilter;
+            }).get()
+        );
+
+        add(
+            createSkillAdderWithDialog(skillGrid),
+            skillGrid
+        );
     }
 
     private Component createSkillAdderWithDialog(Grid<SkillDto> skillGrid) {
@@ -133,6 +176,7 @@ public class SkillsManagementView extends VerticalLayout {
             Optional<SkillDto> newSkill = skillService.saveSkill(formDto);
             if (newSkill.isPresent()) {
                 skillGrid.getDataProvider().refreshAll();
+                refreshTagSelectorItems();
                 ViewUtils.notificationTopCenter("Skill \"" + skillName + "\" created", true).open();
             } else {
                 Notification notification = ViewUtils.notificationTopCenter("", LUMO_WARNING);
@@ -186,6 +230,7 @@ public class SkillsManagementView extends VerticalLayout {
                 ViewUtils.notificationTopCenter("Skill \"" + newName + "\" updated", true).open();
                 skillBinder.getFields().forEach(HasValue::clear);
                 grid.getDataProvider().refreshAll();    // TODO IMPROVEMENT how to get that single entry updated with `refreshItem` instead of `refreshAll`
+                refreshTagSelectorItems();
                 dialog.close();
             }
         });
@@ -229,6 +274,7 @@ public class SkillsManagementView extends VerticalLayout {
         confirmDialog.addConfirmListener(e -> {
             skillService.deleteSkillById(selectedSkill.getId());
             skillGrid.getDataProvider().refreshAll();
+            refreshTagSelectorItems();
         });
         confirmDialog.setCancelable(true);
         return confirmDialog;
@@ -237,9 +283,126 @@ public class SkillsManagementView extends VerticalLayout {
     private MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBox() {
         MultiSelectComboBox<SkillTagDto> tagSelector = new MultiSelectComboBox<>();
         tagSelector.setLabel("Tags");
+        tagSelector.setSelectedItemsOnTop(true);
+        tagSelector.setWidthFull();
+        tagSelector.setMaxWidth("100%");
         tagSelector.setItemLabelGenerator(SkillTagDto::getName);
         tagSelector.setItems(skillTagService.getAllSkillTag());
         return tagSelector;
+    }
+
+    private MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBoxFilter() {
+        MultiSelectComboBox<SkillTagDto> tagSelector = new MultiSelectComboBox<>();
+        tagSelector.setPlaceholder("Filter by tags");
+        tagSelector.setClearButtonVisible(true);
+        tagSelector.addThemeVariants(MultiSelectComboBoxVariant.LUMO_SMALL);
+        tagSelector.setSelectedItemsOnTop(true);
+        tagSelector.setWidthFull();
+        tagSelector.setMaxWidth("100%");
+        tagSelector.setItemLabelGenerator(SkillTagDto::getName);
+        tagSelector.setItems(skillTagService.getAllSkillTagInUse());
+        return tagSelector;
+    }
+
+    private static Component createFilterTextField(
+        String placeHolderText,
+        Consumer<String> filterChangeConsumer
+    ) {
+        TextField textField = new TextField();
+        textField.setPrefixComponent(VaadinIcon.SEARCH.create());
+        textField.setPlaceholder(placeHolderText);
+        textField.setValueChangeMode(ValueChangeMode.EAGER);
+        textField.setClearButtonVisible(true);
+        textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        textField.setWidthFull();
+        textField.setMaxWidth("100%");
+        textField.setValueChangeTimeout(800);
+        textField.addValueChangeListener(
+            e -> filterChangeConsumer.accept(e.getValue())
+        );
+        return textField;
+    }
+
+    @Setter
+    private static class SkillDtoFilter {
+        private String name;
+        private Set<SkillTagDto> tags;
+
+        private boolean test(SkillDto skillDto) {
+            boolean matchesName = matches(skillDto.getName(), name);
+            boolean containsAllSelectedTags = tags != null
+                && skillDto.getTags() != null
+                && skillDto.getTags().containsAll(tags);
+            return matchesName && containsAllSelectedTags;
+        }
+
+        private static boolean matches(String value, String searchTerm) {
+            return searchTerm == null
+                || searchTerm.isEmpty()
+                || value.toLowerCase().contains(searchTerm.toLowerCase());
+        }
+    }
+
+    private static class SkillDtoDataProvider extends AbstractBackEndDataProvider<SkillDto, SkillDtoFilter> {
+        private final SkillService skillService;
+
+        private SkillDtoDataProvider(SkillService skillService) {
+            this.skillService = skillService;
+        }
+
+        @Override
+        protected Stream<SkillDto> fetchFromBackEnd(Query<SkillDto, SkillDtoFilter> query) {
+            Stream<SkillDto> stream = skillService.getAllSkill().stream();
+
+            // Filtering
+            if (query.getFilter().isPresent()) {
+                stream = stream.filter(
+                    skill -> query.getFilter().get()
+                        .test(skill)
+                );
+            }
+
+            // Sorting
+            if (!query.getSortOrders().isEmpty()) {
+                stream = stream.sorted(
+                    sortComparator(query.getSortOrders())
+                );
+            }
+
+            // Pagination
+            return stream
+                .skip(query.getOffset())
+                .limit(query.getLimit());
+        }
+
+        @Override
+        protected int sizeInBackEnd(Query<SkillDto, SkillDtoFilter> query) {
+            return (int) fetchFromBackEnd(query).count();
+        }
+
+        private static Comparator<SkillDto> sortComparator(List<QuerySortOrder> sortOrders) {
+            return sortOrders.stream()
+                .map(sortOrder -> {
+                    Comparator<SkillDto> comparator = skillFieldComparator(sortOrder.getSorted());
+                    if (sortOrder.getDirection() == SortDirection.DESCENDING) {
+                        comparator = comparator.reversed();
+                    }
+                    return comparator;
+                })
+                .reduce(Comparator::thenComparing)
+                .orElse((p1, p2) -> 0);
+        }
+
+        private static Comparator<SkillDto> skillFieldComparator(String sorted) {
+            if (sorted.equals(GRID_NAME_COLUMN_NAME)) {
+                return Comparator.comparing(SkillDto::getName);
+            }
+            return (p1, p2) -> 0;
+        }
+    }
+
+    private void refreshTagSelectorItems() {
+        tagSelectorFilter.setItems(skillTagService.getAllSkillTagInUse());
     }
 
 }

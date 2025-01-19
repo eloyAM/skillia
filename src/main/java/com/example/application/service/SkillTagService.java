@@ -36,6 +36,13 @@ public class SkillTagService {
                 .toList();
     }
 
+    public List<SkillTagDto> getAllSkillTagInUse() {
+        return skillTagRepo.findAllUsedOnSkillTagging()
+            .stream()
+            .map(DtoEntityMapping::mapSkillTagEntityToSkillTagDto)
+            .toList();
+    }
+
     public Optional<SkillTagDto> updateSkillTag(String newName, Long id) {
         try {
             int rowsUpdated = skillTagRepo.updateNameById(newName, id);
