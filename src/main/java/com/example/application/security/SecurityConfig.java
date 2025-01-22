@@ -33,11 +33,18 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
     private final AuthenticationProvider jwtAuthenticationProvider;
     private final SecretKey secretKey;
     private final Environment env;
+    private final JwtProperties jwtProperties;
 
-    public SecurityConfig(SecretKey secretKey, JwtAuthenticationProvider jwtAuthenticationProvider, Environment env) {
+    public SecurityConfig(
+        SecretKey secretKey,
+        JwtAuthenticationProvider jwtAuthenticationProvider,
+        Environment env,
+        JwtProperties jwtProperties
+    ) {
         this.secretKey = secretKey;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.env = env;
+        this.jwtProperties = jwtProperties;
     }
 
     @Override
@@ -71,7 +78,7 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
         AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver = request -> authenticationManagerBuilder.getOrBuild();
         BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter = new BearerTokenAuthenticationFilter(authenticationManagerResolver);
         http.addFilterBefore(bearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        super.setStatelessAuthentication(http, secretKey, SecretKeyConfig.JWT_ISSUER);
+        super.setStatelessAuthentication(http, secretKey, jwtProperties.issuer(), jwtProperties.expirationSeconds());
 
         super.configure(http);
         setLoginView(http, LoginView.class); // <4>

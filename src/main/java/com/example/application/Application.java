@@ -5,6 +5,7 @@ import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -16,6 +17,10 @@ import java.util.Arrays;
  * and some desktop browsers.
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan({
+    "com.example.application.security",
+    "com.example.application.ldap"
+})
 @Theme("skillia")
 @PWA(
         name = "Skillia",

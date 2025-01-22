@@ -28,16 +28,18 @@ import static com.example.application.security.JwtAuthenticationProviderConfig.R
 
 @Component
 public class CustomJwtEncoder {
-    private final SecretKey secretKey;
     private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
     private final JWKSource<SecurityContext> jwkSource;
-    public static final JWSAlgorithm jwsAlgorithm = CustomJwtDecoder.jwsAlgorithm;
-    public static final String issuer = SecretKeyConfig.JWT_ISSUER;
-    private long expiresIn = 1800L;
+    private final JWSAlgorithm jwsAlgorithm;
+    private final JwtProperties jwtProperties;
 
-    public CustomJwtEncoder(SecretKey secretKey) {
-        this.secretKey = secretKey;
+    public CustomJwtEncoder(
+        SecretKey secretKey,
+        JwtProperties jwtProperties
+    ) {
+        jwsAlgorithm = JWSAlgorithm.parse(jwtProperties.algorithm());
         this.jwkSource = CustomJwtDecoder.getJWKSource(secretKey, jwsAlgorithm);
+        this.jwtProperties = jwtProperties;
     }
 
     public String encodeJwt(Authentication authentication) throws JOSEException {
@@ -61,8 +63,8 @@ public class CustomJwtEncoder {
 
         JWSSigner signer = new DefaultJWSSignerFactory().createJWSSigner(jwk, jwsAlgorithm);
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(authentication.getName()).issuer(issuer).issueTime(now)
-                .expirationTime(new Date(now.getTime() + expiresIn * 1000))
+                .subject(authentication.getName()).issuer(jwtProperties.issuer()).issueTime(now)
+                .expirationTime(new Date(now.getTime() + jwtProperties.expirationSeconds() * 1000))
                 .claim(ROLES_CLAIM, roles).build();
         SignedJWT signedJWT = new SignedJWT(jwsHeader, claimsSet);
         signedJWT.sign(signer);

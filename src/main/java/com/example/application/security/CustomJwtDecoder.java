@@ -18,10 +18,13 @@ import javax.crypto.SecretKey;
 class CustomJwtDecoder implements JwtDecoder {
 
     private final JwtDecoder jwtDecoder;
-    public static final JWSAlgorithm jwsAlgorithm = JWSAlgorithm.parse(SecretKeyConfig.JWT_MAC_ALGORITHM_NAME);
 
-    public CustomJwtDecoder(SecretKey secretKey) {
-        this.jwtDecoder = getJwtDecoder(SecretKeyConfig.JWT_ISSUER, getJWKSource(secretKey, jwsAlgorithm));
+    public CustomJwtDecoder(
+        SecretKey secretKey,
+        JwtProperties jwtProperties
+    ) {
+        JWSAlgorithm jwsAlgorithm = JWSAlgorithm.parse(jwtProperties.algorithm());
+        this.jwtDecoder = getJwtDecoder(jwtProperties.issuer(), jwsAlgorithm, getJWKSource(secretKey, jwsAlgorithm));
     }
 
     @Override
@@ -29,13 +32,13 @@ class CustomJwtDecoder implements JwtDecoder {
         return jwtDecoder.decode(token);
     }
 
-    private static JwtDecoder getJwtDecoder(String issuer, JWKSource<SecurityContext> jwkSource) {
+    private static JwtDecoder getJwtDecoder(String issuer, JWSAlgorithm jwsAlgorithm1, JWKSource<SecurityContext> jwkSource) {
         DefaultJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
         jwtProcessor.setJWTClaimsSetVerifier((claimsSet, context) -> {
             // No-op, Spring Security’s NimbusJwtDecoder uses its own validator
         });
 
-        JWSKeySelector<SecurityContext> jwsKeySelector = new JWSVerificationKeySelector<>(jwsAlgorithm, jwkSource);
+        JWSKeySelector<SecurityContext> jwsKeySelector = new JWSVerificationKeySelector<>(jwsAlgorithm1, jwkSource);
         jwtProcessor.setJWSKeySelector(jwsKeySelector);
         NimbusJwtDecoder nimbusJwtDecoder = new NimbusJwtDecoder(jwtProcessor);
         nimbusJwtDecoder.setJwtValidator(
