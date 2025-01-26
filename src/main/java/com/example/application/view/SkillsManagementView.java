@@ -139,7 +139,7 @@ public class SkillsManagementView extends VerticalLayout {
         );
         headerRow.getCell(tagsColumn).setComponent(
             ((Supplier<Component>) () -> {
-                tagSelectorFilter = createTagMultiSelectComboBoxFilter();
+                tagSelectorFilter = createTagMultiSelectComboBoxFilter(skillTagService);
                 tagSelectorFilter.addValueChangeListener(e -> {
                     skillFilter.setTags(tagSelectorFilter.getSelectedItems());
                     filterDataProvider.setFilter(skillFilter);
@@ -291,7 +291,7 @@ public class SkillsManagementView extends VerticalLayout {
         return tagSelector;
     }
 
-    private MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBoxFilter() {
+    public static MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBoxFilter(SkillTagService skillTagService) {
         MultiSelectComboBox<SkillTagDto> tagSelector = new MultiSelectComboBox<>();
         tagSelector.setPlaceholder("Filter by tags");
         tagSelector.setClearButtonVisible(true);

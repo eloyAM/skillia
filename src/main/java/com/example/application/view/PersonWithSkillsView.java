@@ -1,8 +1,11 @@
 package com.example.application.view;
 
 import com.example.application.dto.PersonWithSkillsDto;
+import com.example.application.dto.SkillTagDto;
 import com.example.application.service.PersonSkillService;
+import com.example.application.service.SkillTagService;
 import com.example.application.utils.Comparators;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
@@ -11,25 +14,28 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
+
+import static com.example.application.view.SkillsManagementView.createTagMultiSelectComboBoxFilter;
 
 @PermitAll
 @Route(layout = MainLayout.class, value = "skillsmatrix")
 public class PersonWithSkillsView extends VerticalLayout {
 
     private final PersonSkillService personSkillService;
+    private final SkillTagService skillTagService;
 
-    public PersonWithSkillsView(PersonSkillService personSkillService) {
+    public PersonWithSkillsView(PersonSkillService personSkillService, SkillTagService skillTagService) {
         this.personSkillService = personSkillService;
+        this.skillTagService = skillTagService;
         createUi();
     }
 
@@ -49,7 +55,11 @@ public class PersonWithSkillsView extends VerticalLayout {
         TextField personSearchTextField = new TextField();
         personSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
         personSearchTextField.setPlaceholder("Search");
-        personSearchTextField.setTooltipText("Find persons by name, title or department");
+        personSearchTextField.setTooltipText("Find persons by name, job title or department");
+        personSearchTextField.setClearButtonVisible(true);
+        personSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        personSearchTextField.setWidthFull();
+        personSearchTextField.setMaxWidth("100%");
         Grid.Column<PersonWithSkillsDto> personColumn = personSkillGrid.getColumnByKey("person");
         HeaderRow headerRow = personSkillGrid.appendHeaderRow();
         headerRow.getCell(personColumn).setComponent(personSearchTextField);
@@ -67,8 +77,21 @@ public class PersonWithSkillsView extends VerticalLayout {
         skillSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
         skillSearchTextField.setPlaceholder("Search");
         skillSearchTextField.setTooltipText("Find persons by skill name or level");
+        skillSearchTextField.setClearButtonVisible(true);
+        skillSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        skillSearchTextField.setWidthFull();
+        skillSearchTextField.setMaxWidth("100%");
+        MultiSelectComboBox<SkillTagDto> tagSelectorFilter = createTagMultiSelectComboBoxFilter(skillTagService);
+        tagSelectorFilter.addValueChangeListener(e -> {
+            var selectedTags = e.getValue();
+            List<String> valuesList = selectedTags.stream()
+                .map(SkillTagDto::getName)
+                .collect(Collectors.toList());
+            filterManager.setTagFilter(valuesList);
+            filterManager.applyFilters();
+        });
         Grid.Column<PersonWithSkillsDto> skillsColumn = personSkillGrid.getColumnByKey("skills");
-        headerRow.getCell(skillsColumn).setComponent(skillSearchTextField);
+        headerRow.getCell(skillsColumn).setComponent(new VerticalLayout(skillSearchTextField, tagSelectorFilter));
 
         skillSearchTextField.addValueChangeListener(event -> {
             String filterValue = event.getValue();
@@ -132,7 +155,7 @@ public class PersonWithSkillsView extends VerticalLayout {
             // Can't be an immutable map as we use the 'put' method
             filterMap = new HashMap<>(2);
             filterMap.put(PersonPredicate.personPredicate, Optional.empty());
-            filterMap.put(SkillsPredicate::testStatic, Optional.empty());
+            filterMap.put(SkillsPredicate::testSkillNameOrLevel, Optional.empty());
         }
 
         public void applyFilters() {
@@ -147,11 +170,11 @@ public class PersonWithSkillsView extends VerticalLayout {
         }
 
         public void setSkillsFilter(String filterValue) {
-            filterMap.put(SkillsPredicate::testStatic, Optional.ofNullable(filterValue));
+            filterMap.put(SkillsPredicate::testSkillNameOrLevel, Optional.ofNullable(filterValue));
         }
 
         public void unsetSkillsFilter() {
-            filterMap.put(SkillsPredicate::testStatic, Optional.empty());
+            filterMap.put(SkillsPredicate::testSkillNameOrLevel, Optional.empty());
         }
 
         public void setPersonFilter(String filterValue) {
@@ -162,18 +185,34 @@ public class PersonWithSkillsView extends VerticalLayout {
             filterMap.put(PersonPredicate.personPredicate, Optional.empty());
         }
 
+        public void setTagFilter(List<String> filterValues) {
+            filterMap.put(SkillsPredicate::testSkillTagNames, Optional.of(String.join(";", filterValues)));
+        }
+
         private static final class SkillsPredicate
             implements BiPredicate<PersonWithSkillsDto, String> {
             @Override
             public boolean test(PersonWithSkillsDto person, String filterValue) {
-                return testStatic(person, filterValue);
+                return testSkillNameOrLevel(person, filterValue);
             }
 
-            public static boolean testStatic(PersonWithSkillsDto person, String filterValue) {
+            public static boolean testSkillNameOrLevel(PersonWithSkillsDto person, String filterValue) {
                 return person.getSkills().stream()
                     .map(acquiredSkillDto -> acquiredSkillDto.getSkill().getName()
                         + acquiredSkillDto.getLevel())
                     .anyMatch(skillStr -> StringUtils.containsIgnoreCase(skillStr, filterValue));
+            }
+
+            public static boolean testSkillTagNames(PersonWithSkillsDto person, String joinedValues) {
+                if (joinedValues == null || joinedValues.isBlank()) {
+                    return true;
+                }
+                var filterValues = Arrays.stream(joinedValues.split(";")).collect(Collectors.toSet());
+                var flattenTagNames = person.getSkills().stream()
+                    .flatMap(acquiredSkillDto -> acquiredSkillDto.getSkill().getTags().stream())
+                    .map(SkillTagDto::getName)
+                    .collect(Collectors.toSet());
+                return flattenTagNames.containsAll(filterValues);
             }
         }
 
