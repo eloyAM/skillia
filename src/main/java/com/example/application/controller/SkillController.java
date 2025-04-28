@@ -19,7 +19,7 @@ import static org.springframework.http.ResponseEntity.created;
 
 @Tag(name = "Skill")
 @RestController
-@RequestMapping("/skill")
+@RequestMapping("/api/skill")
 public class SkillController {
     private final SkillService skillService;
 

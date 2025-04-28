@@ -10,7 +10,7 @@ import java.util.List;
 
 @io.swagger.v3.oas.annotations.Hidden   // Hide this controller from Swagger, internal purposes only
 @RestController
-@RequestMapping("/ldap")
+@RequestMapping("/api/ldap")
 public class LdapUserInfoController {
     private final LdapService ldapService;
 

@@ -24,7 +24,7 @@ import static org.springframework.http.ResponseEntity.created;
 
 @Tag(name = "Person skills", description = "API for skills assignments")
 @RestController
-@RequestMapping("/personSkills")
+@RequestMapping("/api/personSkills")
 @Validated
 public class PersonSkillsController {
     private final PersonSkillService personSkillService;

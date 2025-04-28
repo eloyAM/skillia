@@ -57,8 +57,8 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
 //                    PathRequest.toH2Console(),
                     PathRequest.toStaticResources().atCommonLocations(),
                     antMatcher("/api/auth/**"), // Allow login
-                    antMatcher(HttpMethod.GET, "/api" + apiDocsPath),    // api-docs (json)
-                    antMatcher(HttpMethod.GET, "/api" + apiDocsPath + ".yaml") // api-docs.yaml
+                    antMatcher(HttpMethod.GET, apiDocsPath),    // api-docs (json)
+                    antMatcher(HttpMethod.GET, apiDocsPath + ".yaml") // api-docs.yaml
             ).permitAll()   // permitAll() allows both anonymous and authenticated access
                            // anonymous() allows anonymous, but not authenticated access
             ;

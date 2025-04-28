@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 @Tag(name = "Auth", description = "API authentication")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @Validated
 public class AuthController {
     private final AuthenticationManager authenticationManager;

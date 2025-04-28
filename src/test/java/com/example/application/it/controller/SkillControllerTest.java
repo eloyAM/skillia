@@ -1,8 +1,8 @@
 package com.example.application.it.controller;
 
 import com.example.application.dto.SkillDto;
-import com.example.application.it.testutils.CleanDbExtension;
 import com.example.application.it.controller.testutils.ControllerTestUtils;
+import com.example.application.it.testutils.CleanDbExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +45,7 @@ public class SkillControllerTest {
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectHeader().value("Location", v -> assertThat(v).startsWith("/api/skill/"))
                 .expectBody()
                 .jsonPath("$.name").isEqualTo(skillName)
                 .jsonPath("$.id").isNumber()

@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.Arrays;
 
@@ -21,6 +22,7 @@ import java.util.Arrays;
     "com.example.application.security",
     "com.example.application.ldap"
 })
+@EnableWebMvc
 @Theme("skillia")
 @PWA(
         name = "Skillia",
