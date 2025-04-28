@@ -2,6 +2,9 @@ package com.example.application.view;
 
 import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
+import com.example.application.view.internal.PersonGridView;
+import com.example.application.view.internal.PersonSkillGridView;
+import com.example.application.view.internal.SkillGridView;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
@@ -96,7 +99,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     }
 
     private void createDrawer() {
-        addToDrawer(new VerticalLayout(createMenuLink(PersonWithSkillsView.class, "Skills Matrix", VaadinIcon.USERS.create())));
+        addToDrawer(new VerticalLayout(createMenuLink(SkillsMatrixView.class, "Skills Matrix", VaadinIcon.USERS.create())));
 
         Authentication authentication = securityService.getAuthentication();
         var userAuthorities = authentication.getAuthorities();

@@ -1,5 +1,6 @@
-package com.example.application.view;
+package com.example.application.view.exception;
 
+import com.example.application.view.MainLayout;
 import com.example.application.view.components.AccessDenied;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;

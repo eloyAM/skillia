@@ -28,12 +28,12 @@ import static com.example.application.view.SkillsManagementView.createTagMultiSe
 
 @PermitAll
 @Route(layout = MainLayout.class, value = "skillsmatrix")
-public class PersonWithSkillsView extends VerticalLayout {
+public class SkillsMatrixView extends VerticalLayout {
 
     private final PersonSkillService personSkillService;
     private final SkillTagService skillTagService;
 
-    public PersonWithSkillsView(PersonSkillService personSkillService, SkillTagService skillTagService) {
+    public SkillsMatrixView(PersonSkillService personSkillService, SkillTagService skillTagService) {
         this.personSkillService = personSkillService;
         this.skillTagService = skillTagService;
         createUi();

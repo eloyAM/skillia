@@ -1,7 +1,8 @@
-package com.example.application.view;
+package com.example.application.view.internal;
 
 import com.example.application.dto.SkillDto;
 import com.example.application.service.SkillService;
+import com.example.application.view.MainLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
