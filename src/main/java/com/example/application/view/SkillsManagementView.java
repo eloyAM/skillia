@@ -330,16 +330,14 @@ public class SkillsManagementView extends VerticalLayout {
 
         private boolean test(SkillDto skillDto) {
             boolean matchesName = matches(skillDto.getName(), name);
-            boolean containsAllSelectedTags = tags != null
-                && skillDto.getTags() != null
-                && skillDto.getTags().containsAll(tags);
+            boolean containsAllSelectedTags = tags == null
+                || (skillDto.getTags() != null && skillDto.getTags().containsAll(tags));
             return matchesName && containsAllSelectedTags;
         }
 
         private static boolean matches(String value, String searchTerm) {
-            return searchTerm == null
-                || searchTerm.isEmpty()
-                || value.toLowerCase().contains(searchTerm.toLowerCase());
+            return searchTerm == null || searchTerm.isEmpty()
+                || (value != null && value.toLowerCase().contains(searchTerm.toLowerCase()));
         }
     }
 
