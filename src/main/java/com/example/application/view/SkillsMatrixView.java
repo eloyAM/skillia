@@ -1,10 +1,10 @@
 package com.example.application.view;
 
+import com.example.application.dto.PersonDto;
 import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.service.PersonSkillService;
 import com.example.application.service.SkillTagService;
-import com.example.application.utils.Comparators;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
@@ -149,15 +149,15 @@ public class SkillsMatrixView extends VerticalLayout {
     private static TextField createPersonSearchTextField(FilterManager filterManager) {
         TextField personSearchTextField = new TextField();
         personSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        personSearchTextField.setPlaceholder("Search");
-        personSearchTextField.setTooltipText("Find persons by name, job title or department");
+        personSearchTextField.setPlaceholder("Filter by person name");
+        personSearchTextField.setTooltipText("Find persons by name, username or email");
         personSearchTextField.setClearButtonVisible(true);
         personSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
         personSearchTextField.setWidthFull();
         personSearchTextField.setMaxWidth("100%");
         personSearchTextField.addValueChangeListener(event -> {
             String filterValue = event.getValue();
-            filterManager.setPersonFilter(filterValue);
+            filterManager.setPersonContactFilter(filterValue);
             filterManager.applyFilters();
         });
         return personSearchTextField;
@@ -215,7 +215,7 @@ public class SkillsMatrixView extends VerticalLayout {
             this.listDataView = listDataView;
             // Can't be an immutable map as we use the 'put' method
             filterMap = new HashMap<>(5);
-            unsetFilter(PersonPredicate.personPredicate);
+            unsetFilter(PersonPredicate.personContactPredicate);
             unsetFilter(PersonPredicate.departmentListPredicate);
             unsetFilter(PersonPredicate.jobTitleListPredicate);
             unsetFilter(SkillsPredicate::testSkillNameOrLevel);
@@ -241,8 +241,8 @@ public class SkillsMatrixView extends VerticalLayout {
             filterMap.put(SkillsPredicate::testSkillNameOrLevel, Optional.ofNullable(filterValue));
         }
 
-        public void setPersonFilter(String filterValue) {
-            filterMap.put(PersonPredicate.personPredicate, Optional.ofNullable(filterValue));
+        public void setPersonContactFilter(String filterValue) {
+            filterMap.put(PersonPredicate.personContactPredicate, Optional.ofNullable(filterValue));
         }
 
         public void setTagFilter(List<String> filterValues) {
@@ -287,10 +287,17 @@ public class SkillsMatrixView extends VerticalLayout {
         }
 
         private static final class PersonPredicate {
-            public static final BiPredicate<PersonWithSkillsDto, String> personPredicate =
-                (personWithSkillsDto, filterValue) ->
-                    Comparators.personDtoAttributesContains(personWithSkillsDto.getPerson(),
-                        filterValue);
+            public static final BiPredicate<PersonWithSkillsDto, String> personContactPredicate =
+                (personWithSkillsDto, filterValue) -> {
+                    if (filterValue == null || filterValue.isEmpty()) {
+                        return true;
+                    }
+                    // Allow any department from the filter "list"
+                    PersonDto person = personWithSkillsDto.getPerson();
+                    return StringUtils.containsIgnoreCase(person.getFullName(), filterValue)
+                        || StringUtils.containsIgnoreCase(person.getUsername(), filterValue)
+                        || StringUtils.containsIgnoreCase(person.getEmail(), filterValue);
+                };
             public static BiPredicate<PersonWithSkillsDto, String> departmentListPredicate =
                 (personWithSkillsDto, filterValue) -> {
                     if (filterValue == null || filterValue.isEmpty()) {
