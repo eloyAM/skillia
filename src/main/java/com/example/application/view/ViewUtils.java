@@ -1,6 +1,9 @@
 package com.example.application.view;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBoxVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -10,7 +13,9 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @UtilityClass
 public final class ViewUtils {
@@ -55,5 +60,20 @@ public final class ViewUtils {
             e -> filterChangeConsumer.accept(e.getValue())
         );
         return textField;
+    }
+
+    public static <T> MultiSelectComboBox<T> createMultiSelectComboBoxFilter(
+        Supplier<List<T>> itemsSupplier, ItemLabelGenerator<T> itemLabelGenerator, String placeholder
+    ) {
+        MultiSelectComboBox<T> selector = new MultiSelectComboBox<>();
+        selector.setPlaceholder(placeholder);
+        selector.setClearButtonVisible(true);
+        selector.addThemeVariants(MultiSelectComboBoxVariant.LUMO_SMALL);
+        selector.setSelectedItemsOnTop(true);
+        selector.setWidthFull();
+        selector.setMaxWidth("100%");
+        selector.setItemLabelGenerator(itemLabelGenerator);
+        selector.setItems(itemsSupplier.get());
+        return selector;
     }
 }

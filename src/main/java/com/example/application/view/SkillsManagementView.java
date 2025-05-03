@@ -11,7 +11,6 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
-import com.vaadin.flow.component.combobox.MultiSelectComboBoxVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -37,7 +36,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WARNING;
@@ -135,7 +133,8 @@ public class SkillsManagementView extends VerticalLayout {
             })
         );
 
-        tagSelectorFilter = createTagMultiSelectComboBoxFilter(skillTagService::getAllSkillTagInUse);
+        tagSelectorFilter = ViewUtils.createMultiSelectComboBoxFilter(
+            skillTagService::getAllSkillTagInUse, SkillTagDto::getName, "Filter by tags");
         tagSelectorFilter.addValueChangeListener(e -> {
             skillFilter.setTags(tagSelectorFilter.getSelectedItems());
             filterDataProvider.setFilter(skillFilter);
@@ -282,21 +281,6 @@ public class SkillsManagementView extends VerticalLayout {
         tagSelector.setMaxWidth("100%");
         tagSelector.setItemLabelGenerator(SkillTagDto::getName);
         tagSelector.setItems(skillTagService.getAllSkillTag());
-        return tagSelector;
-    }
-
-    public static MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBoxFilter(
-        Supplier<List<SkillTagDto>> itemsSupplier
-    ) {
-        MultiSelectComboBox<SkillTagDto> tagSelector = new MultiSelectComboBox<>();
-        tagSelector.setPlaceholder("Filter by tags");
-        tagSelector.setClearButtonVisible(true);
-        tagSelector.addThemeVariants(MultiSelectComboBoxVariant.LUMO_SMALL);
-        tagSelector.setSelectedItemsOnTop(true);
-        tagSelector.setWidthFull();
-        tagSelector.setMaxWidth("100%");
-        tagSelector.setItemLabelGenerator(SkillTagDto::getName);
-        tagSelector.setItems(itemsSupplier.get());
         return tagSelector;
     }
 

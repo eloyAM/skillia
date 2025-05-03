@@ -5,6 +5,7 @@ import com.example.application.dto.SkillTagDto;
 import com.example.application.service.PersonSkillService;
 import com.example.application.service.SkillTagService;
 import com.example.application.utils.Comparators;
+import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
@@ -22,9 +23,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.function.BiPredicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static com.example.application.view.SkillsManagementView.createTagMultiSelectComboBoxFilter;
 
 @PermitAll
 @Route(layout = MainLayout.class, value = "skillsmatrix")
@@ -61,11 +63,14 @@ public class SkillsMatrixView extends VerticalLayout {
 
         // Create a filter for the person column
         TextField personSearchTextField = createPersonSearchTextField(filterManager);
-        headerRow.getCell(personColumn).setComponent(personSearchTextField);
+        MultiSelectComboBox<String> departmentSelectBoxFilter = createDepartmentSelectBoxFilter(
+            listDataView.getItems(), filterManager);
+        headerRow.getCell(personColumn).setComponent(new VerticalLayout(personSearchTextField, departmentSelectBoxFilter));
 
         // Create a filter for the skill column
         TextField skillSearchTextField = createSkillSearcTextField(filterManager);
-        MultiSelectComboBox<SkillTagDto> tagSelectorFilter = createTagMultiSelectComboBoxFilter(skillTagService::getAllSkillTagInUse);
+        MultiSelectComboBox<SkillTagDto> tagSelectorFilter = ViewUtils.createMultiSelectComboBoxFilter(
+            skillTagService::getAllSkillTagInUse, SkillTagDto::getName, "Filter by tags");
         tagSelectorFilter.addValueChangeListener(e -> {
             var selectedTags = e.getValue();
             List<String> valuesList = selectedTags.stream()
@@ -77,6 +82,25 @@ public class SkillsMatrixView extends VerticalLayout {
         headerRow.getCell(skillsColumn).setComponent(new VerticalLayout(skillSearchTextField, tagSelectorFilter));
 
         add(personSkillGrid);
+    }
+
+    private static MultiSelectComboBox<String> createDepartmentSelectBoxFilter(Stream<PersonWithSkillsDto> items, FilterManager filterManager) {
+        Supplier<List<String>> valueProvider = () -> items
+            .map(personWithSkillsDto -> personWithSkillsDto.getPerson().getDepartment())
+            .distinct()
+            .toList();
+        ItemLabelGenerator<String> itemLabelGenerator = item -> item;
+        var selector = ViewUtils.createMultiSelectComboBoxFilter(
+            valueProvider,
+            itemLabelGenerator,
+            "Filter by department"
+        );
+        selector.addValueChangeListener(e -> {
+            var selectedDepartments = e.getValue();
+            filterManager.setDepartmentListFilter(selectedDepartments);
+            filterManager.applyFilters();
+        });
+        return selector;
     }
 
     private static TextField createSkillSearcTextField(FilterManager filterManager) {
@@ -164,9 +188,11 @@ public class SkillsMatrixView extends VerticalLayout {
         private FilterManager(GridListDataView<PersonWithSkillsDto> listDataView) {
             this.listDataView = listDataView;
             // Can't be an immutable map as we use the 'put' method
-            filterMap = new HashMap<>(2);
-            filterMap.put(PersonPredicate.personPredicate, Optional.empty());
-            filterMap.put(SkillsPredicate::testSkillNameOrLevel, Optional.empty());
+            filterMap = new HashMap<>(4);
+            unsetFilter(PersonPredicate.personPredicate);
+            unsetFilter(PersonPredicate.departmentListPredicate);
+            unsetFilter(SkillsPredicate::testSkillNameOrLevel);
+            unsetFilter(SkillsPredicate::testSkillTagNames);
         }
 
         public void applyFilters() {
@@ -180,24 +206,25 @@ public class SkillsMatrixView extends VerticalLayout {
                     }));
         }
 
-        public void setSkillsFilter(String filterValue) {
-            filterMap.put(SkillsPredicate::testSkillNameOrLevel, Optional.ofNullable(filterValue));
+        public void unsetFilter(BiPredicate<PersonWithSkillsDto, String> predicateFilter) {
+            filterMap.put(predicateFilter, Optional.empty());
         }
 
-        public void unsetSkillsFilter() {
-            filterMap.put(SkillsPredicate::testSkillNameOrLevel, Optional.empty());
+        public void setSkillsFilter(String filterValue) {
+            filterMap.put(SkillsPredicate::testSkillNameOrLevel, Optional.ofNullable(filterValue));
         }
 
         public void setPersonFilter(String filterValue) {
             filterMap.put(PersonPredicate.personPredicate, Optional.ofNullable(filterValue));
         }
 
-        public void unsetPersonFilter() {
-            filterMap.put(PersonPredicate.personPredicate, Optional.empty());
-        }
-
         public void setTagFilter(List<String> filterValues) {
             filterMap.put(SkillsPredicate::testSkillTagNames, Optional.of(String.join(";", filterValues)));
+        }
+
+        public void setDepartmentListFilter(Collection<String> filterValues) {
+            String joinedValues = String.join(";", filterValues);
+            filterMap.put(PersonPredicate.departmentListPredicate, Optional.of(joinedValues));
         }
 
         private static final class SkillsPredicate
@@ -232,6 +259,15 @@ public class SkillsMatrixView extends VerticalLayout {
                 (personWithSkillsDto, filterValue) ->
                     Comparators.personDtoAttributesContains(personWithSkillsDto.getPerson(),
                         filterValue);
+            public static BiPredicate<PersonWithSkillsDto, String> departmentListPredicate =
+                (personWithSkillsDto, filterValue) -> {
+                    if (filterValue == null || filterValue.isEmpty()) {
+                        return true;
+                    }
+                    // Allow any department from the filter "list"
+                    return StringUtils.containsIgnoreCase(filterValue,
+                        personWithSkillsDto.getPerson().getDepartment());
+                };
         }
     }
 }
