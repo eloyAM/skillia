@@ -26,11 +26,9 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.provider.*;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.Setter;
@@ -39,7 +37,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -132,21 +129,18 @@ public class SkillsManagementView extends VerticalLayout {
         HeaderRow headerRow = skillGrid.appendHeaderRow();
 
         headerRow.getCell(nameColumn).setComponent(
-            createFilterTextField("Search by name", str -> {
+            ViewUtils.createFilterTextField("Search by name", str -> {
                 skillFilter.setName(str);
                 filterDataProvider.setFilter(skillFilter);
             })
         );
-        headerRow.getCell(tagsColumn).setComponent(
-            ((Supplier<Component>) () -> {
-                tagSelectorFilter = createTagMultiSelectComboBoxFilter(skillTagService);
-                tagSelectorFilter.addValueChangeListener(e -> {
-                    skillFilter.setTags(tagSelectorFilter.getSelectedItems());
-                    filterDataProvider.setFilter(skillFilter);
-                });
-                return tagSelectorFilter;
-            }).get()
-        );
+
+        tagSelectorFilter = createTagMultiSelectComboBoxFilter(skillTagService::getAllSkillTagInUse);
+        tagSelectorFilter.addValueChangeListener(e -> {
+            skillFilter.setTags(tagSelectorFilter.getSelectedItems());
+            filterDataProvider.setFilter(skillFilter);
+        });
+        headerRow.getCell(tagsColumn).setComponent(tagSelectorFilter);
 
         add(
             createSkillAdderWithDialog(skillGrid),
@@ -291,7 +285,9 @@ public class SkillsManagementView extends VerticalLayout {
         return tagSelector;
     }
 
-    public static MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBoxFilter(SkillTagService skillTagService) {
+    public static MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBoxFilter(
+        Supplier<List<SkillTagDto>> itemsSupplier
+    ) {
         MultiSelectComboBox<SkillTagDto> tagSelector = new MultiSelectComboBox<>();
         tagSelector.setPlaceholder("Filter by tags");
         tagSelector.setClearButtonVisible(true);
@@ -300,27 +296,8 @@ public class SkillsManagementView extends VerticalLayout {
         tagSelector.setWidthFull();
         tagSelector.setMaxWidth("100%");
         tagSelector.setItemLabelGenerator(SkillTagDto::getName);
-        tagSelector.setItems(skillTagService.getAllSkillTagInUse());
+        tagSelector.setItems(itemsSupplier.get());
         return tagSelector;
-    }
-
-    private static Component createFilterTextField(
-        String placeHolderText,
-        Consumer<String> filterChangeConsumer
-    ) {
-        TextField textField = new TextField();
-        textField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        textField.setPlaceholder(placeHolderText);
-        textField.setValueChangeMode(ValueChangeMode.EAGER);
-        textField.setClearButtonVisible(true);
-        textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        textField.setWidthFull();
-        textField.setMaxWidth("100%");
-        textField.setValueChangeTimeout(800);
-        textField.addValueChangeListener(
-            e -> filterChangeConsumer.accept(e.getValue())
-        );
-        return textField;
     }
 
     @Setter

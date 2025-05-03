@@ -42,46 +42,30 @@ public class SkillsMatrixView extends VerticalLayout {
     private void createUi() {
         setSizeFull();
         var personSkillGrid = new Grid<>(PersonWithSkillsDto.class, false);
-        personSkillGrid.addColumn(createPersonRenderer()).setHeader("Person")
+        Grid.Column<PersonWithSkillsDto> personColumn = personSkillGrid.addColumn(createPersonRenderer())
+            .setHeader("Person")
             .setKey("person");
-        personSkillGrid.addColumn(createSkillsRenderer()).setHeader("Skills")
+        Grid.Column<PersonWithSkillsDto> skillsColumn = personSkillGrid.addColumn(createSkillsRenderer())
+            .setHeader("Skills")
             .setKey("skills");
+        HeaderRow headerRow = personSkillGrid.appendHeaderRow();
+        personSkillGrid.getHeaderRows().clear();
 
         List<PersonWithSkillsDto> personSkillAll = personSkillService.getAllPersonSkill();
         personSkillGrid.setItems(personSkillAll);
 
-        personSkillGrid.getHeaderRows().clear();
-
-        TextField personSearchTextField = new TextField();
-        personSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        personSearchTextField.setPlaceholder("Search");
-        personSearchTextField.setTooltipText("Find persons by name, job title or department");
-        personSearchTextField.setClearButtonVisible(true);
-        personSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        personSearchTextField.setWidthFull();
-        personSearchTextField.setMaxWidth("100%");
-        Grid.Column<PersonWithSkillsDto> personColumn = personSkillGrid.getColumnByKey("person");
-        HeaderRow headerRow = personSkillGrid.appendHeaderRow();
-        headerRow.getCell(personColumn).setComponent(personSearchTextField);
-
         GridListDataView<PersonWithSkillsDto> listDataView = personSkillGrid.getListDataView();
+
+        // Filter system for the whole grid
         FilterManager filterManager = new FilterManager(listDataView);
 
-        personSearchTextField.addValueChangeListener(event -> {
-            String filterValue = event.getValue();
-            filterManager.setPersonFilter(filterValue);
-            filterManager.applyFilters();
-        });
+        // Create a filter for the person column
+        TextField personSearchTextField = createPersonSearchTextField(filterManager);
+        headerRow.getCell(personColumn).setComponent(personSearchTextField);
 
-        TextField skillSearchTextField = new TextField();
-        skillSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        skillSearchTextField.setPlaceholder("Search");
-        skillSearchTextField.setTooltipText("Find persons by skill name or level");
-        skillSearchTextField.setClearButtonVisible(true);
-        skillSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        skillSearchTextField.setWidthFull();
-        skillSearchTextField.setMaxWidth("100%");
-        MultiSelectComboBox<SkillTagDto> tagSelectorFilter = createTagMultiSelectComboBoxFilter(skillTagService);
+        // Create a filter for the skill column
+        TextField skillSearchTextField = createSkillSearcTextField(filterManager);
+        MultiSelectComboBox<SkillTagDto> tagSelectorFilter = createTagMultiSelectComboBoxFilter(skillTagService::getAllSkillTagInUse);
         tagSelectorFilter.addValueChangeListener(e -> {
             var selectedTags = e.getValue();
             List<String> valuesList = selectedTags.stream()
@@ -90,16 +74,43 @@ public class SkillsMatrixView extends VerticalLayout {
             filterManager.setTagFilter(valuesList);
             filterManager.applyFilters();
         });
-        Grid.Column<PersonWithSkillsDto> skillsColumn = personSkillGrid.getColumnByKey("skills");
         headerRow.getCell(skillsColumn).setComponent(new VerticalLayout(skillSearchTextField, tagSelectorFilter));
 
+        add(personSkillGrid);
+    }
+
+    private static TextField createSkillSearcTextField(FilterManager filterManager) {
+        TextField skillSearchTextField = new TextField();
+        skillSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
+        skillSearchTextField.setPlaceholder("Search");
+        skillSearchTextField.setTooltipText("Find persons by skill name or level");
+        skillSearchTextField.setClearButtonVisible(true);
+        skillSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        skillSearchTextField.setWidthFull();
+        skillSearchTextField.setMaxWidth("100%");
         skillSearchTextField.addValueChangeListener(event -> {
             String filterValue = event.getValue();
             filterManager.setSkillsFilter(filterValue);
             filterManager.applyFilters();
         });
+        return skillSearchTextField;
+    }
 
-        add(personSkillGrid);
+    private static TextField createPersonSearchTextField(FilterManager filterManager) {
+        TextField personSearchTextField = new TextField();
+        personSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
+        personSearchTextField.setPlaceholder("Search");
+        personSearchTextField.setTooltipText("Find persons by name, job title or department");
+        personSearchTextField.setClearButtonVisible(true);
+        personSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+        personSearchTextField.setWidthFull();
+        personSearchTextField.setMaxWidth("100%");
+        personSearchTextField.addValueChangeListener(event -> {
+            String filterValue = event.getValue();
+            filterManager.setPersonFilter(filterValue);
+            filterManager.applyFilters();
+        });
+        return personSearchTextField;
     }
 
     private static ComponentRenderer<Div, PersonWithSkillsDto> createSkillsRenderer() {

@@ -16,9 +16,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,7 +25,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skilltags")
@@ -58,7 +55,7 @@ public class SkillTagView extends VerticalLayout {
         HeaderRow headerRow = grid.appendHeaderRow();
         SkillTagFilter skillTagFilter = new SkillTagFilter(dataView);
         headerRow.getCell(nameColumn).setComponent(
-            createFilterTextField("Search by name", skillTagFilter::setName)
+            ViewUtils.createFilterTextField("Search by name", skillTagFilter::setName)
         );
         createActionsColumn(grid);
 
@@ -192,25 +189,6 @@ public class SkillTagView extends VerticalLayout {
         return dialog;
     }
 
-    private static Component createFilterTextField(
-        String placeHolderText,
-        Consumer<String> filterChangeConsumer
-    ) {
-        TextField textField = new TextField();
-        textField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        textField.setPlaceholder(placeHolderText);
-        textField.setValueChangeMode(ValueChangeMode.EAGER);
-        textField.setClearButtonVisible(true);
-        textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        textField.setWidthFull();
-        textField.setMaxWidth("100%");
-        textField.addValueChangeListener(
-            e -> filterChangeConsumer.accept(e.getValue())
-        );
-
-        return textField;
-    }
-
 
     private static class SkillTagFilter {
         private final GridListDataView<SkillTagDto> dataView;
@@ -227,15 +205,12 @@ public class SkillTagView extends VerticalLayout {
         }
 
         private boolean test(SkillTagDto skillTagDto) {
-            boolean matchesName = matches(skillTagDto.getName(), name);
-            // boolean matchesX = ...
-            return matchesName; // && matchesX;
+            return matches(skillTagDto.getName(), name);
         }
 
         private static boolean matches(String value, String searchTerm) {
-            return searchTerm == null
-                || searchTerm.isEmpty()
-                || value.toLowerCase().contains(searchTerm.toLowerCase());
+            return searchTerm == null || searchTerm.isEmpty()
+                || (value != null && value.toLowerCase().contains(searchTerm.toLowerCase()));
         }
     }
 }
