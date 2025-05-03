@@ -65,7 +65,10 @@ public class SkillsMatrixView extends VerticalLayout {
         TextField personSearchTextField = createPersonSearchTextField(filterManager);
         MultiSelectComboBox<String> departmentSelectBoxFilter = createDepartmentSelectBoxFilter(
             listDataView.getItems(), filterManager);
-        headerRow.getCell(personColumn).setComponent(new VerticalLayout(personSearchTextField, departmentSelectBoxFilter));
+        MultiSelectComboBox<String> jobTitleSelectBoxFilter = createJobTitleSelectBoxFilter(
+            listDataView.getItems(), filterManager);
+        headerRow.getCell(personColumn).setComponent(new VerticalLayout(
+            personSearchTextField, jobTitleSelectBoxFilter, departmentSelectBoxFilter));
 
         // Create a filter for the skill column
         TextField skillSearchTextField = createSkillSearcTextField(filterManager);
@@ -84,7 +87,9 @@ public class SkillsMatrixView extends VerticalLayout {
         add(personSkillGrid);
     }
 
-    private static MultiSelectComboBox<String> createDepartmentSelectBoxFilter(Stream<PersonWithSkillsDto> items, FilterManager filterManager) {
+    private static MultiSelectComboBox<String> createDepartmentSelectBoxFilter(
+        Stream<PersonWithSkillsDto> items, FilterManager filterManager
+    ) {
         Supplier<List<String>> valueProvider = () -> items
             .map(personWithSkillsDto -> personWithSkillsDto.getPerson().getDepartment())
             .distinct()
@@ -96,8 +101,29 @@ public class SkillsMatrixView extends VerticalLayout {
             "Filter by department"
         );
         selector.addValueChangeListener(e -> {
-            var selectedDepartments = e.getValue();
-            filterManager.setDepartmentListFilter(selectedDepartments);
+            var selectedValues = e.getValue();
+            filterManager.setDepartmentListFilter(selectedValues);
+            filterManager.applyFilters();
+        });
+        return selector;
+    }
+
+    private static MultiSelectComboBox<String> createJobTitleSelectBoxFilter(
+        Stream<PersonWithSkillsDto> items, FilterManager filterManager
+    ) {
+        Supplier<List<String>> valueProvider = () -> items
+            .map(personWithSkillsDto -> personWithSkillsDto.getPerson().getTitle())
+            .distinct()
+            .toList();
+        ItemLabelGenerator<String> itemLabelGenerator = item -> item;
+        var selector = ViewUtils.createMultiSelectComboBoxFilter(
+            valueProvider,
+            itemLabelGenerator,
+            "Filter by job title"
+        );
+        selector.addValueChangeListener(e -> {
+            var selectedValues = e.getValue();
+            filterManager.setJobTitleListFilter(selectedValues);
             filterManager.applyFilters();
         });
         return selector;
@@ -188,9 +214,10 @@ public class SkillsMatrixView extends VerticalLayout {
         private FilterManager(GridListDataView<PersonWithSkillsDto> listDataView) {
             this.listDataView = listDataView;
             // Can't be an immutable map as we use the 'put' method
-            filterMap = new HashMap<>(4);
+            filterMap = new HashMap<>(5);
             unsetFilter(PersonPredicate.personPredicate);
             unsetFilter(PersonPredicate.departmentListPredicate);
+            unsetFilter(PersonPredicate.jobTitleListPredicate);
             unsetFilter(SkillsPredicate::testSkillNameOrLevel);
             unsetFilter(SkillsPredicate::testSkillTagNames);
         }
@@ -225,6 +252,11 @@ public class SkillsMatrixView extends VerticalLayout {
         public void setDepartmentListFilter(Collection<String> filterValues) {
             String joinedValues = String.join(";", filterValues);
             filterMap.put(PersonPredicate.departmentListPredicate, Optional.of(joinedValues));
+        }
+
+        public void setJobTitleListFilter(Collection<String> filterValues) {
+            String joinedValues = String.join(";", filterValues);
+            filterMap.put(PersonPredicate.jobTitleListPredicate, Optional.of(joinedValues));
         }
 
         private static final class SkillsPredicate
@@ -267,6 +299,15 @@ public class SkillsMatrixView extends VerticalLayout {
                     // Allow any department from the filter "list"
                     return StringUtils.containsIgnoreCase(filterValue,
                         personWithSkillsDto.getPerson().getDepartment());
+                };
+            public static BiPredicate<PersonWithSkillsDto, String> jobTitleListPredicate =
+                (personWithSkillsDto, filterValue) -> {
+                    if (filterValue == null || filterValue.isEmpty()) {
+                        return true;
+                    }
+                    // Allow any job title from the filter "list"
+                    return StringUtils.containsIgnoreCase(filterValue,
+                        personWithSkillsDto.getPerson().getTitle());
                 };
         }
     }
