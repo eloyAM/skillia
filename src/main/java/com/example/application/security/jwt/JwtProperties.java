@@ -1,4 +1,4 @@
-package com.example.application.security;
+package com.example.application.security.jwt;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

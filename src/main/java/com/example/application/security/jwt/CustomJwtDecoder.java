@@ -1,4 +1,4 @@
-package com.example.application.security;
+package com.example.application.security.jwt;
 
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;

@@ -1,5 +1,6 @@
 package com.example.application.security;
 
+import com.example.application.security.jwt.CustomJwtEncoder;
 import com.nimbusds.jose.JOSEException;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import org.springframework.security.authentication.AuthenticationManager;

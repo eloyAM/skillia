@@ -1,6 +1,7 @@
 package com.example.application.security;
 
 import com.example.application.ldap.LdapProperties;
+import com.example.application.security.jwt.JwtProperties;
 import com.example.application.view.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import jakarta.servlet.http.HttpServletRequest;

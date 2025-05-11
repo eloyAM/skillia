@@ -1,4 +1,4 @@
-package com.example.application.security;
+package com.example.application.security.jwt;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.example.application.security.JwtAuthenticationProviderConfig.ROLES_CLAIM;
-import static com.example.application.security.JwtAuthenticationProviderConfig.ROLE_AUTHORITY_PREFIX;
+import static com.example.application.security.jwt.JwtAuthenticationProviderConfig.ROLES_CLAIM;
+import static com.example.application.security.jwt.JwtAuthenticationProviderConfig.ROLE_AUTHORITY_PREFIX;
 
 @Component
 public class CustomJwtEncoder {

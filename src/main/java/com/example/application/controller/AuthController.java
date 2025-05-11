@@ -1,7 +1,7 @@
 package com.example.application.controller;
 
 import com.example.application.dto.UsrPwdDto;
-import com.example.application.security.CustomJwtEncoder;
+import com.example.application.security.jwt.CustomJwtEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;
