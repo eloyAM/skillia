@@ -24,7 +24,7 @@ public class SkillTag {
     private Long id;
 
     @Nonnull
-    @Column(name = "name", unique = true, nullable = false)
+    @Column(name = "name", unique = true, nullable = false, length = 70)
     private String name;
 
     @Override

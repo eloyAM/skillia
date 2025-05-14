@@ -21,7 +21,7 @@ class SkillTagServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Diego", "Ramón", "Жанна", "«ταБЬℓσ»:", "1<2 & 4+1>3,", "now 20% off!", "٩(-̮̮̃-̃)۶", "ਈ",
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     })
     void saveSkillTag(String name) {
         SkillTagDto originalDto = new SkillTagDto(null, name);

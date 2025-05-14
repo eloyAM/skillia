@@ -34,7 +34,7 @@ public class Skill {
 
     @NonNull
     @NotBlank
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, length = 70)
     private String name;    // TODO use as PK?
 
     @OneToMany(mappedBy = "skill")
