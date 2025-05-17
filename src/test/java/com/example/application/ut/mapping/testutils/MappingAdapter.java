@@ -108,4 +108,39 @@ public final class MappingAdapter implements IDtoEntityMapper {
     public SkillTag toSkillTag(SkillTagDto skillTagDto) {
         return DtoEntityMapping.mapSkillTagDtoToSkillTagEntity(skillTagDto);
     }
+
+    @Override
+    public Department toEntity(DepartmentDto departmentDto) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public DepartmentDto toDto(Department department) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public Department partialUpdate(DepartmentDto departmentDto, Department department) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public Skill partialUpdate(SkillDto skillDto, Skill skill) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public SkillGroup toEntity(SkillGroupDto skillGroupDto) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public SkillGroupDto toDto(SkillGroup skillGroup) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public SkillGroup partialUpdate(SkillGroupDto skillGroupDto, SkillGroup skillGroup) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
 }

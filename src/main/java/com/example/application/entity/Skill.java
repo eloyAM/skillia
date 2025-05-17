@@ -35,7 +35,7 @@ public class Skill {
     @NonNull
     @NotBlank
     @Column(name = "name", nullable = false, unique = true, length = 70)
-    private String name;    // TODO use as PK?
+    private String name;
 
     @OneToMany(mappedBy = "skill")
     private Collection<PersonSkill> personSkills;

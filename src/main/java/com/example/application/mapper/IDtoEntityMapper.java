@@ -2,17 +2,14 @@ package com.example.application.mapper;
 
 import com.example.application.dto.*;
 import com.example.application.entity.*;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {IDtoEntityMapper.class})
 public interface IDtoEntityMapper {
     // Person
 
@@ -104,4 +101,25 @@ public interface IDtoEntityMapper {
     SkillTagDto toSkillTagDto(SkillTag skillTag);
 
     SkillTag toSkillTag(SkillTagDto skillTagDto);
+
+    // Department
+
+    Department toEntity(DepartmentDto departmentDto);
+
+    DepartmentDto toDto(Department department);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Department partialUpdate(DepartmentDto departmentDto, @MappingTarget Department department);
+
+    // SkillGroup
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Skill partialUpdate(SkillDto skillDto, @MappingTarget Skill skill);
+
+    SkillGroup toEntity(SkillGroupDto skillGroupDto);
+
+    SkillGroupDto toDto(SkillGroup skillGroup);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    SkillGroup partialUpdate(SkillGroupDto skillGroupDto, @MappingTarget SkillGroup skillGroup);
 }

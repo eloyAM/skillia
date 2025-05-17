@@ -1,12 +1,7 @@
 package com.example.application.ut.mapping;
 
-import com.example.application.dto.AcquiredSkillDto;
-import com.example.application.dto.PersonWithSkillsDto;
-import com.example.application.dto.SkillTagDto;
-import com.example.application.entity.Person;
-import com.example.application.entity.PersonSkill;
-import com.example.application.entity.Skill;
-import com.example.application.entity.SkillTag;
+import com.example.application.dto.*;
+import com.example.application.entity.*;
 import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.ut.mapping.testutils.MappingAdapter;
 import org.assertj.core.api.ThrowableAssert;
@@ -20,17 +15,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class IDtoEntityMapperTest {
 
+    private static final IDtoEntityMapper mapstructMapper = Mappers.getMapper(IDtoEntityMapper.class);
+
     static Stream<IDtoEntityMapper> mappers() {
         return Stream.of(
-            Mappers.getMapper(IDtoEntityMapper.class),
+            mapstructMapper,
             MappingAdapter.getInstance()
         );
+    }
+
+    static Stream<IDtoEntityMapper> mapstructMapper() {
+        return Stream.of(mapstructMapper);
     }
 
     //
@@ -216,6 +216,139 @@ class IDtoEntityMapperTest {
         List<PersonWithSkillsDto> result = mapper.toListPersonWithSkillsDto(input);
         // Then
         assertNull(result);
+    }
+
+    @ParameterizedTest
+    @MethodSource("mapstructMapper")
+    void testSkillGroupEntityToDto(IDtoEntityMapper mapper) {
+        // Arrange
+        Skill skill1 = new Skill();
+        skill1.setId(1L);
+        skill1.setName("Skill A");
+        Skill skill2 = new Skill();
+        skill2.setId(2L);
+        skill2.setName("Skill B");
+
+        SkillGroup skillGroup = new SkillGroup();
+        skillGroup.setId(10L);
+        skillGroup.setName("Some group");
+        skillGroup.setDescription("Some description");
+        skillGroup.setSkills(List.of(skill1, skill2));
+
+        // Act
+        SkillGroupDto skillGroupDto = mapper.toDto(skillGroup);
+
+        // Assert
+        assertNotNull(skillGroupDto);
+        assertEquals(skillGroup.getId(), skillGroupDto.getId());
+        assertEquals(skillGroup.getName(), skillGroupDto.getName());
+        assertEquals(skillGroup.getDescription(), skillGroupDto.getDescription());
+        assertThat(skillGroupDto.getSkills()).hasSize(2)
+            .extracting(SkillDto::getId, SkillDto::getName)
+            .containsExactlyInAnyOrder(
+                tuple(skill1.getId(), skill1.getName()),
+                tuple(skill2.getId(), skill2.getName())
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("mapstructMapper")
+    void testSkillGroupDtoToEntity(IDtoEntityMapper mapper) {
+        // Arrange
+        SkillDto skillDto1 = new SkillDto();
+        skillDto1.setId(1L);
+        skillDto1.setName("Skill A");
+        SkillDto skillDto2 = new SkillDto();
+        skillDto2.setId(2L);
+        skillDto2.setName("Skill B");
+
+        SkillGroupDto skillGroupDto = new SkillGroupDto();
+        skillGroupDto.setId(10L);
+        skillGroupDto.setName("Some group");
+        skillGroupDto.setDescription("Some description");
+        skillGroupDto.setSkills(List.of(skillDto1, skillDto2));
+
+        // Act
+        SkillGroup skillGroup = mapper.toEntity(skillGroupDto);
+
+        // Assert
+        assertNotNull(skillGroup);
+        assertEquals(skillGroupDto.getId(), skillGroup.getId());
+        assertEquals(skillGroupDto.getName(), skillGroup.getName());
+        assertEquals(skillGroupDto.getDescription(), skillGroup.getDescription());
+        assertThat(skillGroup.getSkills()).hasSize(2)
+            .extracting(Skill::getId, Skill::getName)
+            .containsExactlyInAnyOrder(
+                tuple(skillDto1.getId(), skillDto1.getName()),
+                tuple(skillDto2.getId(), skillDto2.getName())
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("mapstructMapper")
+    void testDepartmentEntityToDto(IDtoEntityMapper mapper) {
+        // Arrange
+        SkillGroup skillGroup1 = new SkillGroup();
+        skillGroup1.setId(1L);
+        skillGroup1.setName("Skill Group A");
+        skillGroup1.setDescription("Description A");
+        SkillGroup skillGroup2 = new SkillGroup();
+        skillGroup2.setId(2L);
+        skillGroup2.setName("Skill Group B");
+        skillGroup2.setDescription("Description B");
+
+        Department department = new Department();
+        department.setId(10L);
+        department.setName("Department Name");
+        department.setSkillGroups(List.of(skillGroup1, skillGroup2));
+
+        // Act
+        DepartmentDto departmentDto = mapper.toDto(department);
+
+        // Assert
+        assertNotNull(departmentDto);
+        assertEquals(department.getId(), departmentDto.getId());
+        assertEquals(department.getName(), departmentDto.getName());
+        assertNotNull(departmentDto.getSkillGroups());
+        assertThat(departmentDto.getSkillGroups()).hasSize(2)
+            .extracting(SkillGroupDto::getId, SkillGroupDto::getName)
+            .containsExactlyInAnyOrder(
+                tuple(skillGroup1.getId(), skillGroup1.getName()),
+                tuple(skillGroup2.getId(), skillGroup2.getName())
+            );
+    }
+
+    @ParameterizedTest
+    @MethodSource("mapstructMapper")
+    void testDepartmentDtoToEntity(IDtoEntityMapper mapper) {
+        // Arrange
+        SkillGroupDto skillGroupDto1 = new SkillGroupDto();
+        skillGroupDto1.setId(1L);
+        skillGroupDto1.setName("Skill Group A");
+        skillGroupDto1.setDescription("Description A");
+        SkillGroupDto skillGroupDto2 = new SkillGroupDto();
+        skillGroupDto2.setId(2L);
+        skillGroupDto2.setName("Skill Group B");
+        skillGroupDto2.setDescription("Description B");
+
+        DepartmentDto departmentDto = new DepartmentDto();
+        departmentDto.setId(10L);
+        departmentDto.setName("Department Name");
+        departmentDto.setSkillGroups(List.of(skillGroupDto1, skillGroupDto2));
+
+        // Act
+        Department department = mapper.toEntity(departmentDto);
+
+        // Assert
+        assertNotNull(department);
+        assertEquals(departmentDto.getId(), department.getId());
+        assertEquals(departmentDto.getName(), department.getName());
+        assertThat(department.getSkillGroups()).hasSize(2)
+            .extracting(SkillGroup::getId, SkillGroup::getName)
+            .containsExactlyInAnyOrder(
+                tuple(skillGroupDto1.getId(), skillGroupDto1.getName()),
+                tuple(skillGroupDto2.getId(), skillGroupDto2.getName())
+            );
     }
 
     //
