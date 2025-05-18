@@ -43,6 +43,15 @@ public final class ViewUtils {
         return notification;
     }
 
+    @NonNull
+    static Notification notificationTopCenter(Component component, NotificationVariant variant) {
+        Notification notification = new Notification(component);
+        notification.setDuration(5000);
+        notification.setPosition(Notification.Position.TOP_CENTER);
+        notification.addThemeVariants(variant);
+        return notification;
+    }
+
     public static Component createFilterTextField(
         String placeHolderText,
         Consumer<String> filterChangeConsumer

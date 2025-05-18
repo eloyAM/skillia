@@ -3,7 +3,9 @@ package com.example.application.view;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.security.SecConstants;
 import com.example.application.service.SkillTagService;
+import com.example.application.utils.ValidationConstraints;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -12,19 +14,22 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WARNING;
 
 @RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skilltags")
@@ -55,7 +60,7 @@ public class SkillTagView extends VerticalLayout {
         HeaderRow headerRow = grid.appendHeaderRow();
         SkillTagFilter skillTagFilter = new SkillTagFilter(dataView);
         headerRow.getCell(nameColumn).setComponent(
-            ViewUtils.createFilterTextField("Search by name", skillTagFilter::setName)
+            ViewUtils.createFilterTextField("Search", skillTagFilter::setName)
         );
         createActionsColumn(grid);
 
@@ -70,27 +75,32 @@ public class SkillTagView extends VerticalLayout {
         dialog.setHeaderTitle("Create tag");
         TextField nameField = new TextField("Tag name");
         nameField.setRequired(true);
-        Binder<SkillTagDto> nameBinder = new Binder<>(SkillTagDto.class);
-        nameBinder.forField(nameField)
-                .asRequired()
+        nameField.setMaxLength(ValidationConstraints.SkillTag.NAME_MAX_LENGTH);
+        Binder<SkillTagDto> binder = new Binder<>(SkillTagDto.class);
+        binder.forField(nameField)
+                .asRequired("Name is required")
                 .bind(SkillTagDto::getName, SkillTagDto::setName);
-        FormLayout formLayout = new FormLayout(nameField);
-        dialog.add(formLayout);
+        dialog.add(new FormLayout(nameField));
 
         Button createButton = new Button("Create", e -> {
-            String text = nameField.getValue();
-            if (StringUtils.isBlank(text) || StringUtils.length(text) > 50) {
+            SkillTagDto inputSkillTag = new SkillTagDto();
+            try {
+                binder.writeBean(inputSkillTag);
+            } catch (ValidationException ex) {
+                ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
-            Optional<SkillTagDto> newItem = skillTagService.saveSkillTag(
-                    new SkillTagDto().setName(text)
-            );
+            Optional<SkillTagDto> newItem = skillTagService.saveSkillTag(inputSkillTag);
             if (newItem.isPresent()) {
                 listDataView.addItem(newItem.get());
             } else {
-                ViewUtils.notificationTopCenter("The tag already exists", true).open();
+                ViewUtils.notificationTopCenter(new Div(
+                    new Div("Unable to create the tag"),
+                    new Div(" \"" + inputSkillTag.getName() + "\" "),
+                    new Div("It may already exist")
+                ), LUMO_WARNING).open();
             }
-            nameField.clear();
+            binder.getFields().forEach(HasValue::clear);
             dialog.close();
         });
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -158,28 +168,36 @@ public class SkillTagView extends VerticalLayout {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle("Edit tag \"" + selectedItem.getName() + "\"");
         TextField nameTextField = new TextField("Tag name");
-        nameTextField.setValue(selectedItem.getName());
-        Binder<SkillTagDto> sillBinder = new Binder<>(SkillTagDto.class);
-        sillBinder.forField(nameTextField)
+        Binder<SkillTagDto> binder = new Binder<>(SkillTagDto.class);
+        binder.forField(nameTextField)
                 .asRequired()
                 .bind(SkillTagDto::getName, SkillTagDto::setName);
-        FormLayout formLayout = new FormLayout(nameTextField);
-        dialog.add(formLayout);
+        binder.readBean(selectedItem);
+        dialog.add(new FormLayout(nameTextField));
 
         Button saveButton = new Button("Save", e -> {
-            String newName = nameTextField.getValue();
-            if (StringUtils.isBlank(newName) || StringUtils.length(newName) > 50) {
+            SkillTagDto inputSkillTag = new SkillTagDto();
+            try {
+                binder.writeBean(inputSkillTag);
+            } catch (ValidationException ex) {
+                ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
             Optional<SkillTagDto> updatedSkill = skillTagService.updateSkillTag(
-                    newName, selectedItem.getId()
+                inputSkillTag.getName(), selectedItem.getId()
             );
             if (updatedSkill.isPresent()) {
-                selectedItem.setName(newName);
+                selectedItem.setName(inputSkillTag.getName());
                 // TODO IMPROVEMENT (FIX) not updating the name in the grid with `refreshItem` which would be better than `refreshAll`
                 grid.getDataProvider().refreshAll();
-                nameTextField.clear();
+                binder.getFields().forEach(HasValue::clear);
                 dialog.close();
+            } else {
+                ViewUtils.notificationTopCenter(new Div(
+                    new Div("Unable to update the tag"),
+                    new Div(" \"" + inputSkillTag.getName() + "\" "),
+                    new Div("It may already exist")
+                ), LUMO_WARNING).open();
             }
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

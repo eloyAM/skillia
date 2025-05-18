@@ -5,6 +5,7 @@ import com.example.application.dto.SkillTagDto;
 import com.example.application.security.SecConstants;
 import com.example.application.service.SkillService;
 import com.example.application.service.SkillTagService;
+import com.example.application.utils.ValidationConstraints;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
@@ -20,7 +21,6 @@ import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -28,6 +28,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.provider.*;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.Setter;
@@ -42,6 +43,7 @@ import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WA
 
 @RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skillsmanagement")
+@PageTitle("Skills")
 public class SkillsManagementView extends VerticalLayout {
 
     public static final String GRID_NAME_COLUMN_NAME = "name";
@@ -127,14 +129,14 @@ public class SkillsManagementView extends VerticalLayout {
         HeaderRow headerRow = skillGrid.appendHeaderRow();
 
         headerRow.getCell(nameColumn).setComponent(
-            ViewUtils.createFilterTextField("Search by name", str -> {
+            ViewUtils.createFilterTextField("Search", str -> {
                 skillFilter.setName(str);
                 filterDataProvider.setFilter(skillFilter);
             })
         );
 
         tagSelectorFilter = ViewUtils.createMultiSelectComboBoxFilter(
-            skillTagService::getAllSkillTagInUse, SkillTagDto::getName, "Filter by tags");
+            skillTagService::getAllSkillTagInUse, SkillTagDto::getName, "Filter");
         tagSelectorFilter.addValueChangeListener(e -> {
             skillFilter.setTags(tagSelectorFilter.getSelectedItems());
             filterDataProvider.setFilter(skillFilter);
@@ -172,14 +174,11 @@ public class SkillsManagementView extends VerticalLayout {
                 refreshTagSelectorItems();
                 ViewUtils.notificationTopCenter("Skill \"" + skillName + "\" created", true).open();
             } else {
-                Notification notification = ViewUtils.notificationTopCenter("", LUMO_WARNING);
-                notification.removeAll();
-                notification.add(new Div(
+                ViewUtils.notificationTopCenter(new Div(
                     new Div("Unable to create the skill"),
                     new Div(" \"" + skillName + "\" "),
                     new Div("It may already exist")
-                ));
-                notification.open();
+                ), LUMO_WARNING).open();
             }
             skillBinder.getFields().forEach(HasValue::clear);
             dialog.close();
@@ -238,12 +237,13 @@ public class SkillsManagementView extends VerticalLayout {
 
     private FormLayout createSkillFormWithBinder(Binder<SkillDto> skillBinder) {
         TextField skillNameTextField = new TextField("Skill name");
+        skillNameTextField.setMaxLength(ValidationConstraints.Skill.NAME_MAX_LENGTH);
         skillNameTextField.setRequired(true);
         MultiSelectComboBox<SkillTagDto> tagMultiSelectComboBox = createTagMultiSelectComboBox();
         tagMultiSelectComboBox.setRequired(false);
 
         skillBinder.forField(skillNameTextField)
-            .asRequired()
+            .asRequired("Name is required")
             .bind(SkillDto::getName, SkillDto::setName);
         skillBinder.forField(tagMultiSelectComboBox)
             .bind(SkillDto::getTags, SkillDto::setTags);
