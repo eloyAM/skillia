@@ -21,13 +21,16 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.function.ValueProvider;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RolesAllowed("HR")
 @Route(layout = MainLayout.class, value = "skillgroups")
@@ -36,59 +39,85 @@ public class SkillGroupsView extends VerticalLayout {
     private final SkillGroupService skillGroupService;
     private final SkillService skillService;
 
-    private final Grid<SkillGroupDto> groupGrid;
-
     public SkillGroupsView(
         SkillGroupService skillGroupService,
         SkillService skillService
     ) {
         this.skillGroupService = skillGroupService;
         this.skillService = skillService;
-        this.groupGrid = createGrid();
+        createUi();
+    }
 
+    private void createUi() {
         setSizeFull();
-        add(createAddGroupButton(), groupGrid);
+        Grid<SkillGroupDto> grid = createGrid();
+        add(createAddGroupButton(grid), grid);
     }
 
     private Grid<SkillGroupDto> createGrid() {
         Grid<SkillGroupDto> grid = new Grid<>(SkillGroupDto.class, false);
-        Grid.Column<SkillGroupDto> nameColumn = grid.addColumn(SkillGroupDto::getName).setHeader("Name")
-            .setSortable(true)
-            .setFrozen(true);
-        grid.addColumn(SkillGroupDto::getDescription).setHeader("Description");
-        grid.addColumn(group -> group.getSkills().stream().map(SkillDto::getName)
-                .reduce((a, b) -> a + ", " + b)
-                .orElse(""))
-            .setHeader("Skills");
-        grid.addComponentColumn(group -> {
-            // Edit button
-            Button editButton = new Button(VaadinIcon.EDIT.create(), e -> openAddOrEditGroupDialog(group));
-            editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            // Delete button
-            Button deleteButton = new Button(VaadinIcon.TRASH.create(), e -> openDeleteGroupDialog(group, grid));
-            deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-            return new Div(editButton, deleteButton);
-        }).setHeader("Actions");
 
-        GridListDataView<SkillGroupDto> listDataView = grid.setItems(this.skillGroupService.getAllGroups());
+        Grid.Column<SkillGroupDto> nameColumn = grid.addColumn(SkillGroupDto::getName)
+            .setHeader("Name")
+            .setKey("name")
+            .setSortable(true);
 
-        SkillGroupFilter skillGroupFilter = new SkillGroupFilter(listDataView);
+        List<SkillGroupDto> items = skillGroupService.getAllGroups();
+        // If the item collection is not mutable, we'll have troubles adding data dynamically
+        ArrayList<SkillGroupDto> fixedItems = new ArrayList<>(items);
+        GridListDataView<SkillGroupDto> dataView = grid.setItems(fixedItems);
+
         HeaderRow headerRow = grid.appendHeaderRow();
+        SkillGroupFilter skillGroupFilter = new SkillGroupFilter(dataView);
         headerRow.getCell(nameColumn).setComponent(
             ViewUtils.createFilterTextField("Search", skillGroupFilter::setName)
         );
 
-        grid.setSizeFull();
+        grid.addColumn(SkillGroupDto::getDescription)
+            .setHeader("Description")
+            .setKey("description");
+
+        ValueProvider<SkillGroupDto, Object> skillsColumnValueProvider = group -> group.getSkills().stream()
+            .map(SkillDto::getName)
+            .collect(Collectors.joining(", "));
+        grid.addColumn(skillsColumnValueProvider)
+            .setHeader("Skills")
+            .setKey("skills");
+
+        createActionsColumn(grid);
         return grid;
     }
 
-    private Button createAddGroupButton() {
-        Button addGroupButton = new Button("Add Group", VaadinIcon.PLUS.create(), e -> openAddOrEditGroupDialog(null));
+    private void createActionsColumn(Grid<SkillGroupDto> grid) {
+        grid.addComponentColumn(group -> {
+                // Edit
+                Button editButton = new Button(VaadinIcon.EDIT.create(),
+                    e -> openAddOrEditGroupDialog(group, grid)
+                );
+                editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                // Delete
+                Button deleteButton = new Button(VaadinIcon.TRASH.create(),
+                    e -> openDeleteGroupDialog(group, grid)
+                );
+                deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+                // Result component
+                return new Div(editButton, deleteButton);
+            })
+            .setHeader("Actions")
+            .setKey("actions")
+            .setAutoWidth(true)
+            .setFlexGrow(0);
+    }
+
+    private Button createAddGroupButton(Grid<SkillGroupDto> grid) {
+        Button addGroupButton = new Button("Add Group", VaadinIcon.PLUS.create(), e -> openAddOrEditGroupDialog(null, grid));
         addGroupButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         return addGroupButton;
     }
 
-    private void openAddOrEditGroupDialog(@Nullable SkillGroupDto selectedItem) {
+    private void openAddOrEditGroupDialog(@Nullable SkillGroupDto selectedItem, Grid<SkillGroupDto> grid) {
+        boolean isCreationMode = selectedItem == null;
+
         FormLayout formLayout = new FormLayout();
         Binder<SkillGroupDto> binder = new Binder<>(SkillGroupDto.class);
         // Form fields
@@ -134,7 +163,12 @@ public class SkillGroupsView extends VerticalLayout {
             Optional<SkillGroupDto> savedGroup = skillGroupService.saveGroup(inputItem);
             if (savedGroup.isPresent()) {
                 ViewUtils.notificationTopCenter("Group saved successfully", true).open();
-                groupGrid.setItems(skillGroupService.getAllGroups());
+                // Refresh the grid after adding/modifying a record
+                if (isCreationMode) {
+                    grid.getListDataView().addItem(savedGroup.get());
+                }
+                grid.getListDataView().refreshAll();
+                // Close the dialog
                 dialog.close();
             } else {
                 ViewUtils.notificationTopCenter("Failed to save the group", false).open();
@@ -169,6 +203,8 @@ public class SkillGroupsView extends VerticalLayout {
         confirmDialog.open();
     }
 
+    // Grid filter
+
     private static class SkillGroupFilter {
         private final GridListDataView<SkillGroupDto> dataView;
         private String name;
@@ -193,9 +229,3 @@ public class SkillGroupsView extends VerticalLayout {
         }
     }
 }
-
-/*
-//        TextField searchField = new TextField("Search");
-//        searchField.setClearButtonVisible(true);
-//        searchField.addValueChangeListener(e -> listDataView.refreshAll());
- */
