@@ -108,6 +108,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
             addToDrawer(new VerticalLayout(createMenuLink(SkillsAssignmentView.class, "Skills Assignment", VaadinIcon.PLUS_CIRCLE_O.create())));
             addToDrawer(new VerticalLayout(createMenuLink(SkillsManagementView.class, "Skills Management", VaadinIcon.MODAL_LIST.create())));
             addToDrawer(new VerticalLayout(createMenuLink(SkillTagView.class, "Skill tags Management", VaadinIcon.TAG.create())));
+            addToDrawer(new VerticalLayout(createMenuLink(SkillGroupsView.class, "Skill groups Management", VaadinIcon.FOLDER_OPEN.create())));
         }
     }
 
