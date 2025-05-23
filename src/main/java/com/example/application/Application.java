@@ -6,11 +6,7 @@ import com.vaadin.flow.theme.Theme;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import java.util.Arrays;
 
 /**
  * The entry point of the Spring Boot application.
@@ -33,12 +29,7 @@ import java.util.Arrays;
 public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
-        ConfigurableApplicationContext applicationContext = SpringApplication.run(Application.class, args);
-//        displayAllBeans(applicationContext);
+        SpringApplication.run(Application.class, args);
     }
 
-    private static void displayAllBeans(ApplicationContext applicationContext) {
-        String[] allBeanNames = applicationContext.getBeanDefinitionNames();
-        System.out.println(Arrays.toString(allBeanNames));
-    }
 }

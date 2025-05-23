@@ -8,3 +8,8 @@ a[highlight] {
     font-weight: bold;
     text-decoration: underline;
 }
+
+div.skill-level-indicator-with-label {
+    /*padding-bottom: var(--lumo-space-m);*/
+    padding-bottom: 0.75rem;
+}

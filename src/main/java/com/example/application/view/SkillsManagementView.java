@@ -9,6 +9,7 @@ import com.example.application.utils.ValidationConstraints;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -185,6 +186,7 @@ public class SkillsManagementView extends VerticalLayout {
         });
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         createButton.addClassName("create-skill-submit-button");
+        createButton.addClickShortcut(Key.ENTER);
         Button cancelButton = new Button("Cancel", e -> dialog.close());
         cancelButton.addClassName("create-skill-cancel-button");
         dialog.getFooter().add(cancelButton, createButton);
@@ -228,6 +230,7 @@ public class SkillsManagementView extends VerticalLayout {
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         saveButton.addClassName("edit-skill-save-button");
+        saveButton.addClickShortcut(Key.ENTER);
         Button cancelButton = new Button("Cancel", e -> dialog.close());
         cancelButton.addClassName("edit-skill-cancel-button");
         dialog.getFooter().add(cancelButton, saveButton);

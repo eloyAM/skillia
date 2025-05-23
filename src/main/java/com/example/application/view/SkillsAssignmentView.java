@@ -13,6 +13,7 @@ import com.example.application.view.components.SkillAndPeopleWithLevelGrid;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.ComboBoxBase;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
@@ -22,6 +23,7 @@ import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 
@@ -33,6 +35,7 @@ import static com.example.application.view.ViewUtils.notificationTopCenter;
 
 @RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skillsassignment")
+@PageTitle("Assign")
 public class SkillsAssignmentView extends TabSheet {
 
     private final SkillService skillService;
@@ -182,36 +185,32 @@ public class SkillsAssignmentView extends TabSheet {
         skillComboBox.setRequired(true);
         skillComboBox.setWidthFull();
         skillComboBox.setItemLabelGenerator(SkillDto::getName);
+
         List<SkillDto> allSkill = skillService.getAllSkill();
         skillComboBox.setItems(allSkill);
         return skillComboBox;
     }
 
     private MultiSelectComboBox<PersonDto> createPersonMultiSelectComboBox() {
-        MultiSelectComboBox<PersonDto> personMultiSelectComboBox =
-            new MultiSelectComboBox<>("People");
-        personMultiSelectComboBox.setRequired(true);
-        personMultiSelectComboBox.setWidthFull();
-        // The item label generator decides how the selected items are displayed in the input field
-        // If no renderer is set, the item label generator is also used to display dropdown elements
-        personMultiSelectComboBox.setItemLabelGenerator(personDtoItemLabelGenerator);
-        personMultiSelectComboBox.setRenderer(personComboBoxRenderer);
-
-        List<PersonDto> allPerson = personService.findAllPerson();
-        personMultiSelectComboBox.setItems(Comparators::personDtoAttributesContains, allPerson);
-        return personMultiSelectComboBox;
+        MultiSelectComboBox<PersonDto> selector = new MultiSelectComboBox<>("People");
+        configurePersonComboBox(selector);
+        return selector;
     }
 
     private ComboBox<PersonDto> createPersonComboBox() {
-        ComboBox<PersonDto> personComboBox = new ComboBox<>("Person");
-        personComboBox.setRequired(true);
-        personComboBox.setWidthFull();
-        personComboBox.setItemLabelGenerator(personDtoItemLabelGenerator);
-        personComboBox.setRenderer(personComboBoxRenderer);
+        ComboBox<PersonDto> selector = new ComboBox<>("Person");
+        configurePersonComboBox(selector);
+        return selector;
+    }
+
+    private void configurePersonComboBox(ComboBoxBase<?, PersonDto, ?> selector) {
+        selector.setRequired(true);
+        selector.setWidthFull();
+        selector.setItemLabelGenerator(personDtoItemLabelGenerator);
+        selector.setRenderer(personComboBoxRenderer);
 
         List<PersonDto> allPerson = personService.findAllPerson();
-        personComboBox.setItems(Comparators::personDtoAttributesContains, allPerson);
-        return personComboBox;
+        selector.setItems(Comparators::personDtoAttributesContains, allPerson);
     }
 
     private static final ItemLabelGenerator<PersonDto> personDtoItemLabelGenerator = person ->
@@ -236,8 +235,7 @@ public class SkillsAssignmentView extends TabSheet {
     private static final Renderer<PersonDto> personComboBoxRenderer = new ComponentRenderer<>(
         person -> {
             Span fullName = new Span(person.getFullName());
-            Div details = new Div();
-            details.setText(MessageFormat.format("({0} - {1} - {2})",
+            Div details = new Div(MessageFormat.format("({0} - {1} - {2})",
                 person.getUsername(), person.getTitle(), person.getDepartment()
             ));
             details.getStyle()

@@ -5,18 +5,17 @@ import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.service.PersonSkillService;
 import com.example.application.service.SkillTagService;
+import com.example.application.utils.Validators;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +29,7 @@ import java.util.stream.Stream;
 
 @PermitAll
 @Route(layout = MainLayout.class, value = "skillsmatrix")
+@PageTitle("Skills matrix")
 public class SkillsMatrixView extends VerticalLayout {
 
     private final PersonSkillService personSkillService;
@@ -47,7 +47,8 @@ public class SkillsMatrixView extends VerticalLayout {
         Grid.Column<PersonWithSkillsDto> personColumn = personSkillGrid.addColumn(createPersonRenderer())
             .setHeader("Person")
             .setKey("person");
-        Grid.Column<PersonWithSkillsDto> skillsColumn = personSkillGrid.addColumn(createSkillsRenderer())
+        Grid.Column<PersonWithSkillsDto> skillsColumn = personSkillGrid.addColumn(
+                ViewUtils.skillLevelIndicatorRendererForPersonWithSkills())
             .setHeader("Skills")
             .setKey("skills");
         HeaderRow headerRow = personSkillGrid.appendHeaderRow();
@@ -130,74 +131,37 @@ public class SkillsMatrixView extends VerticalLayout {
     }
 
     private static TextField createSkillSearcTextField(FilterManager filterManager) {
-        TextField skillSearchTextField = new TextField();
-        skillSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        skillSearchTextField.setPlaceholder("Search");
-        skillSearchTextField.setTooltipText("Find persons by skill name or level");
-        skillSearchTextField.setClearButtonVisible(true);
-        skillSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        skillSearchTextField.setWidthFull();
-        skillSearchTextField.setMaxWidth("100%");
-        skillSearchTextField.addValueChangeListener(event -> {
-            String filterValue = event.getValue();
+        TextField skillSearchTextField = ViewUtils.createFilterTextField("Search", filterValue -> {
             filterManager.setSkillsFilter(filterValue);
             filterManager.applyFilters();
         });
+        skillSearchTextField.setTooltipText("Find persons by skill name or level");
         return skillSearchTextField;
     }
 
     private static TextField createPersonSearchTextField(FilterManager filterManager) {
-        TextField personSearchTextField = new TextField();
-        personSearchTextField.setPrefixComponent(VaadinIcon.SEARCH.create());
-        personSearchTextField.setPlaceholder("Filter by person name");
-        personSearchTextField.setTooltipText("Find persons by name, username or email");
-        personSearchTextField.setClearButtonVisible(true);
-        personSearchTextField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
-        personSearchTextField.setWidthFull();
-        personSearchTextField.setMaxWidth("100%");
-        personSearchTextField.addValueChangeListener(event -> {
-            String filterValue = event.getValue();
+        TextField personSearchTextField = ViewUtils.createFilterTextField("Filter by person name", filterValue -> {
             filterManager.setPersonContactFilter(filterValue);
             filterManager.applyFilters();
         });
+        personSearchTextField.setTooltipText("Find persons by name, username or email");
         return personSearchTextField;
-    }
-
-    private static ComponentRenderer<Div, PersonWithSkillsDto> createSkillsRenderer() {
-        return new ComponentRenderer<>(personWithSkillsDto -> {
-            var mainDiv = new Div();
-            for (var skill : personWithSkillsDto.getSkills()) {
-                var skillDiv = new Div();
-                skillDiv.setText(skill.getSkill().getName());
-                String levelIndicatorSvgPath = ViewUtils.getLevelIndicatorSvgPath(skill.getLevel());
-                Div levelIndicatorDiv = new Div();
-                Image levelIndicatorSvg =
-                    new Image(levelIndicatorSvgPath, "level " + skill.getLevel());
-                levelIndicatorDiv.add(levelIndicatorSvg);
-                levelIndicatorDiv.getStyle().set("padding-bottom", "var(--lumo-space-s");
-                skillDiv.add(levelIndicatorDiv);
-                mainDiv.add(skillDiv);
-            }
-            return mainDiv;
-        });
     }
 
     private static ComponentRenderer<Div, PersonWithSkillsDto> createPersonRenderer() {
         return new ComponentRenderer<>(personWithSkillsDto -> {
             var person = personWithSkillsDto.getPerson();
 
-            var fullNameDiv = new Div();
-            fullNameDiv.setText(person.getFullName());
+            var fullNameDiv = new Div(Validators.isNullOrEmpty(person.getFullName())
+                ? person.getUsername() : person.getFullName());
             fullNameDiv.getStyle().set("font-weight", "bold");
 
-            var personTitleDiv = new Div();
-            personTitleDiv.setText(person.getTitle());
+            var personTitleDiv = new Div(person.getTitle());
             personTitleDiv.getStyle()
                 .set("font-size", "var(--lumo-font-size-s)")
                 .set("font-style", "italic");
 
-            var deparmentDiv = new Div();
-            deparmentDiv.setText(person.getDepartment());
+            var deparmentDiv = new Div(person.getDepartment());
             deparmentDiv.getStyle()
                 .set("font-size", "var(--lumo-font-size-s)")
                 .set("font-style", "italic");

@@ -1,14 +1,21 @@
 package com.example.application.view;
 
+import com.example.application.dto.PersonWithSkillsDto;
+import com.example.application.dto.SkillAndPeopleWithLevel;
+import com.example.application.utils.Validators;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ItemLabelGenerator;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBoxVariant;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,7 +59,7 @@ public final class ViewUtils {
         return notification;
     }
 
-    public static Component createFilterTextField(
+    public static TextField createFilterTextField(
         String placeHolderText,
         Consumer<String> filterChangeConsumer
     ) {
@@ -84,5 +91,41 @@ public final class ViewUtils {
         selector.setItemLabelGenerator(itemLabelGenerator);
         selector.setItems(itemsSupplier.get());
         return selector;
+    }
+
+
+    private static Div createSkillLevelIndicator(String label, Integer skillLevel) {
+        Div levelIndicatorComponent = new Div(
+            new Div(new Text(label)),
+            new Div(new Image(getLevelIndicatorSvgPath(skillLevel), "level " + skillLevel))
+        );
+        levelIndicatorComponent.addClassName("skill-level-indicator-with-label");
+        return levelIndicatorComponent;
+    }
+
+    public static ComponentRenderer<? extends Component, PersonWithSkillsDto> skillLevelIndicatorRendererForPersonWithSkills() {
+        return new ComponentRenderer<>(personWithSkills -> {
+            var componentsHolder = new Div();
+            for (var personSkill : personWithSkills.getSkills()) {
+                String label = personSkill.getSkill().getName();
+                Integer skillLevel = personSkill.getLevel();
+                componentsHolder.add(createSkillLevelIndicator(label, skillLevel));
+            }
+            return componentsHolder;
+        });
+    }
+
+    public static ComponentRenderer<Div, SkillAndPeopleWithLevel> skillLevelIndicatorRendererForSkillAndPeopleWithLevel() {
+        return new ComponentRenderer<>(skillAndPeopleWithLevel -> {
+            var componentsHolder = new Div();
+            for (var personAndLevel : skillAndPeopleWithLevel.getPeopleWithLevel()) {
+                var person = personAndLevel.getPerson();
+                Integer skillLevel = personAndLevel.getLevel();
+                String label = Validators.isNullOrEmpty(person.getFullName())
+                    ? person.getUsername() : person.getFullName();
+                componentsHolder.add(createSkillLevelIndicator(label, skillLevel));
+            }
+            return componentsHolder;
+        });
     }
 }

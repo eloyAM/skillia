@@ -6,6 +6,7 @@ import com.example.application.service.SkillTagService;
 import com.example.application.utils.ValidationConstraints;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
@@ -104,6 +105,7 @@ public class SkillTagView extends VerticalLayout {
             dialog.close();
         });
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        createButton.addClickShortcut(Key.ENTER);
         Button cancelButton = new Button("Cancel",
                 e -> dialog.close()
         );
@@ -201,6 +203,7 @@ public class SkillTagView extends VerticalLayout {
             }
         });
         saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        saveButton.addClickShortcut(Key.ENTER);
         Button cancelButton = new Button("Cancel", e -> dialog.close());
         dialog.getFooter().add(cancelButton, saveButton);
 
