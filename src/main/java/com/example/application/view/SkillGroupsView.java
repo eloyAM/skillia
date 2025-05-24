@@ -5,6 +5,7 @@ import com.example.application.dto.SkillGroupDto;
 import com.example.application.service.SkillGroupService;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
+import com.example.application.utils.Validators;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -12,16 +13,18 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.function.ValueProvider;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.RolesAllowed;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -30,10 +33,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RolesAllowed("HR")
 @Route(layout = MainLayout.class, value = "skillgroups")
+@PageTitle("Skill groups")
 public class SkillGroupsView extends VerticalLayout {
 
     private final SkillGroupService skillGroupService;
@@ -56,8 +59,17 @@ public class SkillGroupsView extends VerticalLayout {
 
     private Grid<SkillGroupDto> createGrid() {
         Grid<SkillGroupDto> grid = new Grid<>(SkillGroupDto.class, false);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
-        Grid.Column<SkillGroupDto> nameColumn = grid.addColumn(SkillGroupDto::getName)
+        Grid.Column<SkillGroupDto> nameColumn = grid.addComponentColumn(group -> {
+                var nameDiv = new Div(group.getName());
+                nameDiv.getStyle().set("font-weight", "bold");
+                var descriptionDiv = new Div(group.getDescription());
+                descriptionDiv.getStyle()
+                    .set("font-size", "var(--lumo-font-size-s)")
+                    .set("font-style", "italic");
+                return new VerticalLayout(nameDiv, descriptionDiv);
+            })
             .setHeader("Name")
             .setKey("name")
             .setSortable(true);
@@ -70,19 +82,23 @@ public class SkillGroupsView extends VerticalLayout {
         HeaderRow headerRow = grid.appendHeaderRow();
         SkillGroupFilter skillGroupFilter = new SkillGroupFilter(dataView);
         headerRow.getCell(nameColumn).setComponent(
-            ViewUtils.createFilterTextField("Search", skillGroupFilter::setName)
+            ViewUtils.createFilterTextField("Search", skillGroupFilter::setGroupName)
         );
 
-        grid.addColumn(SkillGroupDto::getDescription)
-            .setHeader("Description")
-            .setKey("description");
-
-        ValueProvider<SkillGroupDto, Object> skillsColumnValueProvider = group -> group.getSkills().stream()
-            .map(SkillDto::getName)
-            .collect(Collectors.joining(", "));
-        grid.addColumn(skillsColumnValueProvider)
+        Grid.Column<SkillGroupDto> skillsColumn = grid.addComponentColumn(group -> {
+                var result = new VerticalLayout();
+                group.getSkills().stream()
+                    .map(SkillDto::getName)
+                    .map(Span::new)
+                    .forEach(result::add);
+                return result;
+            })
             .setHeader("Skills")
             .setKey("skills");
+        headerRow.getCell(skillsColumn).setComponent(
+            ViewUtils.createFilterTextField("Search", skillGroupFilter::setSkillName)
+        );
+
 
         createActionsColumn(grid);
         return grid;
@@ -207,25 +223,38 @@ public class SkillGroupsView extends VerticalLayout {
 
     private static class SkillGroupFilter {
         private final GridListDataView<SkillGroupDto> dataView;
-        private String name;
+        private String groupName;
+        private String skillName;
 
         public SkillGroupFilter(GridListDataView<SkillGroupDto> dataView) {
             this.dataView = dataView;
             this.dataView.addFilter(this::test);
         }
 
-        public void setName(String name) {
-            this.name = name;
+        public void setGroupName(String groupName) {
+            this.groupName = groupName;
             dataView.refreshAll();
         }
 
-        private boolean test(SkillGroupDto skillTagDto) {
-            return matches(skillTagDto.getName(), name);
+        public void setSkillName(String skillName) {
+            this.skillName = skillName;
+            dataView.refreshAll();
+        }
+
+        private boolean test(SkillGroupDto group) {
+            return matches(group.getName(), groupName)
+                && matchesGroupSkills(group);
+        }
+
+        private boolean matchesGroupSkills(SkillGroupDto group) {
+            return Validators.isNullOrEmpty(skillName)
+                || group.getSkills().stream().anyMatch(skill -> matches(skill.getName(), skillName));
         }
 
         private static boolean matches(String value, String searchTerm) {
-            return searchTerm == null || searchTerm.isEmpty()
+            return Validators.isNullOrEmpty(searchTerm)
                 || (value != null && value.toLowerCase().contains(searchTerm.toLowerCase()));
         }
+
     }
 }

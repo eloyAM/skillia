@@ -2,34 +2,41 @@ package com.example.application.utils;
 
 import com.example.application.dto.PersonDto;
 import com.example.application.dto.SkillDto;
+import com.example.application.dto.SkillGroupDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.entity.PersonSkill;
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.PersonService;
+import com.example.application.service.SkillGroupService;
 import com.example.application.service.SkillService;
 import com.example.application.service.SkillTagService;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+// TODO add SkillGroup and Department data
 public class DbInit {
 
     private final PersonService personService;
     private final SkillService skillService;
     private final PersonSkillRepo personSkillRepo;
     private final SkillTagService skillTagService;
+    private final SkillGroupService skillGroupService;
 
     public DbInit(
         PersonService personService,
         SkillService skillService,
         PersonSkillRepo personSkillRepo,
-        SkillTagService skillTagService
+        SkillTagService skillTagService,
+        SkillGroupService skillGroupService
     ) {
         this.personService = personService;
         this.skillService = skillService;
         this.personSkillRepo = personSkillRepo;
         this.skillTagService = skillTagService;
+        this.skillGroupService = skillGroupService;
     }
 
     public void run() {
@@ -54,6 +61,8 @@ public class DbInit {
             new PersonSkill(thirdPerson.getUsername(), firstSkill.getId(), 1)
         );
         personSkillRepo.saveAll(personSkills);
+
+        createSkillGroups(skills);
     }
 
     private List<SkillDto> createSkills(Set<SkillTagDto> skillTags) {
@@ -121,6 +130,32 @@ public class DbInit {
                 .orElseThrow()
             )
             .collect(Collectors.toSet());
+    }
+
+    private List<SkillGroupDto> createSkillGroups(List<SkillDto> skills) {
+        return Stream.of(
+                SkillGroupDto.builder().name("Some empty group").build(),
+                SkillGroupDto.builder().name("Empty group with description")
+                    .description("This is some useful description which will help you know what is this for")
+                    .build(),
+                SkillGroupDto.builder().name("Not empty group with desc")
+                    .description("Lorem ipsum dolor sit amet ")
+                    .skills(getShuffleCopy(skills).stream().limit(5).toList())
+                    .build(),
+                SkillGroupDto.builder().name("Not empty group without desc")
+                    .description("Lorem ipsum dolor sit amet ")
+                    .skills(getShuffleCopy(skills).stream().limit(10).toList())
+                    .build()
+            )
+            .map(skillGroupService::saveGroup)
+            .map(Optional::orElseThrow)
+            .toList();
+    }
+
+    private static <R> Collection<R> getShuffleCopy(Collection<R> source) {
+        var copy = new ArrayList<>(source);
+        Collections.shuffle(copy);
+        return copy;
     }
 
 

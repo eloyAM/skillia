@@ -2,6 +2,7 @@ package com.example.application;
 
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.PersonService;
+import com.example.application.service.SkillGroupService;
 import com.example.application.service.SkillService;
 import com.example.application.service.SkillTagService;
 import com.example.application.utils.DbInit;
@@ -23,9 +24,10 @@ public class DbInitAppRunner implements ApplicationRunner {
             PersonService personService,
             SkillService skillService,
             PersonSkillRepo personSkillRepo,
-            SkillTagService skillTagService
+            SkillTagService skillTagService,
+            SkillGroupService skillGroupService
     ) {
-        this.dbInitializer = new DbInit(personService, skillService, personSkillRepo, skillTagService);
+        this.dbInitializer = new DbInit(personService, skillService, personSkillRepo, skillTagService, skillGroupService);
     }
 
     @Override
