@@ -88,6 +88,7 @@ public class SkillsManagementView extends VerticalLayout {
                 .map(SkillTagDto::getName)
                 .map(name -> {
                     Span span = new Span(name);
+                    span.setTitle(name);    // Tooltip
                     span.getElement().getThemeList().add("badge contrast pill");
                     return span;
                 })

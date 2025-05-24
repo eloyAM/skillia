@@ -6,6 +6,8 @@ import com.example.application.service.SkillGroupService;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.utils.Validators;
+import com.vaadin.componentfactory.Popup;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -19,6 +21,7 @@ import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -63,12 +66,19 @@ public class SkillGroupsView extends VerticalLayout {
 
         Grid.Column<SkillGroupDto> nameColumn = grid.addComponentColumn(group -> {
                 var nameDiv = new Div(group.getName());
-                nameDiv.getStyle().set("font-weight", "bold");
+                nameDiv.setTitle(nameDiv.getText());
+                nameDiv.getStyle()
+                    .set("font-size", "var(--lumo-font-size-m)")
+                    .set("font-weight", "600")
+                    .set("color", "var(--lumo-header-text-color)");
                 var descriptionDiv = new Div(group.getDescription());
                 descriptionDiv.getStyle()
                     .set("font-size", "var(--lumo-font-size-s)")
-                    .set("font-style", "italic");
-                return new VerticalLayout(nameDiv, descriptionDiv);
+                    .set("color", "var(--lumo-secondary-text-color)");
+                var result = new VerticalLayout(nameDiv, descriptionDiv);
+                result.setSpacing(false);
+                result.getThemeList().add("spacing-xs");
+                return result;
             })
             .setHeader("Name")
             .setKey("name")
@@ -82,16 +92,28 @@ public class SkillGroupsView extends VerticalLayout {
         HeaderRow headerRow = grid.appendHeaderRow();
         SkillGroupFilter skillGroupFilter = new SkillGroupFilter(dataView);
         headerRow.getCell(nameColumn).setComponent(
-            ViewUtils.createFilterTextField("Search", skillGroupFilter::setGroupName)
+            ViewUtils.createFilterTextField("Search", skillGroupFilter::setGroupNameOrDescription)
         );
 
         Grid.Column<SkillGroupDto> skillsColumn = grid.addComponentColumn(group -> {
-                var result = new VerticalLayout();
-                group.getSkills().stream()
+                FlexLayout tagsContainer = group.getSkills().stream()
                     .map(SkillDto::getName)
-                    .map(Span::new)
-                    .forEach(result::add);
-                return result;
+                    .map(name -> {
+                        Span span = new Span(name);
+                        span.setTitle(name);    // Tooltip
+                        span.getElement().getThemeList().add("badge contrast pill");
+                        Popup popup = new Popup();
+                        popup.setTarget(span.getElement());
+                        popup.setHeaderTitle(name);
+                        return new Span(span, popup);
+                    })
+                    .collect(FlexLayout::new, HasComponents::add, HasComponents::add);
+                tagsContainer.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+                tagsContainer.getStyle()
+                    .set("gap", "var(--lumo-space-s)")
+                    .set("padding-top", "var(--lumo-space-s)")
+                    .set("padding-bottom", "var(--lumo-space-s)");
+                return tagsContainer;
             })
             .setHeader("Skills")
             .setKey("skills");
@@ -223,17 +245,12 @@ public class SkillGroupsView extends VerticalLayout {
 
     private static class SkillGroupFilter {
         private final GridListDataView<SkillGroupDto> dataView;
-        private String groupName;
         private String skillName;
+        private String groupNameOrDescription;
 
         public SkillGroupFilter(GridListDataView<SkillGroupDto> dataView) {
             this.dataView = dataView;
             this.dataView.addFilter(this::test);
-        }
-
-        public void setGroupName(String groupName) {
-            this.groupName = groupName;
-            dataView.refreshAll();
         }
 
         public void setSkillName(String skillName) {
@@ -241,9 +258,15 @@ public class SkillGroupsView extends VerticalLayout {
             dataView.refreshAll();
         }
 
+        public void setGroupNameOrDescription(String searchTerm) {
+            this.groupNameOrDescription = searchTerm;
+            dataView.refreshAll();
+        }
+
         private boolean test(SkillGroupDto group) {
-            return matches(group.getName(), groupName)
-                && matchesGroupSkills(group);
+            return (matches(group.getName(), groupNameOrDescription)
+                || matches(group.getDescription(), groupNameOrDescription)
+            ) && matchesGroupSkills(group);
         }
 
         private boolean matchesGroupSkills(SkillGroupDto group) {

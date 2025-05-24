@@ -154,18 +154,16 @@ public class SkillsMatrixView extends VerticalLayout {
 
             var fullNameDiv = new Div(Validators.isNullOrEmpty(person.getFullName())
                 ? person.getUsername() : person.getFullName());
-            fullNameDiv.getStyle().set("font-weight", "bold");
+            fullNameDiv.getStyle()
+                .set("font-size", "var(--lumo-font-size-m)")
+                .set("font-weight", "600")
+                .set("color", "var(--lumo-header-text-color)");
 
-            var personTitleDiv = new Div(person.getTitle());
-            personTitleDiv.getStyle()
+            var details = new Div(new Div(person.getTitle()), new Div(person.getDepartment()));
+            details.getStyle()
                 .set("font-size", "var(--lumo-font-size-s)")
-                .set("font-style", "italic");
-
-            var deparmentDiv = new Div(person.getDepartment());
-            deparmentDiv.getStyle()
-                .set("font-size", "var(--lumo-font-size-s)")
-                .set("font-style", "italic");
-            return new Div(fullNameDiv, personTitleDiv, deparmentDiv);
+                .set("color", "var(--lumo-secondary-text-color)");
+            return new Div(fullNameDiv, details);
         });
     }
 
