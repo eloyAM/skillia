@@ -99,16 +99,17 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     }
 
     private void createDrawer() {
-        addToDrawer(new VerticalLayout(createMenuLink(SkillsMatrixView.class, "Skills Matrix", VaadinIcon.USERS.create())));
+        addToDrawer(new VerticalLayout(createMenuLink(SkillsMatrixView.class, "Skills Matrix", VaadinIcon.TABLE.create())));
 
         Authentication authentication = securityService.getAuthentication();
         var userAuthorities = authentication.getAuthorities();
         SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
         if (userAuthorities.contains(rhAuthority)) {
-            addToDrawer(new VerticalLayout(createMenuLink(SkillsAssignmentView.class, "Skills Assignment", VaadinIcon.PLUS_CIRCLE_O.create())));
-            addToDrawer(new VerticalLayout(createMenuLink(SkillsManagementView.class, "Skills Management", VaadinIcon.MODAL_LIST.create())));
+            addToDrawer(new VerticalLayout(createMenuLink(SkillsAssignmentView.class, "Skills Assignment", VaadinIcon.STAR_HALF_LEFT_O.create())));
+            addToDrawer(new VerticalLayout(createMenuLink(SkillsManagementView.class, "Skills Management", VaadinIcon.RECORDS.create())));
             addToDrawer(new VerticalLayout(createMenuLink(SkillTagView.class, "Skill tags Management", VaadinIcon.TAG.create())));
             addToDrawer(new VerticalLayout(createMenuLink(SkillGroupsView.class, "Skill groups Management", VaadinIcon.FOLDER_OPEN.create())));
+            addToDrawer(new VerticalLayout(createMenuLink(DepartmentsView.class, "Departments", VaadinIcon.WORKPLACE.create())));
         }
     }
 

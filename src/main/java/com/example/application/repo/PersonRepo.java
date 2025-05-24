@@ -20,4 +20,7 @@ public interface PersonRepo extends JpaRepository<Person, String> {
         + "p.username, p.fullName, p.email, p.title, p.department)"
         + " from Person p")
     List<PersonDto> findBy(Pageable pageable);
+
+    @Query("select distinct p.department from Person p order by p.department asc")
+    List<String> findDistinctDepartments();
 }
