@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PersonRepo extends JpaRepository<Person, String> {
@@ -23,4 +24,6 @@ public interface PersonRepo extends JpaRepository<Person, String> {
 
     @Query("select distinct p.department from Person p order by p.department asc")
     List<String> findDistinctDepartments();
+
+    Optional<Person> findByUsername(String username);
 }

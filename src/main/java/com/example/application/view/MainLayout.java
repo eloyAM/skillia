@@ -2,7 +2,6 @@ package com.example.application.view;
 
 import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
-import com.example.application.service.UserProfileView;
 import com.example.application.view.internal.PersonGridView;
 import com.example.application.view.internal.PersonSkillGridView;
 import com.example.application.view.internal.SkillGridView;
