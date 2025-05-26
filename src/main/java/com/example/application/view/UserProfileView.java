@@ -7,8 +7,16 @@ import com.example.application.security.SecurityService;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.*;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H4;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
@@ -20,8 +28,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-
-import static com.example.application.view.ViewUtils.getLevelIndicatorSvgPath;
 
 @PermitAll
 @Route(layout = MainLayout.class, value = "/profile/:username")
@@ -64,11 +70,11 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         setSizeFull();
         PersonDto person = personService.findPersonByUsername(routeUsername);
 
-        add(new H3("Profile information"));
+        add(new H4("Profile information"));
         add(createUserDetailsSection(person));
 
 
-        add(new H3("Skills"));
+        add(new H4("Skills"));
         List<AcquiredSkillDto> acquiredSkills = personSkillService.findAllAcquiredSkillByPersonId(person.getUsername());
         add(createSkillsGrid(acquiredSkills));
     }
@@ -113,29 +119,76 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         return userCard;
     }
 
-    private static Component createSkillsGrid(List<AcquiredSkillDto> acquiredSkills) {
+    private static Grid<AcquiredSkillDto> createSkillsGrid(List<AcquiredSkillDto> acquiredSkills) {
         // Create skills grid
-        var skillsGrid = new Grid<>(AcquiredSkillDto.class, false);
-        skillsGrid.setWidthFull();
+        var grid = new Grid<>(AcquiredSkillDto.class, false);
+        grid.setWidthFull();
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        grid.setItems(acquiredSkills);
 
         // Configure grid columns
-        skillsGrid.addColumn(v -> v.getSkill().getName())
+        grid.addColumn(v -> v.getSkill().getName())
             .setHeader("Skill")
-            .setFlexGrow(2)
+            .setFlexGrow(1)
             .setSortable(true);
 
-        skillsGrid.addComponentColumn(v ->
-                new Image(getLevelIndicatorSvgPath(v.getLevel()), "level " + v.getLevel())
-            )
+        grid.addComponentColumn(v -> {
+                Div container = new Div(createSkillLevelSelector(v.getLevel()));
+                container.getStyle().setPaddingTop("var(--lumo-space-s)");
+                container.getStyle().setPaddingBottom("var(--lumo-space-s)");
+                return container;
+            })
             .setHeader("Level")
-            .setFlexGrow(1)
+            .setAutoWidth(true)
+            .setFlexGrow(2)
             .setSortable(true)
             .setComparator(AcquiredSkillDto::getLevel);
 
-        // Add sample data to the grid
-        skillsGrid.setItems(acquiredSkills);
+        return grid;
+    }
 
-        return skillsGrid;
+    private static Component createSkillLevelSelector(Integer currentLevel) {
+        MenuBar menuBar = new MenuBar();
+        menuBar.addClassName("skill-level-selector");
+        menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
+
+        // Create menu items for levels 1-5
+        List<Integer> levels = PersonSkillService.getLevels();
+        int firstLevel = levels.get(0);
+        int higherLevel = levels.get(levels.size() - 1);
+        for (Integer level : levels) {
+            String levelWithLabel = "%s - %s".formatted(level, PersonSkillService.getLevelName(level));
+            String text = String.valueOf(level);    // Compact format - show only the number, not the level label
+            MenuItem menuItem = menuBar.addItem(text, levelWithLabel);
+
+            // Add click listener to handle selection
+            menuItem.addClickListener(e -> {
+                // TODO
+                Notification.show("Hi from level " + e.getSource().getText());
+            });
+
+            // Add CSS classes for styling
+            menuItem.addClassName("level-item");
+            if (level == firstLevel) {
+                menuItem.addClassName("first-level");
+            } else if (level == higherLevel) {
+                menuItem.addClassName("last-level");
+            }
+
+            if (level.equals(currentLevel)) {
+                menuItem.addThemeNames(
+                    MenuBarVariant.LUMO_ICON.getVariantName(),
+                    MenuBarVariant.LUMO_PRIMARY.getVariantName()
+                );
+                menuItem.addClassName("current-level");
+            }
+        }
+
+        // TODO set current level
+
+        // TODO add button to reset level
+
+        return menuBar;
     }
 
     private boolean isMyProfileOrPermittedRole(String requestedUsername) {
