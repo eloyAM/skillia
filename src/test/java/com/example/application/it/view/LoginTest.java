@@ -27,8 +27,8 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LoginTest {
     private static final Logger logger = LoggerFactory.getLogger(LoginTest.class);
+    private static final String MAIN_USERNAME = "hugo.reyes";
     private WebDriver driver;
-    private final String baseUrl;
     private final String loginUrl;
     private final String homeUrl;
 
@@ -37,7 +37,7 @@ public class LoginTest {
             @Value("${local.server.port}") int localServerPort
     ) {
         assertThat(localServerPort).isNotZero();
-        this.baseUrl = "http://localhost:" + localServerPort;
+        String baseUrl = "http://localhost:" + localServerPort;
         this.loginUrl = baseUrl + "/login";
         this.homeUrl = baseUrl + "/";
         logger.info("Using baseUrl '{}'", baseUrl);
@@ -83,7 +83,7 @@ public class LoginTest {
 
         // Fill the login form and submit
         usernameInputField.click();
-        usernameInputField.sendKeys("hugo.reyes");
+        usernameInputField.sendKeys(MAIN_USERNAME);
         passwordInputField.click();
         passwordInputField.sendKeys("1234");
         submitButton.click();
@@ -152,6 +152,27 @@ public class LoginTest {
                 .filteredOn(c -> c.getName().equals(LoginUtility.JWT_HEADER_AND_PAYLOAD_COOKIE_NAME)
                         || c.getName().equals(LoginUtility.JWT_SIGNATURE_COOKIE_NAME))
                 .isEmpty();
+    }
+
+    @Test
+    void canNavigateToUserProfile() {
+        LoginUtility.doLogin(driver, loginUrl);
+        getAndWaitUntilTitleIs(homeUrl, "Skillia");
+
+        // Click the profile button to make the profile navigation available
+        driver.findElement(By.cssSelector(".app-header #app-profile-element vaadin-menu-bar-button"))
+            .click();
+
+        // Click the profile/user profile button
+        WebElement profileButton = driver.findElement(By.id("app-my-profile-button"));
+        profileButton.click();
+
+        // Wait for navigation to complete
+        new WebDriverWait(driver, ofSeconds(5), ofSeconds(1))
+            .withMessage("Expecting to get redirected to the profile view")
+            .until(driver -> driver.getCurrentUrl().contains("/profile"));
+
+        assertThat(driver.getCurrentUrl()).contains("/profile/" + MAIN_USERNAME);
     }
 
 

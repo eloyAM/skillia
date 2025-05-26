@@ -52,10 +52,12 @@ public class DepartmentsView extends VerticalLayout {
             .setKey("name")
             .setSortable(true);
 
-        Grid.Column<DepartmentDto> skillGroupsColumn = grid.addComponentColumn(department -> department.getSkillGroups().stream()
-                .map(SkillGroupDto::getName)
-                .map(Div::new)
-                .collect(VerticalLayout::new, HasComponents::add, HasComponents::add))
+        Grid.Column<DepartmentDto> skillGroupsColumn = grid.addComponentColumn(department ->
+                department.getSkillGroups().stream()
+                    .map(SkillGroupDto::getName)
+                    .map(Div::new)
+                    .collect(VerticalLayout::new, HasComponents::add, HasComponents::add)
+            )
             .setHeader("Skill groups")
             .setKey("skill-groups");
 

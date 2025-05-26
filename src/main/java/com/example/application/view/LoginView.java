@@ -93,7 +93,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
                 new UnorderedList(
                         new ListItem("Password: 1234"),
                         new ListItem("Fully-granted users: hugo.reyes, raquel.huerta"),
-                        new ListItem("Regular users: andrea.riquelme, paz.vidal, jacob.smith, ...")
+                        new ListItem("Normal users: andrea.riquelme, paz.vidal, jacob.smith, ...")
                 )
         );
     }

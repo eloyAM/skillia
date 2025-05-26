@@ -2,17 +2,17 @@ package com.example.application.view;
 
 import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
+import com.example.application.service.UserProfileView;
 import com.example.application.view.internal.PersonGridView;
 import com.example.application.view.internal.PersonSkillGridView;
 import com.example.application.view.internal.SkillGridView;
-import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -29,6 +29,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.RouteParam;
 import com.vaadin.flow.router.RouterLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -41,9 +42,12 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private final SecurityService securityService;
     private final HorizontalLayout header;
     private boolean isDebugMode = false;
+    private final Authentication authentication;
 
     public MainLayout(@Autowired SecurityService securityService) {
         this.securityService = securityService;
+        authentication = securityService.getAuthentication();
+        // Create UI
         header = createHeader();
         addToNavbar(header);
         createDrawer();
@@ -58,12 +62,11 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
         Div spacer = new Div();
-        spacer.getStyle().set("flexGrow", "1");
+        spacer.getStyle().setFlexGrow("1");
         header.add(spacer);
 
         header.add(createThemeSwitcher());
 
-        Authentication authentication = securityService.getAuthentication();
         String username = authentication.getName();
         header.add(createProfileButton(username));
 
@@ -101,7 +104,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private void createDrawer() {
         addToDrawer(new VerticalLayout(createMenuLink(SkillsMatrixView.class, "Skills Matrix", VaadinIcon.TABLE.create())));
 
-        Authentication authentication = securityService.getAuthentication();
         var userAuthorities = authentication.getAuthorities();
         SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
         if (userAuthorities.contains(rhAuthority)) {
@@ -149,13 +151,31 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         menuBar.setTooltipText(menuItem, username);
         SubMenu subMenu = menuItem.getSubMenu();
 
-        Button logOutButton = new Button("Log out", VaadinIcon.SIGN_OUT.create()
-                , e -> securityService.logout());
-        logOutButton.setId("app-logout-button");
-
-        subMenu.addItem(username);
-        subMenu.add(logOutButton);
+        MenuItem myProfileItem = createIconItem(subMenu, VaadinIcon.USER, "My profile",
+            e -> navigateToProfile(username));
+        myProfileItem.setId("app-my-profile-button");
+        MenuItem logOutItem = createIconItem(subMenu, VaadinIcon.SIGN_OUT, "Log out",
+            e -> securityService.logout());
+        logOutItem.setId("app-logout-button");
 
         return menuBar;
+    }
+
+    private void navigateToProfile(String username) {
+        getUI().ifPresent(ui -> ui.navigate(
+            UserProfileView.class,
+            new RouteParam(UserProfileView.USERNAME_PATH_PARAMETER, username)));
+    }
+
+    private static MenuItem createIconItem(
+        HasMenuItems menu, VaadinIcon vaadinIcon, String label,
+        ComponentEventListener<ClickEvent<MenuItem>> onClick
+    ) {
+        Icon icon = new Icon(vaadinIcon);
+        icon.getStyle().setMarginRight("var(--lumo-space-m");
+        MenuItem item = menu.addItem(icon, onClick);
+        item.add(new Text(label));
+        item.setAriaLabel(label);
+        return item;
     }
 }
