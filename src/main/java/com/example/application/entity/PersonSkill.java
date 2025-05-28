@@ -10,6 +10,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -19,6 +23,7 @@ import org.hibernate.validator.constraints.Range;
 @Builder(toBuilder = true)
 @Entity
 @Table(name = "person_skill")
+@EntityListeners(AuditingEntityListener.class)
 public class PersonSkill {
 
     public PersonSkill(@NonNull String personId, @NonNull Long skillId,
@@ -31,7 +36,8 @@ public class PersonSkill {
         this(personSkillId,
             new Person(personSkillId.getPersonId()),
             new Skill(personSkillId.getSkillId()),
-            level
+            level,
+            null
         );
     }
 
@@ -58,4 +64,8 @@ public class PersonSkill {
     @NotNull
     @Column(name = "level", nullable = false)
     private Integer level;
+
+    @LastModifiedDate
+    @Column(name = "last_modified_date")
+    private Instant lastModifiedDate;
 }

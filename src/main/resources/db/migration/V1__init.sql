@@ -15,9 +15,10 @@ create table person
 
 create table person_skill
 (
-    level     integer     not null,
-    skill_id  bigint      not null,
-    person_id varchar(40) not null,
+    level              integer     not null,
+    skill_id           bigint      not null,
+    person_id          varchar(40) not null,
+    last_modified_date TIMESTAMP(6) WITH TIME ZONE,
     primary key (skill_id, person_id)
 );
 

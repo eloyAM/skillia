@@ -19,6 +19,7 @@ entity SkillTag {
 entity PersonSkill {
   id Long required unique,
   level Integer required min(1) max(5)
+  lastModifiedDate Instant
 }
 
 entity SkillGroup {
