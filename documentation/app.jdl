@@ -51,3 +51,7 @@ relationship ManyToMany {
 relationship ManyToMany {
   Department to SkillGroup {skillGroups required}
 }
+
+relationship OneToMany {
+  Department to Person {people}
+}

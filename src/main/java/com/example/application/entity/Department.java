@@ -14,13 +14,16 @@ import java.util.List;
 @Entity
 @Table(name = "department")
 public class Department {
+    // Column "name"
+    public static final String COLUMN_NAME = "name";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "department__id_gen")
     @SequenceGenerator(name = "department__id_gen", sequenceName = "department__id_seq", initialValue = 50, allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true, updatable = false, length = 50)
+    @Column(name = COLUMN_NAME, nullable = false, unique = true, updatable = false, length = 50)
     private String name;
 
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -30,5 +33,9 @@ public class Department {
         inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(name = "FK__department_skill_groups__group_id"))
     )
     private List<SkillGroup> skillGroups = new ArrayList<>();
+
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = Person.COLUMN_DEPARMENT, referencedColumnName = COLUMN_NAME)
+    private List<Person> people = new ArrayList<>();
 
 }

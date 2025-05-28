@@ -37,4 +37,18 @@ public class DepartmentService {
             return Optional.empty();
         }
     }
+
+    public Optional<DepartmentDto> findDepartmentById(Long id) {
+        if (id == null)
+            return Optional.empty();
+        return departmentRepository.findById(id)
+            .map(iDtoEntityMapper::toDto);
+    }
+
+    public Optional<DepartmentDto> findDepartmentByName(String name) {
+        if (name == null)
+            return Optional.empty();
+        return Optional.ofNullable(departmentRepository.findByName(name))
+            .map(iDtoEntityMapper::toDto);
+    }
 }

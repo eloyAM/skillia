@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,8 +12,9 @@ import java.util.List;
  */
 @Data
 public class DepartmentDto implements Serializable {
-    Long id;
+    private Long id;
     @NotBlank
-    String name;
-    List<SkillGroupDto> skillGroups;
+    private String name;
+    private List<SkillGroupDto> skillGroups;
+    private List<PersonDto> people = new ArrayList<>();
 }
