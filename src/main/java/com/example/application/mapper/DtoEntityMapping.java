@@ -28,19 +28,22 @@ public final class DtoEntityMapping {
 
     public static SkillDto mapSkillEntityToSkillDto(Skill skillEntity) {
         Set<SkillTagDto> dtoTags = skillEntity.getTags().stream()
-                .map(DtoEntityMapping::mapSkillTagEntityToSkillTagDto)
-                .collect(Collectors.toSet());
+            .map(DtoEntityMapping::mapSkillTagEntityToSkillTagDto)
+            .collect(Collectors.toSet());
         return SkillDto.builder()
             .id(skillEntity.getId())
             .name(skillEntity.getName())
+            .description(skillEntity.getDescription())
             .tags(dtoTags).build();
     }
 
     public static Skill mapSkillDtoToSkillEntity(@Nonnull SkillDto skillDto) {
         Set<SkillTag> entityTags = skillDto.getTags().stream()
-                .map(DtoEntityMapping::mapSkillTagDtoToSkillTagEntity)
-                .collect(Collectors.toSet());
-        return new Skill(skillDto.getId(), skillDto.getName()).setTags(entityTags);
+            .map(DtoEntityMapping::mapSkillTagDtoToSkillTagEntity)
+            .collect(Collectors.toSet());
+        return new Skill(skillDto.getId(), skillDto.getName())
+            .setDescription(skillDto.getDescription())
+            .setTags(entityTags);
     }
 
     public static PersonSkill mapPersonSkillDtoToPersonSkillEntity(PersonSkillBasicDto dto) {

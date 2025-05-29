@@ -24,8 +24,9 @@ create table person_skill
 
 create table skill
 (
-    id   bigint      not null,
-    name varchar(70) not null unique,
+    id          bigint      not null,
+    name        varchar(70) not null unique,
+    description varchar(250),
     primary key (id)
 );
 

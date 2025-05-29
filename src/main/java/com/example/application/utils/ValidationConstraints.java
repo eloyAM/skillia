@@ -17,6 +17,7 @@ public class ValidationConstraints {
         }
 
         public static final int NAME_MAX_LENGTH = 70;
+        public static final int DESCRIPTION_MAX_LENGTH = 250;
     }
 
     public static class SkillTag {

@@ -25,6 +25,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -239,21 +240,28 @@ public class SkillsManagementView extends VerticalLayout {
         return dialog;
     }
 
-    private FormLayout createSkillFormWithBinder(Binder<SkillDto> skillBinder) {
+    private FormLayout createSkillFormWithBinder(Binder<SkillDto> binder) {
         TextField skillNameTextField = new TextField("Skill name");
         skillNameTextField.setMaxLength(ValidationConstraints.Skill.NAME_MAX_LENGTH);
         skillNameTextField.setRequired(true);
+
+        TextArea descriptionField = new TextArea("Description");
+        descriptionField.setMaxLength(ValidationConstraints.Skill.DESCRIPTION_MAX_LENGTH);
+
         MultiSelectComboBox<SkillTagDto> tagMultiSelectComboBox = createTagMultiSelectComboBox();
         tagMultiSelectComboBox.setRequired(false);
 
-        skillBinder.forField(skillNameTextField)
+        binder.forField(skillNameTextField)
             .asRequired("Name is required")
             .bind(SkillDto::getName, SkillDto::setName);
-        skillBinder.forField(tagMultiSelectComboBox)
+        binder.forField(descriptionField)
+            .bind(SkillDto::getDescription, SkillDto::setDescription);
+        binder.forField(tagMultiSelectComboBox)
             .bind(SkillDto::getTags, SkillDto::setTags);
 
         return new FormLayout(
             skillNameTextField,
+            descriptionField,
             tagMultiSelectComboBox
         );
     }

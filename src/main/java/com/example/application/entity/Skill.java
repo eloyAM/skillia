@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -37,6 +38,10 @@ public class Skill {
     @Column(name = "name", nullable = false, unique = true, length = 70)
     private String name;
 
+    @Nullable
+    @Column(name = "description", length = 250)
+    private String description;
+
     @OneToMany(mappedBy = "skill")
     private Collection<PersonSkill> personSkills;
 
@@ -45,9 +50,9 @@ public class Skill {
     @NotNull
     @ManyToMany(fetch = FetchType.EAGER)    // Avoid LazyInitializationException errors when doing dto mapping
     @JoinTable(
-            name = "skill_tagging",
-            joinColumns = @JoinColumn(name = "skill_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__skill")),
-            inverseJoinColumns = @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__tag"))
+        name = "skill_tagging",
+        joinColumns = @JoinColumn(name = "skill_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__skill")),
+        inverseJoinColumns = @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__tag"))
     )
     @Builder.Default
     private Set<SkillTag> tags = new LinkedHashSet<>();
