@@ -11,10 +11,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.H4;
-import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -74,8 +71,13 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
     }
 
     private void createUi() {
-        setSizeFull();
         PersonDto person = personService.findPersonByUsername(routeUsername);
+        if (person == null) {
+            add(new H1("User not found"));
+            return;
+        }
+
+        setSizeFull();
 
         add(new H4("Profile information"));
         add(createUserDetailsSection(person));

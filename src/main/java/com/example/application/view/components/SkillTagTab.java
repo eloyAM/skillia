@@ -1,9 +1,9 @@
-package com.example.application.view;
+package com.example.application.view.components;
 
 import com.example.application.dto.SkillTagDto;
-import com.example.application.security.SecConstants;
 import com.example.application.service.SkillTagService;
 import com.example.application.utils.ValidationConstraints;
+import com.example.application.view.ViewUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
@@ -22,9 +22,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import jakarta.annotation.security.RolesAllowed;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +29,11 @@ import java.util.Optional;
 
 import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WARNING;
 
-@RolesAllowed(SecConstants.HR)
-@Route(layout = MainLayout.class, value = "skilltags")
-@PageTitle("Tags")
-public class SkillTagView extends VerticalLayout {
+public class SkillTagTab extends VerticalLayout {
 
     private final SkillTagService skillTagService;
 
-    public SkillTagView(SkillTagService skillTagService) {
+    public SkillTagTab(SkillTagService skillTagService) {
         this.skillTagService = skillTagService;
         createUi();
     }
@@ -79,8 +73,8 @@ public class SkillTagView extends VerticalLayout {
         nameField.setMaxLength(ValidationConstraints.SkillTag.NAME_MAX_LENGTH);
         Binder<SkillTagDto> binder = new Binder<>(SkillTagDto.class);
         binder.forField(nameField)
-                .asRequired("Name is required")
-                .bind(SkillTagDto::getName, SkillTagDto::setName);
+            .asRequired("Name is required")
+            .bind(SkillTagDto::getName, SkillTagDto::setName);
         dialog.add(new FormLayout(nameField));
 
         Button createButton = new Button("Create", e -> {
@@ -93,7 +87,9 @@ public class SkillTagView extends VerticalLayout {
             }
             Optional<SkillTagDto> newItem = skillTagService.saveSkillTag(inputSkillTag);
             if (newItem.isPresent()) {
+                ViewUtils.notificationTopCenter("Tag \"" + newItem.get().getName() + "\" created", true).open();
                 listDataView.addItem(newItem.get());
+                listDataView.refreshAll();
             } else {
                 ViewUtils.notificationTopCenter(new Div(
                     new Div("Unable to create the tag"),
@@ -107,12 +103,12 @@ public class SkillTagView extends VerticalLayout {
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         createButton.addClickShortcut(Key.ENTER);
         Button cancelButton = new Button("Cancel",
-                e -> dialog.close()
+            e -> dialog.close()
         );
         dialog.getFooter().add(cancelButton, createButton);
 
         Button addSkillButton = new Button("Add tag", VaadinIcon.PLUS.create(),
-                e -> dialog.open()
+            e -> dialog.open()
         );
         addSkillButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         return addSkillButton;
@@ -120,23 +116,23 @@ public class SkillTagView extends VerticalLayout {
 
     private void createActionsColumn(Grid<SkillTagDto> grid) {
         grid.addComponentColumn(selectedTag -> {
-            // Edit
-            Dialog editDialog = createEditDialog(selectedTag, grid);
-            Button editButton = new Button(VaadinIcon.EDIT.create(),
+                // Edit
+                Dialog editDialog = createEditDialog(selectedTag, grid);
+                Button editButton = new Button(VaadinIcon.EDIT.create(),
                     e -> editDialog.open()
-            );
-            editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-            // Delete
-            ConfirmDialog deleteDialog = createDeleteDialog(selectedTag, grid);
-            Button deleteButton = new Button(VaadinIcon.TRASH.create(),
-                e -> deleteDialog.open()
-            );
-            deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-            // Result component
-            HorizontalLayout buttonsLayout = new HorizontalLayout(editButton, deleteButton);
-            buttonsLayout.setSpacing(false);
-            return buttonsLayout;
-        })
+                );
+                editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                // Delete
+                ConfirmDialog deleteDialog = createDeleteDialog(selectedTag, grid);
+                Button deleteButton = new Button(VaadinIcon.TRASH.create(),
+                    e -> deleteDialog.open()
+                );
+                deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
+                // Result component
+                HorizontalLayout buttonsLayout = new HorizontalLayout(editButton, deleteButton);
+                buttonsLayout.setSpacing(false);
+                return buttonsLayout;
+            })
             .setHeader("Actions")
             .setKey("actions")
             .setAutoWidth(true)
@@ -144,14 +140,14 @@ public class SkillTagView extends VerticalLayout {
     }
 
     private ConfirmDialog createDeleteDialog(
-            SkillTagDto selectedItem,
-            Grid<SkillTagDto> grid
+        SkillTagDto selectedItem,
+        Grid<SkillTagDto> grid
     ) {
         ConfirmDialog confirmDialog = new ConfirmDialog();
         confirmDialog.setHeader("Delete tag \"" + selectedItem.getName() + "\"");
         confirmDialog.setText(
-                "Are you sure you want to permanently delete this item?\r\n"
-                        + "It will be no longer be linked to any skill."
+            "Are you sure you want to permanently delete this item?\r\n"
+                + "It will be no longer be linked to any skill."
         );
         confirmDialog.setConfirmText("Delete");
         confirmDialog.setConfirmButtonTheme("error primary");
@@ -164,16 +160,16 @@ public class SkillTagView extends VerticalLayout {
     }
 
     private Dialog createEditDialog(
-            SkillTagDto selectedItem,
-            Grid<SkillTagDto> grid
+        SkillTagDto selectedItem,
+        Grid<SkillTagDto> grid
     ) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle("Edit tag \"" + selectedItem.getName() + "\"");
         TextField nameTextField = new TextField("Tag name");
         Binder<SkillTagDto> binder = new Binder<>(SkillTagDto.class);
         binder.forField(nameTextField)
-                .asRequired()
-                .bind(SkillTagDto::getName, SkillTagDto::setName);
+            .asRequired()
+            .bind(SkillTagDto::getName, SkillTagDto::setName);
         binder.readBean(selectedItem);
         dialog.add(new FormLayout(nameTextField));
 
@@ -189,6 +185,7 @@ public class SkillTagView extends VerticalLayout {
                 inputSkillTag.getName(), selectedItem.getId()
             );
             if (updatedSkill.isPresent()) {
+                ViewUtils.notificationTopCenter("Tag \"" + updatedSkill.get().getName() + "\" updated", true).open();
                 selectedItem.setName(inputSkillTag.getName());
                 // TODO IMPROVEMENT (FIX) not updating the name in the grid with `refreshItem` which would be better than `refreshAll`
                 grid.getDataProvider().refreshAll();

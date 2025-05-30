@@ -1,4 +1,4 @@
-package com.example.application.view;
+package com.example.application.view.components;
 
 import com.example.application.dto.SkillDto;
 import com.example.application.dto.SkillGroupDto;
@@ -6,6 +6,7 @@ import com.example.application.service.SkillGroupService;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.utils.Validators;
+import com.example.application.view.ViewUtils;
 import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
@@ -27,9 +28,6 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
-import jakarta.annotation.security.RolesAllowed;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.ArrayList;
@@ -37,15 +35,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
-@RolesAllowed("HR")
-@Route(layout = MainLayout.class, value = "skillgroups")
-@PageTitle("Skill groups")
-public class SkillGroupsView extends VerticalLayout {
+public class SkillGroupsTab extends VerticalLayout {
 
     private final SkillGroupService skillGroupService;
     private final SkillService skillService;
 
-    public SkillGroupsView(
+    public SkillGroupsTab(
         SkillGroupService skillGroupService,
         SkillService skillService
     ) {
@@ -200,11 +195,15 @@ public class SkillGroupsView extends VerticalLayout {
             }
             Optional<SkillGroupDto> savedGroup = skillGroupService.saveGroup(inputItem);
             if (savedGroup.isPresent()) {
-                ViewUtils.notificationTopCenter("Group saved successfully", true).open();
                 // Refresh the grid after adding/modifying a record
+                final String successMessage;
                 if (isCreationMode) {
                     grid.getListDataView().addItem(savedGroup.get());
+                    successMessage = "Skill group \"" + savedGroup.get().getName() + "\" created";
+                } else {
+                    successMessage = "Skill group \"" + savedGroup.get().getName() + "\" updated";
                 }
+                ViewUtils.notificationTopCenter(successMessage, true).open();
                 grid.getListDataView().refreshAll();
                 // Close the dialog
                 dialog.close();

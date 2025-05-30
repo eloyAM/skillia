@@ -33,7 +33,7 @@ public final class ViewUtils {
     }
 
     @NonNull
-    static Notification notificationTopCenter(String message, boolean success) {
+    public static Notification notificationTopCenter(String message, boolean success) {
         Notification notification = new Notification(message, 5000,
             Notification.Position.TOP_CENTER);
         notification.addThemeVariants(success
@@ -44,7 +44,7 @@ public final class ViewUtils {
     }
 
     @NonNull
-    static Notification notificationTopCenter(String message, NotificationVariant variant) {
+    public static Notification notificationTopCenter(String message, NotificationVariant variant) {
         Notification notification = new Notification(message, 5000,
             Notification.Position.TOP_CENTER);
         notification.addThemeVariants(variant);
@@ -52,7 +52,7 @@ public final class ViewUtils {
     }
 
     @NonNull
-    static Notification notificationTopCenter(Component component, NotificationVariant variant) {
+    public static Notification notificationTopCenter(Component component, NotificationVariant variant) {
         Notification notification = new Notification(component);
         notification.setDuration(5000);
         notification.setPosition(Notification.Position.TOP_CENTER);
