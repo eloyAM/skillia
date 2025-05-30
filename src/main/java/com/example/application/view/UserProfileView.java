@@ -2,6 +2,7 @@ package com.example.application.view;
 
 import com.example.application.dto.AcquiredSkillDto;
 import com.example.application.dto.PersonDto;
+import com.example.application.dto.PersonSkillBasicDto;
 import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
 import com.example.application.service.PersonService;
@@ -16,7 +17,6 @@ import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
-import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
@@ -25,9 +25,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+
+import static com.example.application.view.ViewUtils.notificationTopCenter;
 
 @PermitAll
 @Route(layout = MainLayout.class, value = "/profile/:username")
@@ -35,6 +38,10 @@ import java.util.Objects;
 public class UserProfileView extends VerticalLayout implements BeforeEnterObserver, AfterNavigationObserver {
 
     public static final String USERNAME_PATH_PARAMETER = "username";
+
+    private static final String CURRENT_LEVEL_CSSCLASS = "current-level";
+    private static final String LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME = MenuBarVariant.LUMO_PRIMARY.getVariantName();
+    public static final String LUMO_MENU_BAR_ICON_THEME_VARIANT = MenuBarVariant.LUMO_ICON.getVariantName();
 
     private final Authentication authentication;
     private final PersonService personService;
@@ -119,7 +126,7 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         return userCard;
     }
 
-    private static Grid<AcquiredSkillDto> createSkillsGrid(List<AcquiredSkillDto> acquiredSkills) {
+    private Grid<AcquiredSkillDto> createSkillsGrid(List<AcquiredSkillDto> acquiredSkills) {
         // Create skills grid
         var grid = new Grid<>(AcquiredSkillDto.class, false);
         grid.setWidthFull();
@@ -133,7 +140,7 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
             .setSortable(true);
 
         grid.addComponentColumn(v -> {
-                Div container = new Div(createSkillLevelSelector(v.getLevel()));
+                Div container = new Div(createSkillLevelSelector(v.getLevel(), v.getSkill().getId()));
                 container.getStyle().setPaddingTop("var(--lumo-space-s)");
                 container.getStyle().setPaddingBottom("var(--lumo-space-s)");
                 return container;
@@ -147,7 +154,7 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         return grid;
     }
 
-    private static Component createSkillLevelSelector(Integer currentLevel) {
+    private Component createSkillLevelSelector(Integer currentLevel, Long skillIid) {
         MenuBar menuBar = new MenuBar();
         menuBar.addClassName("skill-level-selector");
         menuBar.addThemeVariants(MenuBarVariant.LUMO_ICON);
@@ -156,19 +163,46 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         List<Integer> levels = PersonSkillService.getLevels();
         int firstLevel = levels.get(0);
         int higherLevel = levels.get(levels.size() - 1);
+        List<MenuItem> menuItems = new ArrayList<>(levels.size());
         for (Integer level : levels) {
             String levelWithLabel = "%s - %s".formatted(level, PersonSkillService.getLevelName(level));
             String text = String.valueOf(level);    // Compact format - show only the number, not the level label
             MenuItem menuItem = menuBar.addItem(text, levelWithLabel);
+            menuItems.add(menuItem);
 
-            // Add click listener to handle selection
-            menuItem.addClickListener(e -> {
-                // TODO
-                Notification.show("Hi from level " + e.getSource().getText());
-            });
+            // Add click listener to handle selection only if my own profile or role allowed
+            if (isMyProfileOrPermittedRole(routeUsername)) {
+                menuItem.addClickListener(e -> {
+                    MenuItem selectedLevelItem = e.getSource();
+                    String selectedLevel = selectedLevelItem.getText();
+
+                    MenuItem oldLevelItem = menuItems.stream()
+                        .filter(item -> item.hasClassName(CURRENT_LEVEL_CSSCLASS)).findFirst().orElseThrow();
+
+                    // No modification if the target is the same level
+                    if (selectedLevelItem.equals(oldLevelItem))
+                        return;
+
+                    // Update the skill level
+                    final PersonSkillBasicDto data = new PersonSkillBasicDto(routeUsername, skillIid, Integer.valueOf(selectedLevel));
+                    PersonSkillBasicDto savedPersonSkill = personSkillService.savePersonSkill(data);
+                    if (savedPersonSkill == null) {
+                        notificationTopCenter("Some error occurred while saving", false).open();
+                        return;
+                    }
+
+                    // Update the view
+                    selectedLevelItem.addThemeNames(
+                        LUMO_MENU_BAR_ICON_THEME_VARIANT, LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME
+                    );
+                    selectedLevelItem.addClassName(CURRENT_LEVEL_CSSCLASS);
+                    oldLevelItem.removeClassName(CURRENT_LEVEL_CSSCLASS);
+                    oldLevelItem.removeThemeNames(LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME);
+                });
+            }
 
             // Add CSS classes for styling
-            menuItem.addClassName("level-item");
+            menuItem.addClassNames("level-item", "level-" + level);
             if (level == firstLevel) {
                 menuItem.addClassName("first-level");
             } else if (level == higherLevel) {
@@ -177,16 +211,11 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
 
             if (level.equals(currentLevel)) {
                 menuItem.addThemeNames(
-                    MenuBarVariant.LUMO_ICON.getVariantName(),
-                    MenuBarVariant.LUMO_PRIMARY.getVariantName()
+                    LUMO_MENU_BAR_ICON_THEME_VARIANT, LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME
                 );
-                menuItem.addClassName("current-level");
+                menuItem.addClassName(CURRENT_LEVEL_CSSCLASS);
             }
         }
-
-        // TODO set current level
-
-        // TODO add button to reset level
 
         return menuBar;
     }

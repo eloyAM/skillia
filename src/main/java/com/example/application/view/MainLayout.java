@@ -26,10 +26,7 @@ import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.RouteParam;
-import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.router.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -78,11 +75,11 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         Authentication authentication = securityService1.getAuthentication();
         header.add(new Div(new Text("user: "
 //                + user.getUsername()
-                + authentication.getName()
+            + authentication.getName()
         )));
         header.add(new Div(new Text("roles: "
 //                + user.getAuthorities().toString()
-                + authentication.getAuthorities().toString()
+            + authentication.getAuthorities().toString()
         )));
     }
 
@@ -101,6 +98,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     }
 
     private void createDrawer() {
+        String username = authentication.getName();
+        addToDrawer(new VerticalLayout(createMenuLink(UserProfileView.class, "My profile", VaadinIcon.USER.create(),
+            new RouteParameters(UserProfileView.USERNAME_PATH_PARAMETER, username))));
         addToDrawer(new VerticalLayout(createMenuLink(SkillsMatrixView.class, "Skills Matrix", VaadinIcon.TABLE.create())));
 
         var userAuthorities = authentication.getAuthorities();
@@ -114,11 +114,15 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         }
     }
 
-    private static RouterLink createMenuLink(Class<? extends Component> viewClass, String caption, Icon icon) {
-        final RouterLink routerLink = new RouterLink(viewClass);
+    private static RouterLink createMenuLink(Class<? extends Component> viewClass, String caption, Icon icon, RouteParameters routeParameters) {
+        final RouterLink routerLink = new RouterLink(viewClass, routeParameters);
         routerLink.setClassName("menu-link");
         routerLink.add(icon, new Span(caption));
         return routerLink;
+    }
+
+    private static RouterLink createMenuLink(Class<? extends Component> viewClass, String caption, Icon icon) {
+        return createMenuLink(viewClass, caption, icon, RouteParameters.empty());
     }
 
     @Override
