@@ -6,6 +6,7 @@ import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.service.PersonSkillService;
 import com.example.application.view.ViewUtils;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -17,11 +18,14 @@ public class PersonAndSkillsGrid extends Grid<PersonWithSkillsDto> {
 
     public PersonAndSkillsGrid(@NonNull PersonSkillService personSkillService) {
         this.personSkillService = personSkillService;
-        addColumn(
-            personWithSkills -> personWithSkills.getPerson().getFullName()
-        ).setHeader("Person");
+
+        addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        addColumn(personWithSkills -> personWithSkills.getPerson().getFullName())
+            .setHeader("Person")
+            .setFlexGrow(1);
         addColumn(ViewUtils.skillLevelIndicatorRendererForPersonWithSkills())
-            .setHeader("Skills");
+            .setHeader("Skills")
+            .setFlexGrow(2);
     }
 
     /**

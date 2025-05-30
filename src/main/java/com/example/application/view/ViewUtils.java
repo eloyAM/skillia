@@ -116,23 +116,27 @@ public final class ViewUtils {
             container.getStyle()
                 .set("gap", "var(--lumo-space-xl)")
                 .set("padding-top", "var(--lumo-space-s)")
-                .set("padding-bottom", "var(--lumo-space-s)")
-            ;
+                .set("padding-bottom", "var(--lumo-space-s)");
             return container;
         });
     }
 
-    public static ComponentRenderer<Div, SkillAndPeopleWithLevel> skillLevelIndicatorRendererForSkillAndPeopleWithLevel() {
+    public static ComponentRenderer<? extends Component, SkillAndPeopleWithLevel> skillLevelIndicatorRendererForSkillAndPeopleWithLevel() {
         return new ComponentRenderer<>(skillAndPeopleWithLevel -> {
-            var componentsHolder = new Div();
+            var container = new FlexLayout();
             for (var personAndLevel : skillAndPeopleWithLevel.getPeopleWithLevel()) {
                 var person = personAndLevel.getPerson();
                 Integer skillLevel = personAndLevel.getLevel();
                 String label = Validators.isNullOrEmpty(person.getFullName())
                     ? person.getUsername() : person.getFullName();
-                componentsHolder.add(createSkillLevelIndicator(label, skillLevel));
+                container.add(createSkillLevelIndicator(label, skillLevel));
             }
-            return componentsHolder;
+            container.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+            container.getStyle()
+                .set("gap", "var(--lumo-space-xl)")
+                .set("padding-top", "var(--lumo-space-s)")
+                .set("padding-bottom", "var(--lumo-space-s)");
+            return container;
         });
     }
 }
