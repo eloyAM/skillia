@@ -13,6 +13,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
@@ -94,8 +95,8 @@ public final class ViewUtils {
     }
 
 
-    private static Div createSkillLevelIndicator(String label, Integer skillLevel) {
-        Div levelIndicatorComponent = new Div(
+    private static Component createSkillLevelIndicator(String label, Integer skillLevel) {
+        var levelIndicatorComponent = new Div(
             new Div(new Text(label)),
             new Div(new Image(getLevelIndicatorSvgPath(skillLevel), "level " + skillLevel))
         );
@@ -105,13 +106,19 @@ public final class ViewUtils {
 
     public static ComponentRenderer<? extends Component, PersonWithSkillsDto> skillLevelIndicatorRendererForPersonWithSkills() {
         return new ComponentRenderer<>(personWithSkills -> {
-            var componentsHolder = new Div();
+            var container = new FlexLayout();
             for (var personSkill : personWithSkills.getSkills()) {
                 String label = personSkill.getSkill().getName();
                 Integer skillLevel = personSkill.getLevel();
-                componentsHolder.add(createSkillLevelIndicator(label, skillLevel));
+                container.add(createSkillLevelIndicator(label, skillLevel));
             }
-            return componentsHolder;
+            container.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+            container.getStyle()
+                .set("gap", "var(--lumo-space-xl)")
+                .set("padding-top", "var(--lumo-space-s)")
+                .set("padding-bottom", "var(--lumo-space-s)")
+            ;
+            return container;
         });
     }
 

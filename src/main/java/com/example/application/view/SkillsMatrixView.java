@@ -9,6 +9,7 @@ import com.example.application.utils.Validators;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
@@ -44,13 +45,16 @@ public class SkillsMatrixView extends VerticalLayout {
     private void createUi() {
         setSizeFull();
         var personSkillGrid = new Grid<>(PersonWithSkillsDto.class, false);
+        personSkillGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         Grid.Column<PersonWithSkillsDto> personColumn = personSkillGrid.addColumn(createPersonRenderer())
             .setHeader("Person")
-            .setKey("person");
+            .setKey("person")
+            .setFlexGrow(1);
         Grid.Column<PersonWithSkillsDto> skillsColumn = personSkillGrid.addColumn(
                 ViewUtils.skillLevelIndicatorRendererForPersonWithSkills())
             .setHeader("Skills")
-            .setKey("skills");
+            .setKey("skills")
+            .setFlexGrow(2);
         HeaderRow headerRow = personSkillGrid.appendHeaderRow();
         personSkillGrid.getHeaderRows().clear();
 
@@ -99,7 +103,7 @@ public class SkillsMatrixView extends VerticalLayout {
         var selector = ViewUtils.createMultiSelectComboBoxFilter(
             valueProvider,
             itemLabelGenerator,
-            "Filter by department"
+            "Department"
         );
         selector.addValueChangeListener(e -> {
             var selectedValues = e.getValue();
@@ -120,7 +124,7 @@ public class SkillsMatrixView extends VerticalLayout {
         var selector = ViewUtils.createMultiSelectComboBoxFilter(
             valueProvider,
             itemLabelGenerator,
-            "Filter by job title"
+            "Job title"
         );
         selector.addValueChangeListener(e -> {
             var selectedValues = e.getValue();
@@ -140,7 +144,7 @@ public class SkillsMatrixView extends VerticalLayout {
     }
 
     private static TextField createPersonSearchTextField(FilterManager filterManager) {
-        TextField personSearchTextField = ViewUtils.createFilterTextField("Filter by person name", filterValue -> {
+        TextField personSearchTextField = ViewUtils.createFilterTextField("Person name", filterValue -> {
             filterManager.setPersonContactFilter(filterValue);
             filterManager.applyFilters();
         });
