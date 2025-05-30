@@ -1,9 +1,10 @@
 package com.example.application.repo;
 
-import com.example.application.dto.*;
+import com.example.application.dto.AcquiredSkillDto;
+import com.example.application.dto.PersonSkillBasicDto;
+import com.example.application.dto.PersonWithLevelDto;
 import com.example.application.entity.PersonSkill;
 import com.example.application.entity.PersonSkillId;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,7 +21,7 @@ public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillI
        ps.level,
     FROM PERSON_SKILL ps
     LEFT JOIN SKILL s ON s.id=ps.skill_id
-    WHERE ps.person_id = 'eloy.abellan'
+    WHERE ps.person_id = 'gilberto.jimenezm'
      */
     // This fills the person and the skill objects
     List<PersonSkill> findPersonSkillByPersonSkillIdPersonId(String personSkillId);

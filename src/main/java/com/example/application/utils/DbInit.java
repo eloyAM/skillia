@@ -41,6 +41,8 @@ public class DbInit {
 
     public void run() {
         List<PersonDto> persons = createPersons();
+        Map<String, PersonDto> personsByUsername = persons.stream()
+            .collect(Collectors.toMap(PersonDto::getUsername, Function.identity()));
         PersonDto firstPerson = persons.get(0);
         PersonDto secondPerson = persons.get(1);
         PersonDto thirdPerson = persons.get(2);
@@ -50,12 +52,20 @@ public class DbInit {
         createSkillsRandom();
 
         List<SkillDto> skills = createSkills(skillTags);
+        Map<String, SkillDto> skillsByName = skills.stream()
+            .collect(Collectors.toMap(SkillDto::getName, Function.identity()));
         SkillDto firstSkill = skills.get(0);
         SkillDto secondSkill = skills.get(1);
 
+        Function<String, Long> skillIdByName = (name) -> skillsByName.get(name).getId();
+
         Collection<PersonSkill> personSkills = List.of(
-            new PersonSkill(firstPerson.getUsername(), firstSkill.getId(), 3),
-            new PersonSkill(firstPerson.getUsername(), secondSkill.getId(), 2),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("C++"), 3),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("Java"), 2),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("Korean"), randomLvl()),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("Open source"), randomLvl()),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("Mockito"), randomLvl()),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("MS Project"), randomLvl()),
             new PersonSkill(secondPerson.getUsername(), firstSkill.getId(), 4),
             new PersonSkill(thirdPerson.getUsername(), secondSkill.getId(), 5),
             new PersonSkill(thirdPerson.getUsername(), firstSkill.getId(), 1)
@@ -75,6 +85,9 @@ public class DbInit {
             SkillDto.builder().name("Java")
                 .tags(Set.of(tagsByName.get("Programming Languages")))
                 .build(),
+            SkillDto.builder().name("SQL - Structured Query Language")
+                .tags(Set.of(tagsByName.get("Programming Languages")))
+                .build(),
             SkillDto.builder().name("English")
                 .tags(Set.of(tagsByName.get("Languages")))
                 .build(),
@@ -84,6 +97,9 @@ public class DbInit {
             SkillDto.builder().name("Open source").build(),
             SkillDto.builder().name("JUnit")
                 .tags(Set.of(tagsByName.get("Unit Testing"), tagsByName.get("Java")))
+                .build(),
+            SkillDto.builder().name("Mockito")
+                .tags(Set.of(tagsByName.get("Unit Testing"), tagsByName.get("Java"), tagsByName.get("Mocking libraries")))
                 .build(),
             new SkillDto(null,
                 "MS Project",
@@ -95,9 +111,9 @@ public class DbInit {
 
     private List<PersonDto> createPersons() {
         List<PersonDto> persons = List.of(
-            new PersonDto("eloy.abellan")
-                .setEmail("eloy.abellan@example.com")
-                .setFullName("Eloy Abellán Mayor")
+            new PersonDto("gilberto.jimenezm")
+                .setEmail("gilberto.jimenezm@example.com")
+                .setFullName("Gilberto Jiménez Montés")
                 .setTitle("Junior Engineer")
                 .setDepartment("Innovation"),
             new PersonDto("juan.canovas")
@@ -122,7 +138,9 @@ public class DbInit {
                 SkillTagDto.builder().name("Project Management").build(),
                 SkillTagDto.builder().name("Tools").build(),
                 SkillTagDto.builder().name("Unit Testing").build(),
-                SkillTagDto.builder().name("Java").build()
+                SkillTagDto.builder().name("Java").build(),
+                SkillTagDto.builder().name("Mocking libraries").build(),
+                SkillTagDto.builder().name("Performance testing tools").build()
             )
             .stream()
             .map(item -> skillTagService
@@ -160,7 +178,7 @@ public class DbInit {
 
 
     private void createSkillTagsRandom() {
-        int nElements = 150;
+        int nElements = 51;
         Set<SkillTagDto> tags = new LinkedHashSet<>(nElements);
         for (int i = 0; i < nElements; i++) {
             String name = String.format("Tag %03d", i);
@@ -175,7 +193,7 @@ public class DbInit {
     }
 
     private void createSkillsRandom() {
-        int nElements = 101;
+        int nElements = 51;
         Set<SkillDto> tags = new LinkedHashSet<>(nElements);
         for (int i = 0; i < nElements; i++) {
             String name = String.format("Skill %03d", i);
@@ -187,6 +205,10 @@ public class DbInit {
             skillService.saveSkill(tag)
                 .orElseThrow();
         }
+    }
+
+    private static int randomLvl() {
+        return new Random().nextInt(5) + 1;
     }
 
 }

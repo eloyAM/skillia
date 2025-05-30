@@ -570,6 +570,7 @@
             </build>
             <properties>
                 <activeProfiles>embedded-ldap,embedded-postgres</activeProfiles>
+                <initdbfromjava>false</initdbfromjava>
             </properties>
         </profile>
 

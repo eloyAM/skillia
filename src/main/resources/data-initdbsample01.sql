@@ -21,14 +21,14 @@ VALUES (1, 'C++'),
        (7, 'Python');
 
 INSERT INTO person (username, email, full_name, title, department)
-VALUES ('eloy.abellan', 'eloy.abellan@example.com', 'Eloy Abellán Mayor', 'Junior Engineer', 'Innovation'),
+VALUES ('gilberto.jimenezm', 'gilberto.jimenezm@example.com', 'Gilberto Jiménez Montés', 'Junior Engineer', 'Innovation'),
        ('juan.canovas', 'juan.canovas@example.com', 'Juan Cánovas Hernández', 'Senior Engineer', 'Development'),
        ('jacob.smith', 'jacob.smith@example.com', 'Jacob Smith', 'Head Of Accounting', 'Accounting'),
        ('hernan.cortes', NULL, NULL, NULL, NULL);
 
 INSERT INTO person_skill (person_id, skill_id, level)
-VALUES ('eloy.abellan', 1, 3),
-       ('eloy.abellan', 2, 2),
+VALUES ('gilberto.jimenezm', 1, 3),
+       ('gilberto.jimenezm', 2, 2),
        ('juan.canovas', 1, 4),
        ('jacob.smith', 2, 5),
        ('jacob.smith', 1, 1);
