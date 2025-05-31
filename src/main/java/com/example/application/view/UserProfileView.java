@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import static com.example.application.view.ViewUtils.createAndInitialize;
 import static com.example.application.view.ViewUtils.notificationTopCenter;
 
 @PermitAll
@@ -95,18 +96,26 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         Span usernameSpan = new Span("@" + personDto.getUsername());
         usernameSpan.getStyle().set("color", "var(--lumo-secondary-text-color)").set("font-size", "var(--lumo-font-size-s)");
 
-        Span email = new Span("📧 " + (Objects.requireNonNullElse(personDto.getEmail(), "No email")));
-        email.getStyle().set("color", "var(--lumo-body-text-color)").set("font-size", "var(--lumo-font-size-s)");
-
-        Span title = new Span("💼 " + (Objects.requireNonNullElse(personDto.getTitle(), "No title")));
-        title.getStyle().set("color", "var(--lumo-body-text-color)").set("font-size", "var(--lumo-font-size-s)");
-
-        Span department = new Span("🏢 " + (Objects.requireNonNullElse(personDto.getDepartment(), "No department")));
-        department.getStyle().set("color", "var(--lumo-body-text-color)").set("font-size", "var(--lumo-font-size-s)");
+        var emailJobTitleAndDepartment = new Div(
+            new Span("📧 " + Objects.requireNonNullElse(personDto.getEmail(), "No email")),
+            new Div(
+                new Span("💼 " + Objects.requireNonNullElse(personDto.getTitle(), "No title")),
+                // Spacer
+                createAndInitialize(new Span(), span -> span.getStyle().setPaddingRight("var(--lumo-space-m)")),
+                new Span("🏢 " + Objects.requireNonNullElse(personDto.getDepartment(), "No department"))
+            )
+        );
+        emailJobTitleAndDepartment.getStyle()
+            .set("font-size", "var(--lumo-font-size-s)")
+            .set("display", "flex")
+            .set("flex-wrap", "wrap")
+            .set("flex-direction", "row")
+            .set("column-gap", "var(--lumo-space-l")
+            .set("row-gap", "var(--lumo-space-xs)");
 
         // User details
         VerticalLayout detailsLayout = new VerticalLayout(
-            fullName, usernameSpan, email, title, department
+            fullName, usernameSpan, emailJobTitleAndDepartment
         );
         detailsLayout.setPadding(false);
         detailsLayout.setSpacing(false);

@@ -6,6 +6,7 @@ import com.example.application.service.SkillService;
 import com.example.application.service.SkillTagService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.view.ViewUtils;
+import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
@@ -73,8 +74,6 @@ public class SkillsViewTab extends VerticalLayout {
         Grid.Column<SkillDto> nameColumn = skillGrid.addColumn(SkillDto::getName)
             .setHeader("Name")
             .setKey(GRID_NAME_COLUMN_NAME)
-            .setFrozen(true)
-            .setAutoWidth(true)
             .setSortable(true);
 
         // Tags column
@@ -85,7 +84,10 @@ public class SkillsViewTab extends VerticalLayout {
                         Span span = new Span(name);
                         span.setTitle(name);    // Tooltip
                         span.getElement().getThemeList().add("badge contrast pill");
-                        return span;
+                        Popup popup = new Popup();
+                        popup.setTarget(span.getElement());
+                        popup.setHeaderTitle(name);
+                        return new Span(span, popup);
                     })
                     .collect(FlexLayout::new, HasComponents::add, HasComponents::add);
                 tagsContainer.setFlexWrap(FlexLayout.FlexWrap.WRAP);
@@ -96,8 +98,7 @@ public class SkillsViewTab extends VerticalLayout {
                 return tagsContainer;
             })
             .setHeader("Tags")
-            .setKey("tags")
-            .setAutoWidth(true);
+            .setKey("tags");
 
         // Actions column
         skillGrid.addComponentColumn(selectedSkill -> {

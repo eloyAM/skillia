@@ -1,5 +1,7 @@
 package com.example.application.view;
 
+import com.example.application.dto.AcquiredSkillDto;
+import com.example.application.dto.PersonWithLevelDto;
 import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.SkillAndPeopleWithLevel;
 import com.example.application.utils.Validators;
@@ -23,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 @UtilityClass
@@ -104,39 +107,55 @@ public final class ViewUtils {
         return levelIndicatorComponent;
     }
 
+    private static <T> FlexLayout createSkillLevelIndicatorContainer(
+        Iterable<T> items,
+        Function<T, String> labelProvider,
+        Function<T, Integer> levelProvider
+    ) {
+        var container = new FlexLayout();
+        items.forEach(item -> {
+            String label = labelProvider.apply(item);
+            Integer level = levelProvider.apply(item);
+            container.add(createSkillLevelIndicator(label, level));
+        });
+        container.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+        container.getStyle()
+            .set("row-gap", "var(--lumo-space-l)")
+            .set("column-gap", "var(--lumo-space-xl)")
+            .set("padding-top", "var(--lumo-space-s)")
+            .set("padding-bottom", "var(--lumo-space-s)");
+        return container;
+    }
+
     public static ComponentRenderer<? extends Component, PersonWithSkillsDto> skillLevelIndicatorRendererForPersonWithSkills() {
         return new ComponentRenderer<>(personWithSkills -> {
-            var container = new FlexLayout();
-            for (var personSkill : personWithSkills.getSkills()) {
-                String label = personSkill.getSkill().getName();
-                Integer skillLevel = personSkill.getLevel();
-                container.add(createSkillLevelIndicator(label, skillLevel));
-            }
-            container.setFlexWrap(FlexLayout.FlexWrap.WRAP);
-            container.getStyle()
-                .set("gap", "var(--lumo-space-xl)")
-                .set("padding-top", "var(--lumo-space-s)")
-                .set("padding-bottom", "var(--lumo-space-s)");
-            return container;
+            var items = personWithSkills.getSkills();
+            return createSkillLevelIndicatorContainer(
+                items,
+                personSkill -> personSkill.getSkill().getName(),
+                AcquiredSkillDto::getLevel
+            );
         });
     }
 
     public static ComponentRenderer<? extends Component, SkillAndPeopleWithLevel> skillLevelIndicatorRendererForSkillAndPeopleWithLevel() {
         return new ComponentRenderer<>(skillAndPeopleWithLevel -> {
-            var container = new FlexLayout();
-            for (var personAndLevel : skillAndPeopleWithLevel.getPeopleWithLevel()) {
-                var person = personAndLevel.getPerson();
-                Integer skillLevel = personAndLevel.getLevel();
-                String label = Validators.isNullOrEmpty(person.getFullName())
-                    ? person.getUsername() : person.getFullName();
-                container.add(createSkillLevelIndicator(label, skillLevel));
-            }
-            container.setFlexWrap(FlexLayout.FlexWrap.WRAP);
-            container.getStyle()
-                .set("gap", "var(--lumo-space-xl)")
-                .set("padding-top", "var(--lumo-space-s)")
-                .set("padding-bottom", "var(--lumo-space-s)");
-            return container;
+            var items = skillAndPeopleWithLevel.getPeopleWithLevel();
+            return createSkillLevelIndicatorContainer(
+                items,
+                personAndLevel -> {
+                    var person = personAndLevel.getPerson();
+                    return Validators.isNullOrEmpty(person.getFullName())
+                        ? person.getUsername() : person.getFullName();
+                },
+                PersonWithLevelDto::getLevel
+            );
         });
+    }
+
+    // Create and initialize a component with a single statement
+    public static <T extends Component> T createAndInitialize(T component, Consumer<T> initializer) {
+        initializer.accept(component);
+        return component;
     }
 }
