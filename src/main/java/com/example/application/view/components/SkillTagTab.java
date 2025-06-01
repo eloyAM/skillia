@@ -13,6 +13,7 @@ import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
@@ -41,6 +42,7 @@ public class SkillTagTab extends VerticalLayout {
     private void createUi() {
         setSizeFull();
         Grid<SkillTagDto> grid = new Grid<>(SkillTagDto.class, false);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
         Grid.Column<SkillTagDto> nameColumn = grid.addColumn(SkillTagDto::getName)
             .setHeader("Name")

@@ -78,7 +78,7 @@ public class SkillsMatrixView extends VerticalLayout {
         // Create a filter for the skill column
         TextField skillSearchTextField = createSkillSearcTextField(filterManager);
         MultiSelectComboBox<SkillTagDto> tagSelectorFilter = ViewUtils.createMultiSelectComboBoxFilter(
-            skillTagService::getAllSkillTagInUse, SkillTagDto::getName, "Filter by tags");
+            skillTagService::getAllSkillTagInUse, SkillTagDto::getName, "Tags");
         tagSelectorFilter.addValueChangeListener(e -> {
             var selectedTags = e.getValue();
             List<String> valuesList = selectedTags.stream()
@@ -135,7 +135,7 @@ public class SkillsMatrixView extends VerticalLayout {
     }
 
     private static TextField createSkillSearcTextField(FilterManager filterManager) {
-        TextField skillSearchTextField = ViewUtils.createFilterTextField("Search", filterValue -> {
+        TextField skillSearchTextField = ViewUtils.createFilterTextField("Name", filterValue -> {
             filterManager.setSkillsFilter(filterValue);
             filterManager.applyFilters();
         });
@@ -144,7 +144,7 @@ public class SkillsMatrixView extends VerticalLayout {
     }
 
     private static TextField createPersonSearchTextField(FilterManager filterManager) {
-        TextField personSearchTextField = ViewUtils.createFilterTextField("Person name", filterValue -> {
+        TextField personSearchTextField = ViewUtils.createFilterTextField("Name", filterValue -> {
             filterManager.setPersonContactFilter(filterValue);
             filterManager.applyFilters();
         });

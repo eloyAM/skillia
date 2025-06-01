@@ -10,6 +10,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
@@ -45,6 +46,7 @@ public class DepartmentsView extends VerticalLayout {
 
         List<DepartmentDto> departments = departmentService.findAllDepartment();
         Grid<DepartmentDto> grid = new Grid<>(DepartmentDto.class, false);
+        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         GridListDataView<DepartmentDto> gridListDataView = grid.setItems(departments);
 
         Grid.Column<DepartmentDto> departmentNameColumn = grid.addColumn(DepartmentDto::getName)
@@ -112,7 +114,7 @@ public class DepartmentsView extends VerticalLayout {
 
         Button cancelButton = new Button("Cancel", e -> dialog.close());
 
-        dialog.setHeaderTitle("Manage Skill Groups for \"" + selectedItem.getName() + "\"");
+        dialog.setHeaderTitle("Select Skill Groups for \"" + selectedItem.getName() + "\"");
         dialog.add(skillGroupListBox);
         dialog.getFooter().add(cancelButton, saveButton);
         dialog.open();

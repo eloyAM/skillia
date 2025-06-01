@@ -32,7 +32,7 @@ public class LdapDbService {
         this.departmentRepository = departmentRepository;
     }
 
-    public void loadDbUsersWithLdap() {
+    public void loadUsersAndDepartmentsWithLdap() {
         log.info("Loading users from LDAP");
         List<PersonDto> ldapUsers = ldapService.findAllUsers();
         log.info("Found {} users from LDAP, proceeding to save them on the users database", ldapUsers.size());

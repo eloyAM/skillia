@@ -6,17 +6,18 @@ import com.example.application.dto.SkillGroupDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.entity.PersonSkill;
 import com.example.application.repo.PersonSkillRepo;
-import com.example.application.service.PersonService;
-import com.example.application.service.SkillGroupService;
-import com.example.application.service.SkillService;
-import com.example.application.service.SkillTagService;
+import com.example.application.service.*;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// TODO add SkillGroup and Department data
+/**
+ * Important:
+ * take care with dependencies/overwriting data
+ * imported from LDAP through the runner {@link com.example.application.ImportLdapUsersToDbAppRunner}
+ */
 public class DbInit {
 
     private final PersonService personService;
@@ -24,19 +25,22 @@ public class DbInit {
     private final PersonSkillRepo personSkillRepo;
     private final SkillTagService skillTagService;
     private final SkillGroupService skillGroupService;
+    private final DepartmentService departmentService;
 
     public DbInit(
         PersonService personService,
         SkillService skillService,
         PersonSkillRepo personSkillRepo,
         SkillTagService skillTagService,
-        SkillGroupService skillGroupService
+        SkillGroupService skillGroupService,
+        DepartmentService departmentService
     ) {
         this.personService = personService;
         this.skillService = skillService;
         this.personSkillRepo = personSkillRepo;
         this.skillTagService = skillTagService;
         this.skillGroupService = skillGroupService;
+        this.departmentService = departmentService;
     }
 
     public void run() {
@@ -72,7 +76,8 @@ public class DbInit {
         );
         personSkillRepo.saveAll(personSkills);
 
-        createSkillGroups(skills);
+        List<SkillGroupDto> skillGroups = createSkillGroups(skills);
+        setDeparmentSkillsGroups(skillGroups);
     }
 
     private List<SkillDto> createSkills(Set<SkillTagDto> skillTags) {
@@ -171,6 +176,14 @@ public class DbInit {
             .map(Optional::orElseThrow)
             .toList();
     }
+
+    private void setDeparmentSkillsGroups(List<SkillGroupDto> skillGroups) {
+        departmentService.findDepartmentByName("Human Resources").ifPresent(d -> {
+            d.getSkillGroups().addAll(skillGroups.stream().limit(5).toList());
+            departmentService.saveDepartment(d);
+        });
+    }
+
 
     private static <R> Collection<R> getShuffleCopy(Collection<R> source) {
         var copy = new ArrayList<>(source);
