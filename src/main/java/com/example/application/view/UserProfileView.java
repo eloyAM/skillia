@@ -1,31 +1,28 @@
 package com.example.application.view;
 
-import com.example.application.dto.AcquiredSkillDto;
-import com.example.application.dto.PersonDto;
-import com.example.application.dto.PersonSkillBasicDto;
+import com.example.application.dto.*;
 import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
+import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.router.*;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.application.view.ViewUtils.createAndInitialize;
 import static com.example.application.view.ViewUtils.notificationTopCenter;
@@ -44,18 +41,22 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
     private final Authentication authentication;
     private final PersonService personService;
     private final PersonSkillService personSkillService;
+    private final DepartmentService departmentService;
+
     private String routeUsername;
 
     public UserProfileView(
         SecurityService securityService,
         PersonService personService,
-        PersonSkillService personSkillService
+        PersonSkillService personSkillService,
+        DepartmentService departmentService
     ) {
         // We can't create the UI here as we have a dependency on the route parameters,
         // who are read later, not here
         this.authentication = securityService.getAuthentication();
         this.personService = personService;
         this.personSkillService = personSkillService;
+        this.departmentService = departmentService;
     }
 
     @Override
@@ -83,10 +84,10 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         add(new H4("Profile information"));
         add(createUserDetailsSection(person));
 
-
-        add(new H4("Skills"));
         List<AcquiredSkillDto> acquiredSkills = personSkillService.findAllAcquiredSkillByPersonId(person.getUsername());
-        add(createSkillsGrid(acquiredSkills));
+
+        add(new H4("Tree grid Skills"));
+        add(createSkillsTreegrid(person, acquiredSkills));
     }
 
     private static Component createUserDetailsSection(PersonDto personDto) {
@@ -137,32 +138,63 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         return userCard;
     }
 
-    private Grid<AcquiredSkillDto> createSkillsGrid(List<AcquiredSkillDto> acquiredSkills) {
-        // Create skills grid
-        var grid = new Grid<>(AcquiredSkillDto.class, false);
-        grid.setWidthFull();
-        grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-        grid.setItems(acquiredSkills);
 
-        // Configure grid columns
-        grid.addColumn(v -> v.getSkill().getName())
-            .setHeader("Skill")
-            .setFlexGrow(1)
-            .setSortable(true);
+    private TreeGrid<?> createSkillsTreegrid(PersonDto person, List<AcquiredSkillDto> acquiredSkills) {
+        var tree = new TreeGrid<AcquiredSkillDto>();
+        {
+            tree.setWidthFull();
+            tree.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+            // Scroll if the screen is not big enough, we don't want to cut the level column
+            tree.setMinWidth("400px");
 
-        grid.addComponentColumn(v -> {
-                Div container = new Div(createSkillLevelSelector(v.getLevel(), v.getSkill().getId()));
-                container.getStyle().setPaddingTop("var(--lumo-space-s)");
-                container.getStyle().setPaddingBottom("var(--lumo-space-s)");
-                return container;
-            })
-            .setHeader("Level")
-            .setAutoWidth(true)
-            .setFlexGrow(2)
-            .setSortable(true)
-            .setComparator(AcquiredSkillDto::getLevel);
+            tree.addHierarchyColumn(sk -> sk.getSkill().getName())
+                .setHeader("Skill")
+                .setFlexGrow(1);
 
-        return grid;
+            tree.addComponentColumn(v -> {
+                    if (v.getLevel() == -1) {
+                        return new Span();   // Special case for the grouping element
+                    }
+                    return createSkillLevelSelector(v.getLevel(), v.getSkill().getId());
+                })
+                .setHeader("Level")
+                .setSortable(true)
+                .setComparator(AcquiredSkillDto::getLevel)
+                .setAutoWidth(true)
+                .setFlexGrow(2);
+        }
+
+        DepartmentDto departmentObject = departmentService.findDepartmentByName(person.getDepartment())
+            .orElseThrow(() -> new IllegalStateException("Department " + person.getDepartment()
+                + " not found for the person " + person.getUsername()));
+        var groupToSkillsMap = departmentObject.getSkillGroups().stream()
+            .collect(Collectors.toMap(skillGroup ->
+                    new AcquiredSkillDto(-1L, skillGroup.getName(), -1),
+                SkillGroupDto::getSkills
+            ));
+        List<AcquiredSkillDto> rootItems = groupToSkillsMap.keySet().stream().toList();
+
+        var addedSkillsIds = new HashSet<Long>();
+        tree.setItems(rootItems, item -> {
+            Set<SkillDto> skillsForThisGroup = groupToSkillsMap.get(item);
+            if (skillsForThisGroup != null) {
+                return skillsForThisGroup.stream()
+                    // Avoid adding the same skill even if related to multiple groups
+                    // Select the current level for acquired skills or 0 for non-acquired skills
+                    .filter(skill -> addedSkillsIds.add(skill.getId()))
+                    .map(skill -> {
+                        Optional<AcquiredSkillDto> acquiredSkill = acquiredSkills.stream()
+                            .filter(as -> as.getSkill().getId().equals(skill.getId()))
+                            .findFirst();
+                        int level = acquiredSkill.map(AcquiredSkillDto::getLevel).orElse(0);
+                        return new AcquiredSkillDto(skill.getId(), skill.getName(), level);
+                    })
+                    .toList();
+            }
+            return List.of();
+        });
+        tree.expand(rootItems);
+        return tree;
     }
 
     private Component createSkillLevelSelector(Integer currentLevel, Long skillIid) {
@@ -187,18 +219,19 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
                     MenuItem selectedLevelItem = e.getSource();
                     String selectedLevel = selectedLevelItem.getText();
 
-                    MenuItem oldLevelItem = menuItems.stream()
-                        .filter(item -> item.hasClassName(CURRENT_LEVEL_CSSCLASS)).findFirst().orElseThrow();
+                    // If there was no previous skill rating, there's no old item
+                    Optional<MenuItem> oldLevelItem = menuItems.stream()
+                        .filter(item -> item.hasClassName(CURRENT_LEVEL_CSSCLASS)).findFirst();
 
                     // No modification if the target is the same level
-                    if (selectedLevelItem.equals(oldLevelItem))
+                    if (oldLevelItem.map(selectedLevelItem::equals).orElse(false))
                         return;
 
                     // Update the skill level
                     final PersonSkillBasicDto data = new PersonSkillBasicDto(routeUsername, skillIid, Integer.valueOf(selectedLevel));
                     PersonSkillBasicDto savedPersonSkill = personSkillService.savePersonSkill(data);
                     if (savedPersonSkill == null) {
-                        notificationTopCenter("Some error occurred while saving", false).open();
+                        notificationTopCenter("Some error occurred while setting the skill level", false).open();
                         return;
                     }
 
@@ -207,8 +240,10 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
                         LUMO_MENU_BAR_ICON_THEME_VARIANT, LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME
                     );
                     selectedLevelItem.addClassName(CURRENT_LEVEL_CSSCLASS);
-                    oldLevelItem.removeClassName(CURRENT_LEVEL_CSSCLASS);
-                    oldLevelItem.removeThemeNames(LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME);
+                    oldLevelItem.ifPresent(old -> {
+                        old.removeClassName(CURRENT_LEVEL_CSSCLASS);
+                        old.removeThemeNames(LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME);
+                    });
                 });
             }
 

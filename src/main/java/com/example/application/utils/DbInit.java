@@ -157,15 +157,15 @@ public class DbInit {
 
     private List<SkillGroupDto> createSkillGroups(List<SkillDto> skills) {
         return Stream.of(
-                SkillGroupDto.builder().name("Some empty group").build(),
-                SkillGroupDto.builder().name("Empty group with description")
+                SkillGroupDto.builder().name("Some group empty group without a description").build(),
+                SkillGroupDto.builder().name("Another empty group a description indeed")
                     .description("This is some useful description which will help you know what is this for")
                     .build(),
-                SkillGroupDto.builder().name("Not empty group with description")
+                SkillGroupDto.builder().name("Group number 1 22 333")
                     .description("Lorem ipsum dolor sit amet ")
                     .skills(getShuffleCopy(skills).stream().limit(5).collect(Collectors.toSet()))
                     .build(),
-                SkillGroupDto.builder().name("Not empty group, no description")
+                SkillGroupDto.builder().name("Group eternal duck green")
                     .skills(getShuffleCopy(skills).stream().limit(5).collect(Collectors.toSet()))
                     .build(),
                 SkillGroupDto.builder().name("Group abcdefg hijklmn")
@@ -178,8 +178,10 @@ public class DbInit {
     }
 
     private void setDeparmentSkillsGroups(List<SkillGroupDto> skillGroups) {
-        departmentService.findDepartmentByName("Human Resources").ifPresent(d -> {
-            d.getSkillGroups().addAll(skillGroups.stream().limit(5).toList());
+        departmentService.findAllDepartment().forEach(d -> {
+            List<SkillGroupDto> skillGroupsToAdd = getShuffleCopy(skillGroups).stream()
+                .limit(new Random().nextInt(5) + 1).toList();
+            d.getSkillGroups().addAll(skillGroupsToAdd);
             departmentService.saveDepartment(d);
         });
     }

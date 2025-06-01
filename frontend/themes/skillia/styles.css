@@ -1,6 +1,26 @@
 @media all and (max-width: 1100px) {
-  .list-view.editing .toolbar,
-  .list-view.editing .contact-grid {
-    display: none;
-  }
+    .list-view.editing .toolbar,
+    .list-view.editing .contact-grid {
+        display: none;
+    }
+}
+
+vaadin-grid-tree-toggle {
+    --vaadin-grid-tree-toggle-level-offset: 0.5em;
+}
+
+.skill-level-selector .first-level {
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+}
+
+.skill-level-selector .last-level {
+    border-top-right-radius: 50%;
+    border-bottom-right-radius: 50%;
+}
+
+.skill-level-selector {
+    padding-top: var(--lumo-space-s);
+    padding-bottom: var(--lumo-space-s);
+    display: inline-flex;
 }
