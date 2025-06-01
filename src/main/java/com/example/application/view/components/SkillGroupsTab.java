@@ -169,8 +169,8 @@ public class SkillGroupsTab extends VerticalLayout {
             binder.forField(nameField).asRequired("Name is required").bind(SkillGroupDto::getName, SkillGroupDto::setName);
             binder.forField(descriptionField).bind(SkillGroupDto::getDescription, SkillGroupDto::setDescription);
             binder.forField(skillSelector).bind(
-                group -> group.getSkills() == null ? new HashSet<>() : new HashSet<>(group.getSkills()),
-                (group, skills) -> group.setSkills(List.copyOf(skills))
+                group -> group.getSkills() == null ? new HashSet<>() : group.getSkills(),
+                SkillGroupDto::setSkills
             );
 
             formLayout.add(nameField, descriptionField, skillSelector);

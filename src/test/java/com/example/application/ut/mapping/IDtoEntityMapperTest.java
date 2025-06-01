@@ -13,6 +13,7 @@ import org.mapstruct.factory.Mappers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
@@ -233,7 +234,7 @@ class IDtoEntityMapperTest {
         skillGroup.setId(10L);
         skillGroup.setName("Some group");
         skillGroup.setDescription("Some description");
-        skillGroup.setSkills(List.of(skill1, skill2));
+        skillGroup.setSkills(Set.of(skill1, skill2));
 
         // Act
         SkillGroupDto skillGroupDto = mapper.toDto(skillGroup);
@@ -266,7 +267,7 @@ class IDtoEntityMapperTest {
         skillGroupDto.setId(10L);
         skillGroupDto.setName("Some group");
         skillGroupDto.setDescription("Some description");
-        skillGroupDto.setSkills(List.of(skillDto1, skillDto2));
+        skillGroupDto.setSkills(Set.of(skillDto1, skillDto2));
 
         // Act
         SkillGroup skillGroup = mapper.toEntity(skillGroupDto);

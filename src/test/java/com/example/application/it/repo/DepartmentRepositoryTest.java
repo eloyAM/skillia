@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,7 +58,7 @@ class DepartmentRepositoryTest {
         SkillGroup skillGroup = new SkillGroup();
         skillGroup.setName("Some group");
         skillGroup.setDescription("Some description");
-        skillGroup.setSkills(List.of(skill));
+        skillGroup.setSkills(Set.of(skill));
         skillGroupRepo.save(skillGroup);
 
         Department department = new Department();
@@ -74,7 +75,7 @@ class DepartmentRepositoryTest {
         assertThat(all.get(0).getSkillGroups()).hasSize(1);
         assertThat(all.get(0).getSkillGroups().get(0).getName()).isEqualTo("Some group");
         assertThat(all.get(0).getSkillGroups().get(0).getSkills()).hasSize(1);
-        assertThat(all.get(0).getSkillGroups().get(0).getSkills().get(0).getName()).isEqualTo("Some skill");
+        assertThat(all.get(0).getSkillGroups().get(0).getSkills().iterator().next().getName()).isEqualTo("Some skill");
     }
 
     @Test

@@ -6,8 +6,8 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -33,6 +33,6 @@ public class SkillGroup {
         inverseJoinColumns = @JoinColumn(name = "skill_id", foreignKey = @ForeignKey(name = "FK__skill_group_skills__skill_id")),
         indexes = {@Index(name = "UIX__skill_group_skills__composite_id", unique = true, columnList = "group_id, skill_id")}
     )
-    private List<Skill> skills = new ArrayList<>();
+    private Set<Skill> skills = new HashSet<>();
 
 }

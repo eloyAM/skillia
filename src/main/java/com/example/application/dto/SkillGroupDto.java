@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
  * DTO for {@link com.example.application.entity.SkillGroup}
@@ -21,5 +21,5 @@ public class SkillGroupDto implements Serializable {
     @NotBlank
     String name;
     String description;
-    List<SkillDto> skills;
+    Set<SkillDto> skills;
 }

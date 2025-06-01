@@ -156,13 +156,15 @@ public class DbInit {
                 SkillGroupDto.builder().name("Empty group with description")
                     .description("This is some useful description which will help you know what is this for")
                     .build(),
-                SkillGroupDto.builder().name("Not empty group with desc")
+                SkillGroupDto.builder().name("Not empty group with description")
                     .description("Lorem ipsum dolor sit amet ")
-                    .skills(getShuffleCopy(skills).stream().limit(5).toList())
+                    .skills(getShuffleCopy(skills).stream().limit(5).collect(Collectors.toSet()))
                     .build(),
-                SkillGroupDto.builder().name("Not empty group without desc")
-                    .description("Lorem ipsum dolor sit amet ")
-                    .skills(getShuffleCopy(skills).stream().limit(10).toList())
+                SkillGroupDto.builder().name("Not empty group, no description")
+                    .skills(getShuffleCopy(skills).stream().limit(5).collect(Collectors.toSet()))
+                    .build(),
+                SkillGroupDto.builder().name("Group abcdefg hijklmn")
+                    .skills(getShuffleCopy(skills).stream().limit(10).collect(Collectors.toSet()))
                     .build()
             )
             .map(skillGroupService::saveGroup)
@@ -178,7 +180,7 @@ public class DbInit {
 
 
     private void createSkillTagsRandom() {
-        int nElements = 51;
+        int nElements = 11;
         Set<SkillTagDto> tags = new LinkedHashSet<>(nElements);
         for (int i = 0; i < nElements; i++) {
             String name = String.format("Tag %03d", i);
@@ -193,7 +195,7 @@ public class DbInit {
     }
 
     private void createSkillsRandom() {
-        int nElements = 51;
+        int nElements = 11;
         Set<SkillDto> tags = new LinkedHashSet<>(nElements);
         for (int i = 0; i < nElements; i++) {
             String name = String.format("Skill %03d", i);
