@@ -6,7 +6,7 @@
 }
 
 vaadin-grid-tree-toggle {
-    --vaadin-grid-tree-toggle-level-offset: 0.5em;
+    --vaadin-grid-tree-toggle-level-offset: 0em;
 }
 
 .skill-level-selector .first-level {
@@ -23,4 +23,13 @@ vaadin-grid-tree-toggle {
     padding-top: var(--lumo-space-s);
     padding-bottom: var(--lumo-space-s);
     display: inline-flex;
+}
+
+.skill-level-indicator-with-label {
+    line-height: var(--lumo-line-height-xs);
+}
+
+vaadin-grid[theme~=my-grid-spacing-theme]::part(body-cell) {
+    padding-top: var(--lumo-space-s);
+    padding-bottom: var(--lumo-space-s);
 }

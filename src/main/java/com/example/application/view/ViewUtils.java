@@ -121,9 +121,7 @@ public final class ViewUtils {
         container.setFlexWrap(FlexLayout.FlexWrap.WRAP);
         container.getStyle()
             .set("row-gap", "var(--lumo-space-l)")
-            .set("column-gap", "var(--lumo-space-xl)")
-            .set("padding-top", "var(--lumo-space-s)")
-            .set("padding-bottom", "var(--lumo-space-s)");
+            .set("column-gap", "var(--lumo-space-xl)");
         return container;
     }
 

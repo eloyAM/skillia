@@ -167,10 +167,19 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         DepartmentDto departmentObject = departmentService.findDepartmentByName(person.getDepartment())
             .orElseThrow(() -> new IllegalStateException("Department " + person.getDepartment()
                 + " not found for the person " + person.getUsername()));
+
+        // As we show each skill only for the first group where we find it, sorting by ascending number
+        // of skills avoids a greater amount of empty groups
         var groupToSkillsMap = departmentObject.getSkillGroups().stream()
-            .collect(Collectors.toMap(skillGroup ->
-                    new AcquiredSkillDto(-1L, skillGroup.getName(), -1),
-                SkillGroupDto::getSkills
+            .sorted(Comparator.comparingInt((SkillGroupDto group) -> {
+                Set<SkillDto> skills = group.getSkills();
+                return (skills == null || skills.isEmpty()) ? Integer.MAX_VALUE : skills.size();
+            }))
+            .collect(Collectors.toMap(
+                skillGroup -> new AcquiredSkillDto(-1L, skillGroup.getName(), -1),
+                SkillGroupDto::getSkills,
+                (a, b) -> a,
+                LinkedHashMap::new
             ));
         List<AcquiredSkillDto> rootItems = groupToSkillsMap.keySet().stream().toList();
 

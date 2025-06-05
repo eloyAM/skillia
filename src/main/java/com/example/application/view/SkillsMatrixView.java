@@ -46,6 +46,7 @@ public class SkillsMatrixView extends VerticalLayout {
         setSizeFull();
         var personSkillGrid = new Grid<>(PersonWithSkillsDto.class, false);
         personSkillGrid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        personSkillGrid.addThemeName("my-grid-spacing-theme");
         Grid.Column<PersonWithSkillsDto> personColumn = personSkillGrid.addColumn(createPersonRenderer())
             .setHeader("Person")
             .setKey("person")
