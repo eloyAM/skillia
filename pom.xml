@@ -15,6 +15,10 @@
         <vaadin.version>24.3.0</vaadin.version>
         <activeProfiles>h2,embedded-ldap</activeProfiles>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+        <sonar.language>java</sonar.language>
         <!-- Can't use 3.6.0 due to https://issues.apache.org/jira/browse/MPIR-462 -->
         <maven-project-info-reports-plugin.version>3.8.0</maven-project-info-reports-plugin.version>
         <maven-surefire-report-plugin.version>3.5.2</maven-surefire-report-plugin.version>
@@ -738,6 +742,19 @@
                     <scope>runtime</scope>
                 </dependency>
             </dependencies>
+        </profile>
+
+        <profile>
+            <id>sonarqube</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <version>5.1.0.4751</version>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
     </profiles>

@@ -13,7 +13,7 @@ public class GlobalException {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public static ResponseEntity<?> handleConstraintViolation(ConstraintViolationException e) {
+    public static ResponseEntity<ProblemDetail> handleConstraintViolation(ConstraintViolationException e) {
         var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problem.setTitle("Validation error");
         problem.setDetail(e.getLocalizedMessage());

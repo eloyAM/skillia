@@ -141,28 +141,27 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
 
     private TreeGrid<?> createSkillsTreegrid(PersonDto person, List<AcquiredSkillDto> acquiredSkills) {
         var tree = new TreeGrid<AcquiredSkillDto>();
-        {
-            tree.setWidthFull();
-            tree.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-            // Scroll if the screen is not big enough, we don't want to cut the level column
-            tree.setMinWidth("400px");
 
-            tree.addHierarchyColumn(sk -> sk.getSkill().getName())
-                .setHeader("Skill")
-                .setFlexGrow(1);
+        tree.setWidthFull();
+        tree.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        // Scroll if the screen is not big enough, we don't want to cut the level column
+        tree.setMinWidth("400px");
 
-            tree.addComponentColumn(v -> {
-                    if (v.getLevel() == -1) {
-                        return new Span();   // Special case for the grouping element
-                    }
-                    return createSkillLevelSelector(v.getLevel(), v.getSkill().getId());
-                })
-                .setHeader("Level")
-                .setSortable(true)
-                .setComparator(AcquiredSkillDto::getLevel)
-                .setAutoWidth(true)
-                .setFlexGrow(2);
-        }
+        tree.addHierarchyColumn(sk -> sk.getSkill().getName())
+            .setHeader("Skill")
+            .setFlexGrow(1);
+
+        tree.addComponentColumn(v -> {
+                if (v.getLevel() == -1) {
+                    return new Span();   // Special case for the grouping element
+                }
+                return createSkillLevelSelector(v.getLevel(), v.getSkill().getId());
+            })
+            .setHeader("Level")
+            .setSortable(true)
+            .setComparator(AcquiredSkillDto::getLevel)
+            .setAutoWidth(true)
+            .setFlexGrow(2);
 
         DepartmentDto departmentObject = departmentService.findDepartmentByName(person.getDepartment())
             .orElseThrow(() -> new IllegalStateException("Department " + person.getDepartment()
@@ -222,39 +221,7 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
             MenuItem menuItem = menuBar.addItem(text, levelWithLabel);
             menuItems.add(menuItem);
 
-            // Add click listener to handle selection only if my own profile or role allowed
-            if (isMyProfileOrPermittedRole(routeUsername)) {
-                menuItem.addClickListener(e -> {
-                    MenuItem selectedLevelItem = e.getSource();
-                    String selectedLevel = selectedLevelItem.getText();
-
-                    // If there was no previous skill rating, there's no old item
-                    Optional<MenuItem> oldLevelItem = menuItems.stream()
-                        .filter(item -> item.hasClassName(CURRENT_LEVEL_CSSCLASS)).findFirst();
-
-                    // No modification if the target is the same level
-                    if (oldLevelItem.map(selectedLevelItem::equals).orElse(false))
-                        return;
-
-                    // Update the skill level
-                    final PersonSkillBasicDto data = new PersonSkillBasicDto(routeUsername, skillIid, Integer.valueOf(selectedLevel));
-                    PersonSkillBasicDto savedPersonSkill = personSkillService.savePersonSkill(data);
-                    if (savedPersonSkill == null) {
-                        notificationTopCenter("Some error occurred while setting the skill level", false).open();
-                        return;
-                    }
-
-                    // Update the view
-                    selectedLevelItem.addThemeNames(
-                        LUMO_MENU_BAR_ICON_THEME_VARIANT, LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME
-                    );
-                    selectedLevelItem.addClassName(CURRENT_LEVEL_CSSCLASS);
-                    oldLevelItem.ifPresent(old -> {
-                        old.removeClassName(CURRENT_LEVEL_CSSCLASS);
-                        old.removeThemeNames(LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME);
-                    });
-                });
-            }
+            addSkillSelectorClickListenerIfPermitted(skillIid, menuItem, menuItems);
 
             // Add CSS classes for styling
             menuItem.addClassNames("level-item", "level-" + level);
@@ -273,6 +240,42 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         }
 
         return menuBar;
+    }
+
+    // Add click listener to handle selection only if my own profile or role allowed
+    private void addSkillSelectorClickListenerIfPermitted(Long skillIid, MenuItem menuItem, List<MenuItem> menuItems) {
+        if (isMyProfileOrPermittedRole(routeUsername)) {
+            menuItem.addClickListener(e -> {
+                MenuItem selectedLevelItem = e.getSource();
+                String selectedLevel = selectedLevelItem.getText();
+
+                // If there was no previous skill rating, there's no old item
+                Optional<MenuItem> oldLevelItem = menuItems.stream()
+                    .filter(item -> item.hasClassName(CURRENT_LEVEL_CSSCLASS)).findFirst();
+
+                // No modification if the target is the same level
+                if (oldLevelItem.map(selectedLevelItem::equals).orElse(false))
+                    return;
+
+                // Update the skill level
+                final PersonSkillBasicDto data = new PersonSkillBasicDto(routeUsername, skillIid, Integer.valueOf(selectedLevel));
+                PersonSkillBasicDto savedPersonSkill = personSkillService.savePersonSkill(data);
+                if (savedPersonSkill == null) {
+                    notificationTopCenter("Some error occurred while setting the skill level", false).open();
+                    return;
+                }
+
+                // Update the view
+                selectedLevelItem.addThemeNames(
+                    LUMO_MENU_BAR_ICON_THEME_VARIANT, LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME
+                );
+                selectedLevelItem.addClassName(CURRENT_LEVEL_CSSCLASS);
+                oldLevelItem.ifPresent(old -> {
+                    old.removeClassName(CURRENT_LEVEL_CSSCLASS);
+                    old.removeThemeNames(LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME);
+                });
+            });
+        }
     }
 
     private boolean isMyProfileOrPermittedRole(String requestedUsername) {

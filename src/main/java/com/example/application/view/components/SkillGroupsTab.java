@@ -6,6 +6,7 @@ import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.utils.Validators;
 import com.example.application.view.ViewUtils;
+import com.example.application.view.LumoVars;
 import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
@@ -102,9 +103,9 @@ public class SkillGroupsTab extends VerticalLayout {
                     .collect(FlexLayout::new, HasComponents::add, HasComponents::add);
                 tagsContainer.setFlexWrap(FlexLayout.FlexWrap.WRAP);
                 tagsContainer.getStyle()
-                    .set("gap", "var(--lumo-space-s)")
-                    .set("padding-top", "var(--lumo-space-s)")
-                    .set("padding-bottom", "var(--lumo-space-s)");
+                    .set("gap", LumoVars.LUMO_SPACE_S)
+                    .set("padding-top", LumoVars.LUMO_SPACE_S)
+                    .set("padding-bottom", LumoVars.LUMO_SPACE_S);
                 return tagsContainer;
             })
             .setHeader("Skills")

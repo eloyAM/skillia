@@ -3,6 +3,7 @@ package com.example.application.controller;
 import com.example.application.dto.UsrPwdDto;
 import com.example.application.security.jwt.CustomJwtEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.nimbusds.jose.JOSEException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 @Validated
 public class AuthController {
+    public static final String MESSAGE_FIELD = "message";
     private final AuthenticationManager authenticationManager;
     private final CustomJwtEncoder customJwtEncoder;
     private final ObjectMapper objectMapper;
@@ -47,21 +49,23 @@ public class AuthController {
 
     @Operation(description = "Get a bearer token for the given username and password")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful login. A bearer token is returned", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(mediaType = "application/problem+json")),
-            @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "500", description = "Could not create the JWT token", content = @Content(mediaType = "application/json"))
+        @ApiResponse(responseCode = "200", description = "Successful login. A bearer token is returned", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(mediaType = "application/problem+json")),
+        @ApiResponse(responseCode = "401", description = "Invalid credentials", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "500", description = "Could not create the JWT token", content = @Content(mediaType = "application/json"))
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UsrPwdDto body) {
-        UsernamePasswordAuthenticationToken usrPwdtoken = new UsernamePasswordAuthenticationToken(body.getUsername(), body.getPassword());
+    public ResponseEntity<ObjectNode> login(@Valid @RequestBody UsrPwdDto body) {
+        UsernamePasswordAuthenticationToken usrPwdtoken = new UsernamePasswordAuthenticationToken(
+            body.getUsername(), body.getPassword()
+        );
         final Authentication authentication;
         try {
             // If no exception is thrown, the credentials are valid
             authentication = authenticationManager.authenticate(usrPwdtoken);
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                    objectMapper.createObjectNode().put("message", "Invalid credentials"));
+                objectMapper.createObjectNode().put(MESSAGE_FIELD, "Invalid credentials"));
         }
 
         final String jwtToken;
@@ -69,11 +73,11 @@ public class AuthController {
             jwtToken = customJwtEncoder.encodeJwt(authentication);
         } catch (JOSEException e) {
             return ResponseEntity.internalServerError().body(
-                    objectMapper.createObjectNode().put("message", "Could not create the JWT token")
+                objectMapper.createObjectNode().put(MESSAGE_FIELD, "Could not create the JWT token")
             );
         }
         return ResponseEntity.ok(
-                objectMapper.createObjectNode().put("token", jwtToken)
+            objectMapper.createObjectNode().put("token", jwtToken)
         );
     }
 
@@ -82,17 +86,17 @@ public class AuthController {
     public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
         final ProblemDetail problem = ex.getBody();
         Map<String, String> errors = ex.getBindingResult().getAllErrors().stream()
-                .filter((error) -> error instanceof FieldError)
-                .collect(Collectors.toMap(
-                        error -> ((FieldError) error).getField(),
-                        error -> Optional.ofNullable(error.getDefaultMessage()).orElse("Error")
-                ));
+            .filter(FieldError.class::isInstance)
+            .collect(Collectors.toMap(
+                error -> ((FieldError) error).getField(),
+                error -> Optional.ofNullable(error.getDefaultMessage()).orElse("Error")
+            ));
         final String briefMessage = errors.entrySet().stream()
-                .findFirst()
-                .map(entry -> entry.getKey() + ": " + entry.getValue())
-                .orElse("Validation error");
+            .findFirst()
+            .map(entry -> entry.getKey() + ": " + entry.getValue())
+            .orElse("Validation error");
         problem.setTitle("Validation error");
-        problem.setProperty("message", briefMessage);
+        problem.setProperty(MESSAGE_FIELD, briefMessage);
         problem.setProperty("errors", List.of(errors));
         return problem;
     }

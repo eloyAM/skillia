@@ -10,8 +10,10 @@ import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.SkillService;
 
+import java.security.SecureRandom;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,8 +43,6 @@ public class DbInit {
 
     public void run() {
         List<PersonDto> persons = createPersons();
-        Map<String, PersonDto> personsByUsername = persons.stream()
-            .collect(Collectors.toMap(PersonDto::getUsername, Function.identity()));
         PersonDto firstPerson = persons.get(0);
         PersonDto secondPerson = persons.get(1);
         PersonDto thirdPerson = persons.get(2);
@@ -57,15 +57,15 @@ public class DbInit {
         SkillDto firstSkill = skills.get(0);
         SkillDto secondSkill = skills.get(1);
 
-        Function<String, Long> skillIdByName = (name) -> skillsByName.get(name).getId();
+        ToLongFunction<String> skillIdByName = name -> skillsByName.get(name).getId();
 
         Collection<PersonSkill> personSkills = List.of(
-            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("C++"), 3),
-            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("Java"), 2),
-            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("Korean"), randomLvl()),
-            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("Open source"), randomLvl()),
-            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("Mockito"), randomLvl()),
-            new PersonSkill(firstPerson.getUsername(), skillIdByName.apply("MS Project"), randomLvl()),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.applyAsLong("C++"), 3),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.applyAsLong("Java"), 2),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.applyAsLong("Korean"), randomLvl()),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.applyAsLong("Open source"), randomLvl()),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.applyAsLong("Mockito"), randomLvl()),
+            new PersonSkill(firstPerson.getUsername(), skillIdByName.applyAsLong("MS Project"), randomLvl()),
             new PersonSkill(secondPerson.getUsername(), firstSkill.getId(), 4),
             new PersonSkill(thirdPerson.getUsername(), secondSkill.getId(), 5),
             new PersonSkill(thirdPerson.getUsername(), firstSkill.getId(), 1)
@@ -81,26 +81,26 @@ public class DbInit {
             .collect(Collectors.toMap(SkillTagDto::getName, Function.identity()));
         Iterable<SkillDto> skills = List.of(
             SkillDto.builder().name("C++")
-                .tags(Set.of(tagsByName.get("Programming Languages")))
+                .tags(Set.of(tagsByName.get(TagsNames.PROGRAMMING_LANGUAGES)))
                 .build(),
             SkillDto.builder().name("Java")
-                .tags(Set.of(tagsByName.get("Programming Languages")))
+                .tags(Set.of(tagsByName.get(TagsNames.PROGRAMMING_LANGUAGES)))
                 .build(),
             SkillDto.builder().name("SQL - Structured Query Language")
-                .tags(Set.of(tagsByName.get("Programming Languages")))
+                .tags(Set.of(tagsByName.get(TagsNames.PROGRAMMING_LANGUAGES)))
                 .build(),
             SkillDto.builder().name("English")
-                .tags(Set.of(tagsByName.get("Languages")))
+                .tags(Set.of(tagsByName.get(TagsNames.LANGUAGES)))
                 .build(),
-            new SkillDto(null, "Korean", tagsByName.get("Languages")),
+            new SkillDto(null, "Korean", tagsByName.get(TagsNames.PROGRAMMING_LANGUAGES)),
             SkillDto.builder().name("Communication").build(),
             SkillDto.builder().name("Testing").build(),
             SkillDto.builder().name("Open source").build(),
             SkillDto.builder().name("JUnit")
-                .tags(Set.of(tagsByName.get("Unit Testing"), tagsByName.get("Java")))
+                .tags(Set.of(tagsByName.get(TagsNames.UNIT_TESTING), tagsByName.get("Java")))
                 .build(),
             SkillDto.builder().name("Mockito")
-                .tags(Set.of(tagsByName.get("Unit Testing"), tagsByName.get("Java"), tagsByName.get("Mocking libraries")))
+                .tags(Set.of(tagsByName.get(TagsNames.UNIT_TESTING), tagsByName.get("Java"), tagsByName.get("Mocking libraries")))
                 .build(),
             new SkillDto(null,
                 "MS Project",
@@ -134,11 +134,11 @@ public class DbInit {
 
     private Set<SkillTagDto> createSkillTags() {
         return Set.of(
-                SkillTagDto.builder().name("Programming Languages").build(),
-                SkillTagDto.builder().name("Languages").build(),
+                SkillTagDto.builder().name(TagsNames.PROGRAMMING_LANGUAGES).build(),
+                SkillTagDto.builder().name(TagsNames.LANGUAGES).build(),
                 SkillTagDto.builder().name("Project Management").build(),
                 SkillTagDto.builder().name("Tools").build(),
-                SkillTagDto.builder().name("Unit Testing").build(),
+                SkillTagDto.builder().name(TagsNames.UNIT_TESTING).build(),
                 SkillTagDto.builder().name("Java").build(),
                 SkillTagDto.builder().name("Mocking libraries").build(),
                 SkillTagDto.builder().name("Performance testing tools").build()
@@ -176,12 +176,11 @@ public class DbInit {
     private void setDeparmentSkillsGroups(List<SkillGroupDto> skillGroups) {
         departmentService.findAllDepartment().forEach(d -> {
             List<SkillGroupDto> skillGroupsToAdd = getShuffleCopy(skillGroups).stream()
-                .limit(new Random().nextInt(5) + 1).toList();
+                .limit(randomUpTo(5)).toList();
             d.getSkillGroups().addAll(skillGroupsToAdd);
             departmentService.saveDepartment(d);
         });
     }
-
 
     private static <R> Collection<R> getShuffleCopy(Collection<R> source) {
         var copy = new ArrayList<>(source);
@@ -220,8 +219,19 @@ public class DbInit {
         }
     }
 
-    private static int randomLvl() {
-        return new Random().nextInt(5) + 1;
+    private static int randomUpTo(int max) {
+        return new SecureRandom().nextInt(max) + 1;
     }
 
+    private static int randomLvl() {
+        return randomUpTo(5);
+    }
+
+    // Constants
+
+    private static class TagsNames {
+        public static final String PROGRAMMING_LANGUAGES = "Programming Languages";
+        public static final String LANGUAGES = "Languages";
+        public static final String UNIT_TESTING = "Unit Testing";
+    }
 }

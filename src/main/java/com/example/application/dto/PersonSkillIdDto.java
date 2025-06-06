@@ -25,8 +25,8 @@ import java.io.Serializable;
 public class PersonSkillIdDto implements Serializable {
     @NonNull
     @NotBlank
-    String personId;
+    private String personId;
     @NonNull
     @NotNull
-    Long skillId;
+    private Long skillId;
 }

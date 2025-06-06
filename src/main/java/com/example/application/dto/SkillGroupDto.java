@@ -17,9 +17,9 @@ import java.util.Set;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 public class SkillGroupDto implements Serializable {
-    Long id;
+    private Long id;
     @NotBlank
-    String name;
-    String description;
-    Set<SkillDto> skills;
+    private String name;
+    private String description;
+    private Set<SkillDto> skills;
 }

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 @UtilityClass
 public final class ViewUtils {
@@ -110,12 +111,12 @@ public final class ViewUtils {
     private static <T> FlexLayout createSkillLevelIndicatorContainer(
         Iterable<T> items,
         Function<T, String> labelProvider,
-        Function<T, Integer> levelProvider
+        ToIntFunction<T> levelProvider
     ) {
         var container = new FlexLayout();
         items.forEach(item -> {
             String label = labelProvider.apply(item);
-            Integer level = levelProvider.apply(item);
+            Integer level = levelProvider.applyAsInt(item);
             container.add(createSkillLevelIndicator(label, level));
         });
         container.setFlexWrap(FlexLayout.FlexWrap.WRAP);
@@ -125,7 +126,7 @@ public final class ViewUtils {
         return container;
     }
 
-    public static ComponentRenderer<? extends Component, PersonWithSkillsDto> skillLevelIndicatorRendererForPersonWithSkills() {
+    public static ComponentRenderer<Component, PersonWithSkillsDto> skillLevelIndicatorRendererForPersonWithSkills() {
         return new ComponentRenderer<>(personWithSkills -> {
             var items = personWithSkills.getSkills();
             return createSkillLevelIndicatorContainer(
@@ -136,7 +137,7 @@ public final class ViewUtils {
         });
     }
 
-    public static ComponentRenderer<? extends Component, SkillAndPeopleWithLevel> skillLevelIndicatorRendererForSkillAndPeopleWithLevel() {
+    public static ComponentRenderer<Component, SkillAndPeopleWithLevel> skillLevelIndicatorRendererForSkillAndPeopleWithLevel() {
         return new ComponentRenderer<>(skillAndPeopleWithLevel -> {
             var items = skillAndPeopleWithLevel.getPeopleWithLevel();
             return createSkillLevelIndicatorContainer(
