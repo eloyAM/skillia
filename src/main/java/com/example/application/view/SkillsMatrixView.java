@@ -4,7 +4,7 @@ import com.example.application.dto.PersonDto;
 import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.service.PersonSkillService;
-import com.example.application.service.SkillTagService;
+import com.example.application.service.SkillService;
 import com.example.application.utils.Validators;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -18,6 +18,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteParameters;
+import com.vaadin.flow.router.RouterLink;
 import jakarta.annotation.security.PermitAll;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,11 +36,15 @@ import java.util.stream.Stream;
 public class SkillsMatrixView extends VerticalLayout {
 
     private final PersonSkillService personSkillService;
-    private final SkillTagService skillTagService;
+    private final SkillService skillService;
 
-    public SkillsMatrixView(PersonSkillService personSkillService, SkillTagService skillTagService) {
+    public SkillsMatrixView(
+        PersonSkillService personSkillService,
+        SkillService skillService
+    ) {
         this.personSkillService = personSkillService;
-        this.skillTagService = skillTagService;
+        this.skillService = skillService;
+        //
         createUi();
     }
 
@@ -79,7 +85,7 @@ public class SkillsMatrixView extends VerticalLayout {
         // Create a filter for the skill column
         TextField skillSearchTextField = createSkillSearcTextField(filterManager);
         MultiSelectComboBox<SkillTagDto> tagSelectorFilter = ViewUtils.createMultiSelectComboBoxFilter(
-            skillTagService::getAllSkillTagInUse, SkillTagDto::getName, "Tags");
+            skillService::getAllSkillTagInUse, SkillTagDto::getName, "Tags");
         tagSelectorFilter.addValueChangeListener(e -> {
             var selectedTags = e.getValue();
             List<String> valuesList = selectedTags.stream()
@@ -157,8 +163,14 @@ public class SkillsMatrixView extends VerticalLayout {
         return new ComponentRenderer<>(personWithSkillsDto -> {
             var person = personWithSkillsDto.getPerson();
 
-            var fullNameDiv = new Div(Validators.isNullOrEmpty(person.getFullName())
-                ? person.getUsername() : person.getFullName());
+            String name = Validators.isNullOrEmpty(person.getFullName())
+                ? person.getUsername() : person.getFullName();
+            RouterLink profileLink = new RouterLink(
+                name,
+                UserProfileView.class,
+                new RouteParameters(UserProfileView.USERNAME_PATH_PARAMETER, person.getUsername())
+            );
+            var fullNameDiv = new Div(profileLink);
             fullNameDiv.getStyle()
                 .set("font-size", "var(--lumo-font-size-m)")
                 .set("font-weight", "600")

@@ -2,7 +2,6 @@ package com.example.application.view.components;
 
 import com.example.application.dto.SkillDto;
 import com.example.application.dto.SkillGroupDto;
-import com.example.application.service.SkillGroupService;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.utils.Validators;
@@ -37,15 +36,13 @@ import java.util.Optional;
 
 public class SkillGroupsTab extends VerticalLayout {
 
-    private final SkillGroupService skillGroupService;
     private final SkillService skillService;
 
     public SkillGroupsTab(
-        SkillGroupService skillGroupService,
         SkillService skillService
     ) {
-        this.skillGroupService = skillGroupService;
         this.skillService = skillService;
+        //
         createUi();
     }
 
@@ -79,7 +76,7 @@ public class SkillGroupsTab extends VerticalLayout {
             .setKey("name")
             .setSortable(true);
 
-        List<SkillGroupDto> items = skillGroupService.getAllGroups();
+        List<SkillGroupDto> items = skillService.getAllGroups();
         // If the item collection is not mutable, we'll have troubles adding data dynamically
         ArrayList<SkillGroupDto> fixedItems = new ArrayList<>(items);
         GridListDataView<SkillGroupDto> dataView = grid.setItems(fixedItems);
@@ -193,7 +190,7 @@ public class SkillGroupsTab extends VerticalLayout {
                 ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
-            Optional<SkillGroupDto> savedGroup = skillGroupService.saveGroup(inputItem);
+            Optional<SkillGroupDto> savedGroup = skillService.saveGroup(inputItem);
             if (savedGroup.isPresent()) {
                 // Refresh the grid after adding/modifying a record
                 final String successMessage;
@@ -233,7 +230,7 @@ public class SkillGroupsTab extends VerticalLayout {
         confirmDialog.setConfirmText("Delete");
         confirmDialog.setConfirmButtonTheme("error primary");
         confirmDialog.addConfirmListener(e -> {
-            skillGroupService.deleteGroupById(selectedItem.getId());
+            skillService.deleteGroupById(selectedItem.getId());
             grid.getListDataView().removeItem(selectedItem);
         });
         confirmDialog.setCancelable(true);

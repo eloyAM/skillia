@@ -1,7 +1,7 @@
 package com.example.application.it.service;
 
 import com.example.application.dto.SkillTagDto;
-import com.example.application.service.SkillTagService;
+import com.example.application.service.SkillService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -17,37 +17,37 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest
 class SkillTagServiceTest {
     @Autowired
-    private SkillTagService skillTagService;
+    private SkillService skillService;
 
     @ParameterizedTest
     @ValueSource(strings = {"Diego", "Ramón", "Жанна", "«ταБЬℓσ»:", "1<2 & 4+1>3,", "now 20% off!", "٩(-̮̮̃-̃)۶", "ਈ",
-            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     })
     void saveSkillTag(String name) {
         SkillTagDto originalDto = new SkillTagDto(null, name);
-        Optional<SkillTagDto> savedResultOpt = skillTagService.saveSkillTag(originalDto);
+        Optional<SkillTagDto> savedResultOpt = skillService.saveSkillTag(originalDto);
         SkillTagDto skillTagDto = savedResultOpt.orElseThrow();
         assertAll(
-                () -> assertThat(skillTagDto.getName()).isEqualTo(name),
-                () -> assertThat(skillTagDto.getId()).isGreaterThan(0L)
+            () -> assertThat(skillTagDto.getName()).isEqualTo(name),
+            () -> assertThat(skillTagDto.getId()).isGreaterThan(0L)
         );
     }
 
     @Test
     void getAllSkillTag() {
-        skillTagService.saveSkillTag(SkillTagDto.builder().name("Tag A").build());
-        skillTagService.saveSkillTag(new SkillTagDto().setName("tag b"));
-        skillTagService.saveSkillTag(new SkillTagDto().setName("tAg  c"));
-        List<SkillTagDto> savedSkillTagAll = skillTagService.getAllSkillTag();
+        skillService.saveSkillTag(SkillTagDto.builder().name("Tag A").build());
+        skillService.saveSkillTag(new SkillTagDto().setName("tag b"));
+        skillService.saveSkillTag(new SkillTagDto().setName("tAg  c"));
+        List<SkillTagDto> savedSkillTagAll = skillService.getAllSkillTag();
         assertThat(savedSkillTagAll).hasSize(3);
         assertThat(savedSkillTagAll)
-                .extracting(SkillTagDto::getName)
-                .containsExactlyInAnyOrder(
-                        "Tag A",
-                        "tag b",
-                        "tAg  c"
-                );
+            .extracting(SkillTagDto::getName)
+            .containsExactlyInAnyOrder(
+                "Tag A",
+                "tag b",
+                "tAg  c"
+            );
         assertThat(savedSkillTagAll)
-                .allSatisfy(skillTagDto -> assertThat(skillTagDto.getId()).isGreaterThan(0L));
+            .allSatisfy(skillTagDto -> assertThat(skillTagDto.getId()).isGreaterThan(0L));
     }
 }

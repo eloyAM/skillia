@@ -3,7 +3,7 @@ package com.example.application.view;
 import com.example.application.dto.DepartmentDto;
 import com.example.application.dto.SkillGroupDto;
 import com.example.application.service.DepartmentService;
-import com.example.application.service.SkillGroupService;
+import com.example.application.service.SkillService;
 import com.example.application.utils.Validators;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
@@ -31,14 +31,16 @@ import java.util.Set;
 public class DepartmentsView extends VerticalLayout {
 
     private final DepartmentService departmentService;
-    private final SkillGroupService skillGroupService;
+    private final SkillService skillService;
 
     public DepartmentsView(
         DepartmentService departmentService,
-        SkillGroupService skillGroupService) {
+        SkillService skillService
+    ) {
         this.departmentService = departmentService;
+        this.skillService = skillService;
+        //
         createUi();
-        this.skillGroupService = skillGroupService;
     }
 
     private void createUi() {
@@ -94,7 +96,7 @@ public class DepartmentsView extends VerticalLayout {
 
         MultiSelectListBox<SkillGroupDto> skillGroupListBox = new MultiSelectListBox<>();
         skillGroupListBox.setItemLabelGenerator(SkillGroupDto::getName);
-        skillGroupListBox.setItems(skillGroupService.getAllGroups());
+        skillGroupListBox.setItems(skillService.getAllGroups());
         skillGroupListBox.setValue(
             Optional.ofNullable(selectedItem.getSkillGroups()).map(Set::copyOf).orElse(Set.of())
         );

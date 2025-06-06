@@ -1,7 +1,7 @@
 package com.example.application.view.components;
 
 import com.example.application.dto.SkillTagDto;
-import com.example.application.service.SkillTagService;
+import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.view.ViewUtils;
 import com.vaadin.flow.component.Component;
@@ -32,10 +32,11 @@ import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WA
 
 public class SkillTagTab extends VerticalLayout {
 
-    private final SkillTagService skillTagService;
+    private final SkillService skillService;
 
-    public SkillTagTab(SkillTagService skillTagService) {
-        this.skillTagService = skillTagService;
+    public SkillTagTab(SkillService skillService) {
+        this.skillService = skillService;
+        //
         createUi();
     }
 
@@ -49,7 +50,7 @@ public class SkillTagTab extends VerticalLayout {
             .setKey("name")
             .setSortable(true);
 
-        List<SkillTagDto> items = skillTagService.getAllSkillTag();
+        List<SkillTagDto> items = skillService.getAllSkillTag();
         // If the item collection is not mutable, we'll have troubles adding data dynamically
         List<SkillTagDto> fixedItems = new ArrayList<>(items);
         GridListDataView<SkillTagDto> dataView = grid.setItems(fixedItems);
@@ -87,7 +88,7 @@ public class SkillTagTab extends VerticalLayout {
                 ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
-            Optional<SkillTagDto> newItem = skillTagService.saveSkillTag(inputSkillTag);
+            Optional<SkillTagDto> newItem = skillService.saveSkillTag(inputSkillTag);
             if (newItem.isPresent()) {
                 ViewUtils.notificationTopCenter("Tag \"" + newItem.get().getName() + "\" created", true).open();
                 listDataView.addItem(newItem.get());
@@ -154,7 +155,7 @@ public class SkillTagTab extends VerticalLayout {
         confirmDialog.setConfirmText("Delete");
         confirmDialog.setConfirmButtonTheme("error primary");
         confirmDialog.addConfirmListener(e -> {
-            skillTagService.deleteSkillTagById(selectedItem.getId());
+            skillService.deleteSkillTagById(selectedItem.getId());
             grid.getListDataView().removeItem(selectedItem);
         });
         confirmDialog.setCancelable(true);
@@ -183,7 +184,7 @@ public class SkillTagTab extends VerticalLayout {
                 ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
-            Optional<SkillTagDto> updatedSkill = skillTagService.updateSkillTag(
+            Optional<SkillTagDto> updatedSkill = skillService.updateSkillTag(
                 inputSkillTag.getName(), selectedItem.getId()
             );
             if (updatedSkill.isPresent()) {

@@ -1,7 +1,9 @@
 package com.example.application;
 
 import com.example.application.repo.PersonSkillRepo;
-import com.example.application.service.*;
+import com.example.application.service.DepartmentService;
+import com.example.application.service.PersonService;
+import com.example.application.service.SkillService;
 import com.example.application.utils.DbInit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,12 +25,10 @@ public class CustomDbInitAppRunner implements ApplicationRunner {
         PersonService personService,
         SkillService skillService,
         PersonSkillRepo personSkillRepo,
-        SkillTagService skillTagService,
-        SkillGroupService skillGroupService,
         DepartmentService departmentService
     ) {
         this.dbInitializer = new DbInit(
-            personService, skillService, personSkillRepo, skillTagService, skillGroupService, departmentService
+            personService, skillService, personSkillRepo, departmentService
         );
     }
 

@@ -3,7 +3,6 @@ package com.example.application.view.components;
 import com.example.application.dto.SkillDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.service.SkillService;
-import com.example.application.service.SkillTagService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.view.ViewUtils;
 import com.vaadin.componentfactory.Popup;
@@ -44,16 +43,16 @@ import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WA
 public class SkillsViewTab extends VerticalLayout {
 
     private static final String GRID_NAME_COLUMN_NAME = "name";
+
     private final SkillService skillService;
-    private final SkillTagService skillTagService;
+
     private MultiSelectComboBox<SkillTagDto> tagSelectorFilter;
 
     public SkillsViewTab(
-        SkillService skillService,
-        SkillTagService skillTagService
+        SkillService skillService
     ) {
         this.skillService = skillService;
-        this.skillTagService = skillTagService;
+        //
         createUi();
     }
 
@@ -134,7 +133,7 @@ public class SkillsViewTab extends VerticalLayout {
         );
 
         tagSelectorFilter = ViewUtils.createMultiSelectComboBoxFilter(
-            skillTagService::getAllSkillTagInUse, SkillTagDto::getName, "Filter");
+            skillService::getAllSkillTagInUse, SkillTagDto::getName, "Filter");
         tagSelectorFilter.addValueChangeListener(e -> {
             skillFilter.setTags(tagSelectorFilter.getSelectedItems());
             filterDataProvider.setFilter(skillFilter);
@@ -287,7 +286,7 @@ public class SkillsViewTab extends VerticalLayout {
         tagSelector.setWidthFull();
         tagSelector.setMaxWidth("100%");
         tagSelector.setItemLabelGenerator(SkillTagDto::getName);
-        tagSelector.setItems(skillTagService.getAllSkillTag());
+        tagSelector.setItems(skillService.getAllSkillTag());
         return tagSelector;
     }
 
@@ -368,7 +367,7 @@ public class SkillsViewTab extends VerticalLayout {
     }
 
     private void refreshTagSelectorItems() {
-        tagSelectorFilter.setItems(skillTagService.getAllSkillTagInUse());
+        tagSelectorFilter.setItems(skillService.getAllSkillTagInUse());
     }
 
 }

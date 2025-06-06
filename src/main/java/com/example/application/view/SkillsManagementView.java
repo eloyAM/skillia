@@ -1,9 +1,7 @@
 package com.example.application.view;
 
 import com.example.application.security.SecConstants;
-import com.example.application.service.SkillGroupService;
 import com.example.application.service.SkillService;
-import com.example.application.service.SkillTagService;
 import com.example.application.view.components.SkillGroupsTab;
 import com.example.application.view.components.SkillTagTab;
 import com.example.application.view.components.SkillsViewTab;
@@ -18,13 +16,11 @@ import jakarta.annotation.security.RolesAllowed;
 @PageTitle("Skills management")
 public class SkillsManagementView extends TabSheet {
     private final SkillService skillService;
-    private final SkillTagService skillTagService;
-    private final SkillGroupService skillGroupService;
 
-    public SkillsManagementView(SkillService skillService, SkillTagService skillTagService, SkillGroupService skillGroupService) {
+    public SkillsManagementView(
+        SkillService skillService
+    ) {
         this.skillService = skillService;
-        this.skillTagService = skillTagService;
-        this.skillGroupService = skillGroupService;
         //
         createUi();
     }
@@ -32,14 +28,14 @@ public class SkillsManagementView extends TabSheet {
     private void createUi() {
         setSizeFull();
 
-        SkillsViewTab skillsViewTab = new SkillsViewTab(skillService, skillTagService);
+        SkillsViewTab skillsViewTab = new SkillsViewTab(skillService);
 
         add(new Tab("Skills"), skillsViewTab);
 
-        SkillTagTab skillTagTab = new SkillTagTab(skillTagService);
+        SkillTagTab skillTagTab = new SkillTagTab(skillService);
         add(new Tab("Tags"), skillTagTab);
 
-        SkillGroupsTab skillGroupsTab = new SkillGroupsTab(skillGroupService, skillService);
+        SkillGroupsTab skillGroupsTab = new SkillGroupsTab(skillService);
         add(new Tab("Groups"), skillGroupsTab);
     }
 }

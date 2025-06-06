@@ -6,7 +6,9 @@ import com.example.application.dto.SkillGroupDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.entity.PersonSkill;
 import com.example.application.repo.PersonSkillRepo;
-import com.example.application.service.*;
+import com.example.application.service.DepartmentService;
+import com.example.application.service.PersonService;
+import com.example.application.service.SkillService;
 
 import java.util.*;
 import java.util.function.Function;
@@ -23,23 +25,17 @@ public class DbInit {
     private final PersonService personService;
     private final SkillService skillService;
     private final PersonSkillRepo personSkillRepo;
-    private final SkillTagService skillTagService;
-    private final SkillGroupService skillGroupService;
     private final DepartmentService departmentService;
 
     public DbInit(
         PersonService personService,
         SkillService skillService,
         PersonSkillRepo personSkillRepo,
-        SkillTagService skillTagService,
-        SkillGroupService skillGroupService,
         DepartmentService departmentService
     ) {
         this.personService = personService;
         this.skillService = skillService;
         this.personSkillRepo = personSkillRepo;
-        this.skillTagService = skillTagService;
-        this.skillGroupService = skillGroupService;
         this.departmentService = departmentService;
     }
 
@@ -148,7 +144,7 @@ public class DbInit {
                 SkillTagDto.builder().name("Performance testing tools").build()
             )
             .stream()
-            .map(item -> skillTagService
+            .map(item -> skillService
                 .saveSkillTag(item)
                 .orElseThrow()
             )
@@ -172,7 +168,7 @@ public class DbInit {
                     .skills(getShuffleCopy(skills).stream().limit(10).collect(Collectors.toSet()))
                     .build()
             )
-            .map(skillGroupService::saveGroup)
+            .map(skillService::saveGroup)
             .map(Optional::orElseThrow)
             .toList();
     }
@@ -204,7 +200,7 @@ public class DbInit {
             );
         }
         for (SkillTagDto tag : tags) {
-            skillTagService.saveSkillTag(tag)
+            skillService.saveSkillTag(tag)
                 .orElseThrow();
         }
     }
