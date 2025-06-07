@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import static org.springframework.http.ResponseEntity.created;
 
@@ -54,9 +54,8 @@ public class SkillController {
             @ApiResponse(responseCode = "204", description = "Skill already exists")
     })
     @PostMapping("")
-    public ResponseEntity<SkillDto> createSkill(@RequestBody Map<String, String> body) {
-        final String skillName = body.get("name");
-        return skillService.saveSkill(new SkillDto(skillName))
+    public ResponseEntity<SkillDto> createSkill(@RequestBody SkillBody body) {
+        return skillService.saveSkill(new SkillDto(body.name))
                 .map(skill -> created(URI.create("/api/skill/" + skill.getId())).body(skill))
                 .orElse(ResponseEntity.noContent().build());
     }
@@ -83,9 +82,8 @@ public class SkillController {
                     description = "No skill matching the id or there is already a skill with the same name")
     })
     @PatchMapping("/{id}")
-    public SkillDto updateSkill(@PathVariable Long id, @RequestBody Map<String, String> body) { // TODO rename to express that this only updates the name, or modify to update tags as well
-        final String skillName = body.get("name");
-        return skillService.updateSkill(id, skillName)
+    public SkillDto updateSkill(@PathVariable Long id, @RequestBody SkillBody body) { // TODO rename to express that this only updates the name, or modify to update tags as well
+        return skillService.updateSkill(id, body.name)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "No skill found to update with the given id " + id));
     }
@@ -98,5 +96,10 @@ public class SkillController {
     public ResponseEntity<Void> deleteSkill(@PathVariable Long id) {
         skillService.deleteSkillById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private record SkillBody(
+        @NotBlank String name
+    ) {
     }
 }

@@ -150,4 +150,8 @@ public class SkillService {
     public void deleteSkillTagById(Long id) {
         skillTagRepo.deleteById(id);
     }
+
+    public Optional<SkillTagDto> getSkillTagById(Long id) {
+        return skillTagRepo.findById(id).map(dtoEntityMapper::toSkillTagDto);
+    }
 }

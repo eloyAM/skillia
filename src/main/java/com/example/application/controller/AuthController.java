@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,15 +19,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Auth", description = "API authentication")
 @RestController
@@ -81,23 +76,4 @@ public class AuthController {
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleValidationExceptions(MethodArgumentNotValidException ex) {
-        final ProblemDetail problem = ex.getBody();
-        Map<String, String> errors = ex.getBindingResult().getAllErrors().stream()
-            .filter(FieldError.class::isInstance)
-            .collect(Collectors.toMap(
-                error -> ((FieldError) error).getField(),
-                error -> Optional.ofNullable(error.getDefaultMessage()).orElse("Error")
-            ));
-        final String briefMessage = errors.entrySet().stream()
-            .findFirst()
-            .map(entry -> entry.getKey() + ": " + entry.getValue())
-            .orElse("Validation error");
-        problem.setTitle("Validation error");
-        problem.setProperty(MESSAGE_FIELD, briefMessage);
-        problem.setProperty("errors", List.of(errors));
-        return problem;
-    }
 }
