@@ -22,7 +22,7 @@ public class LdapService {
 
 
     public List<PersonDto> findAllUsers() {
-        AttributesMapper<PersonDto> attributesMapper = (attrs) -> PersonDto.builder()
+        AttributesMapper<PersonDto> attributesMapper = attrs -> PersonDto.builder()
                 .username(getAttrAsStr(attrs, ldapProperties.getUsernameAttribute()))
                 .fullName(getAttrAsStr(attrs, ldapProperties.getFullNameAttribute()))
                 .email(getAttrAsStr(attrs, "mail"))

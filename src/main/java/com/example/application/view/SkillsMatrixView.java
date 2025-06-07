@@ -90,7 +90,7 @@ public class SkillsMatrixView extends VerticalLayout {
             var selectedTags = e.getValue();
             List<String> valuesList = selectedTags.stream()
                 .map(SkillTagDto::getName)
-                .collect(Collectors.toList());
+                .toList();
             filterManager.setTagFilter(valuesList);
             filterManager.applyFilters();
         });
@@ -266,7 +266,7 @@ public class SkillsMatrixView extends VerticalLayout {
         }
 
         private static final class PersonPredicate {
-            public static final BiPredicate<PersonWithSkillsDto, String> personContactPredicate =
+            static final BiPredicate<PersonWithSkillsDto, String> personContactPredicate =
                 (personWithSkillsDto, filterValue) -> {
                     if (filterValue == null || filterValue.isEmpty()) {
                         return true;
@@ -277,7 +277,7 @@ public class SkillsMatrixView extends VerticalLayout {
                         || StringUtils.containsIgnoreCase(person.getUsername(), filterValue)
                         || StringUtils.containsIgnoreCase(person.getEmail(), filterValue);
                 };
-            public static BiPredicate<PersonWithSkillsDto, String> departmentListPredicate =
+            static BiPredicate<PersonWithSkillsDto, String> departmentListPredicate =
                 (personWithSkillsDto, filterValue) -> {
                     if (filterValue == null || filterValue.isEmpty()) {
                         return true;
@@ -286,7 +286,7 @@ public class SkillsMatrixView extends VerticalLayout {
                     return StringUtils.containsIgnoreCase(filterValue,
                         personWithSkillsDto.getPerson().getDepartment());
                 };
-            public static BiPredicate<PersonWithSkillsDto, String> jobTitleListPredicate =
+            static BiPredicate<PersonWithSkillsDto, String> jobTitleListPredicate =
                 (personWithSkillsDto, filterValue) -> {
                     if (filterValue == null || filterValue.isEmpty()) {
                         return true;

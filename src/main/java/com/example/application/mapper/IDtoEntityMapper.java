@@ -76,9 +76,7 @@ public interface IDtoEntityMapper {
         Map<Person, List<PersonSkill>> skillsByPerson = new LinkedHashMap<>();
         for (PersonSkill personSkillItem : personSkillList) {
             Person person = personSkillItem.getPerson();
-            if (!skillsByPerson.containsKey(person)) {
-                skillsByPerson.put(person, new ArrayList<>());
-            }
+            skillsByPerson.computeIfAbsent(person, k -> new ArrayList<>());
             skillsByPerson.get(person).add(personSkillItem);
         }
 

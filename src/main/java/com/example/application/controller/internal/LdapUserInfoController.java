@@ -20,7 +20,6 @@ public class LdapUserInfoController {
 
     @GetMapping("/users")
     public List<PersonDto> get() {
-        var users = ldapService.findAllUsers();
-        return users;
+        return ldapService.findAllUsers();
     }
 }

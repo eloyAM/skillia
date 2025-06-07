@@ -21,7 +21,6 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static com.example.application.security.jwt.JwtAuthenticationProviderConfig.ROLES_CLAIM;
 import static com.example.application.security.jwt.JwtAuthenticationProviderConfig.ROLE_AUTHORITY_PREFIX;
@@ -53,7 +52,7 @@ public class CustomJwtEncoder {
                 .map(Objects::toString)
                 .filter(a -> a.startsWith(ROLE_AUTHORITY_PREFIX))
                 .map(a -> a.substring(ROLE_AUTHORITY_PREFIX.length()))
-                .collect(Collectors.toList());
+                .toList();
 
         JWSHeader jwsHeader = new JWSHeader(jwsAlgorithm);
         JWKSelector jwkSelector = new JWKSelector(JWKMatcher.forJWSHeader(jwsHeader));

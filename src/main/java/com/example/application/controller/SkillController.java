@@ -91,7 +91,7 @@ public class SkillController {
     }
 
     @Operation(description = "Delete the skill with the given id. No error thrown if the skill doesn't exist")
-    @ApiResponses({
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted (or not found)")
     })
     @DeleteMapping("/{id}")

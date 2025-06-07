@@ -85,9 +85,7 @@ public final class DtoEntityMapping {
         Map<Person, List<PersonSkill>> skillsByPerson = new LinkedHashMap<>();
         for (PersonSkill personSkill : personSkillList) {
             Person person = personSkill.getPerson();
-            if (!skillsByPerson.containsKey(person)) {
-                skillsByPerson.put(person, new ArrayList<>());
-            }
+            skillsByPerson.computeIfAbsent(person, k -> new ArrayList<>());
             skillsByPerson.get(person).add(personSkill);
         }
         List<PersonWithSkillsDto> result = new ArrayList<>(skillsByPerson.size());
@@ -97,7 +95,7 @@ public final class DtoEntityMapping {
                     .skill(mapSkillEntityToSkillDto(ps.getSkill()))
                     .level(ps.getLevel())
                     .build())
-                .collect(Collectors.toList());
+                .toList();
             result.add(PersonWithSkillsDto.builder()
                 .person(mapPersonEntityToPersonDto(entry.getKey()))
                 .skills(skills)

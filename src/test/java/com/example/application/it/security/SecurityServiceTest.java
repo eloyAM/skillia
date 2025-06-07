@@ -33,8 +33,7 @@ class SecurityServiceTest {
 
         // Then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-        assertThat(retrievedAuth).isNotNull();
-        assertThat(retrievedAuth).isInstanceOf(UsernamePasswordAuthenticationToken.class);
+        assertThat(retrievedAuth).isNotNull().isInstanceOf(UsernamePasswordAuthenticationToken.class);
         assertThat(retrievedAuth.getPrincipal()).isInstanceOf(LdapUserDetails.class);
         assertThat(retrievedAuth.getName()).isEqualTo(username);
         assertThat(retrievedAuth.getAuthorities())
@@ -68,8 +67,7 @@ class SecurityServiceTest {
 
         // Then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
-        assertThat(retrievedAuth).isNotNull();
-        assertThat(retrievedAuth).isInstanceOf(JwtAuthenticationToken.class);
+        assertThat(retrievedAuth).isNotNull().isInstanceOf(JwtAuthenticationToken.class);
         assertThat(retrievedAuth.getPrincipal()).isInstanceOf(Jwt.class);
         assertThat(retrievedAuth.getName()).isEqualTo(username);
         assertThat(retrievedAuth.getAuthorities())

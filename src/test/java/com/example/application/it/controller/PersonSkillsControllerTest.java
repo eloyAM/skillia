@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(CleanDbExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PersonSkillsControllerTest {
+class PersonSkillsControllerTest {
     private final WebTestClient wtc;
     private final TestRestTemplate testRestTemplate;
     private String bearerToken = null;

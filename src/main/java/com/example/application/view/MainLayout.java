@@ -42,9 +42,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     public MainLayout(@Autowired SecurityService securityService) {
         this.securityService = securityService;
-        authentication = securityService.getAuthentication();
+        this.authentication = securityService.getAuthentication();
         // Create UI
-        header = createHeader();
+        this.header = createHeader();
         addToNavbar(header);
         createDrawer();
     }
@@ -53,20 +53,20 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         H1 logo = new H1("Skillia");
         logo.addClassName("app-logo");
 
-        HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), logo);
-        header.addClassName("app-header");
-        header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
+        HorizontalLayout container = new HorizontalLayout(new DrawerToggle(), logo);
+        container.addClassName("app-header");
+        container.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
         Div spacer = new Div();
         spacer.getStyle().setFlexGrow("1");
-        header.add(spacer);
+        container.add(spacer);
 
-        header.add(createThemeSwitcher());
+        container.add(createThemeSwitcher());
 
         String username = authentication.getName();
-        header.add(createProfileButton(username));
+        container.add(createProfileButton(username));
 
-        return header;
+        return container;
     }
 
     // only for dev purposes

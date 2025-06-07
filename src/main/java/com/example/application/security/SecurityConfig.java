@@ -53,7 +53,7 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
         final String apiDocsPath = Objects.requireNonNull(
                 env.getProperty("springdoc.api-docs.path"),
                 "springdoc.api-docs.path property required to allow anonymous access");
-        http.authorizeHttpRequests(auth -> {
+        http.authorizeHttpRequests(auth ->
             auth.requestMatchers(
 //                    PathRequest.toH2Console(),
                     PathRequest.toStaticResources().atCommonLocations(),
@@ -62,8 +62,7 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
                     antMatcher(HttpMethod.GET, apiDocsPath + ".yaml") // api-docs.yaml
             ).permitAll()   // permitAll() allows both anonymous and authenticated access
                            // anonymous() allows anonymous, but not authenticated access
-            ;
-        });  // <3>
+        );  // <3>
 
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers(

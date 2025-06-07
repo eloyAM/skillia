@@ -25,7 +25,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)  // Reset the context before running the tests - sometimes the authentication context was not correctly initialized
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LoginTest {
+class LoginTest {
     private static final Logger logger = LoggerFactory.getLogger(LoginTest.class);
     private static final String MAIN_USERNAME = "hugo.reyes";
     private WebDriver driver;
@@ -170,7 +170,7 @@ public class LoginTest {
         // Wait for navigation to complete
         new WebDriverWait(driver, ofSeconds(5), ofSeconds(1))
             .withMessage("Expecting to get redirected to the profile view")
-            .until(driver -> driver.getCurrentUrl().contains("/profile"));
+            .until(d -> d.getCurrentUrl().contains("/profile"));
 
         assertThat(driver.getCurrentUrl()).contains("/profile/" + MAIN_USERNAME);
     }

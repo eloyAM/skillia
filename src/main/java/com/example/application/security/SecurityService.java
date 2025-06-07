@@ -36,11 +36,11 @@ public class SecurityService {
     }
 
     public UserDetails getUserDetails() {
-        return authenticationContext.getAuthenticatedUser(UserDetails.class).get();
+        return authenticationContext.getAuthenticatedUser(UserDetails.class).orElseThrow();
     }
 
     public Jwt getJwt() {
-        return authenticationContext.getAuthenticatedUser(Jwt.class).get();
+        return authenticationContext.getAuthenticatedUser(Jwt.class).orElseThrow();
     }
 
     public Authentication getAuthentication() {

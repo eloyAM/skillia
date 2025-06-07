@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PersonControllerTest {
+class PersonControllerTest {
     @Autowired
     private WebTestClient wtc;
     @Autowired
@@ -23,7 +23,7 @@ public class PersonControllerTest {
     }
 
     @Test
-    void someResultAfterDbInit() throws Exception {
+    void someResultAfterDbInit() {
         wtc.get().uri("/api/person")
                 .headers(h -> h.setBearerAuth(bearerToken))
                 .exchange()

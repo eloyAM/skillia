@@ -152,27 +152,25 @@ public class SkillGroupsTab extends VerticalLayout {
         FormLayout formLayout = new FormLayout();
         Binder<SkillGroupDto> binder = new Binder<>(SkillGroupDto.class);
         // Form fields
-        {
-            TextField nameField = new TextField("Name");
-            nameField.setRequired(true);
-            nameField.setMaxLength(ValidationConstraints.SkillGroup.NAME_MAX_LENGTH);
+        TextField nameField = new TextField("Name");
+        nameField.setRequired(true);
+        nameField.setMaxLength(ValidationConstraints.SkillGroup.NAME_MAX_LENGTH);
 
-            TextArea descriptionField = new TextArea("Description");
-            descriptionField.setMaxLength(ValidationConstraints.SkillGroup.DESCRIPTION_MAX_LENGTH);
+        TextArea descriptionField = new TextArea("Description");
+        descriptionField.setMaxLength(ValidationConstraints.SkillGroup.DESCRIPTION_MAX_LENGTH);
 
-            MultiSelectComboBox<SkillDto> skillSelector = new MultiSelectComboBox<>("Skills");
-            skillSelector.setItems(skillService.getAllSkill());
-            skillSelector.setItemLabelGenerator(SkillDto::getName);
+        MultiSelectComboBox<SkillDto> skillSelector = new MultiSelectComboBox<>("Skills");
+        skillSelector.setItems(skillService.getAllSkill());
+        skillSelector.setItemLabelGenerator(SkillDto::getName);
 
-            binder.forField(nameField).asRequired("Name is required").bind(SkillGroupDto::getName, SkillGroupDto::setName);
-            binder.forField(descriptionField).bind(SkillGroupDto::getDescription, SkillGroupDto::setDescription);
-            binder.forField(skillSelector).bind(
-                group -> group.getSkills() == null ? new HashSet<>() : group.getSkills(),
-                SkillGroupDto::setSkills
-            );
+        binder.forField(nameField).asRequired("Name is required").bind(SkillGroupDto::getName, SkillGroupDto::setName);
+        binder.forField(descriptionField).bind(SkillGroupDto::getDescription, SkillGroupDto::setDescription);
+        binder.forField(skillSelector).bind(
+            group -> group.getSkills() == null ? new HashSet<>() : group.getSkills(),
+            SkillGroupDto::setSkills
+        );
 
-            formLayout.add(nameField, descriptionField, skillSelector);
-        }
+        formLayout.add(nameField, descriptionField, skillSelector);
 
         // Set the fields with the selected item
         if (selectedItem != null) {

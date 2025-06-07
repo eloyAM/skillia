@@ -81,8 +81,9 @@ class SkillTaggingTest {
         ).orElseThrow();
         assertThat(getSkillTaggingCount()).isEqualTo(1);
 
+        Long savedTag01Id = savedTag01.getId();
         assertThatThrownBy(
-            () -> skillService.deleteSkillTagById(savedTag01.getId())
+            () -> skillService.deleteSkillTagById(savedTag01Id)
         ).isInstanceOf(DataIntegrityViolationException.class)
             .message().containsIgnoringCase("fk__skill_tagging__tag");
 
