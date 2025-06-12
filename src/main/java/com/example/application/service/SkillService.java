@@ -154,4 +154,8 @@ public class SkillService {
     public Optional<SkillTagDto> getSkillTagById(Long id) {
         return skillTagRepo.findById(id).map(dtoEntityMapper::toSkillTagDto);
     }
+
+    public Optional<SkillGroupDto> getGroupById(Long id) {
+        return skillGroupRepository.findById(id).map(dtoEntityMapper::toDto);
+    }
 }
