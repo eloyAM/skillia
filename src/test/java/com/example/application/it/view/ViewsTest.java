@@ -23,18 +23,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.openqa.selenium.support.ui.ExpectedConditions.attributeToBe;
 import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
 
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)  // Reset the context before running the tests - sometimes the authentication context was not correctly initialized
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
+// Reset the context before running the tests - sometimes the authentication context was not correctly initialized
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LoginTest {
-    private static final Logger logger = LoggerFactory.getLogger(LoginTest.class);
+class ViewsTest {
+    private static final Logger logger = LoggerFactory.getLogger(ViewsTest.class);
     private static final String MAIN_USERNAME = "hugo.reyes";
     private WebDriver driver;
     private final String loginUrl;
     private final String homeUrl;
 
     @Autowired
-    public LoginTest(
-            @Value("${local.server.port}") int localServerPort
+    public ViewsTest(
+        @Value("${local.server.port}") int localServerPort
     ) {
         assertThat(localServerPort).isNotZero();
         String baseUrl = "http://localhost:" + localServerPort;
@@ -45,8 +46,8 @@ class LoginTest {
 
     @BeforeEach
     void setUp(
-            @Value("${webdriver.headless}") String isHeadless,
-            @Value("${webdriver.chrome.binary}") String chromeBinary
+        @Value("${webdriver.headless}") String isHeadless,
+        @Value("${webdriver.chrome.binary}") String chromeBinary
     ) {
         ChromeOptions chromeOptions = new ChromeOptions();
         if (Boolean.parseBoolean(isHeadless)) {
@@ -97,12 +98,12 @@ class LoginTest {
         // Check some cookies
 
         Cookie jwtHeaderAndPlayloadCookie = driver.manage()
-                .getCookieNamed(LoginUtility.JWT_HEADER_AND_PAYLOAD_COOKIE_NAME);
+            .getCookieNamed(LoginUtility.JWT_HEADER_AND_PAYLOAD_COOKIE_NAME);
         assertThat(jwtHeaderAndPlayloadCookie.isHttpOnly()).isFalse();
         assertThat(jwtHeaderAndPlayloadCookie.getValue()).matches("^[A-Za-z0-9_-]{2,}\\.[A-Za-z0-9_-]{2,}$");
 
         Cookie jwtSignatureCookie = driver.manage()
-                .getCookieNamed(LoginUtility.JWT_SIGNATURE_COOKIE_NAME);
+            .getCookieNamed(LoginUtility.JWT_SIGNATURE_COOKIE_NAME);
         assertThat(jwtSignatureCookie.isHttpOnly()).isTrue();
         assertThat(jwtSignatureCookie.getValue()).matches("^[A-Za-z0-9_-]{2,}$");
     }
@@ -116,8 +117,8 @@ class LoginTest {
 
         // Check the app banner
         assertThat(appHeader.findElement(By.tagName("h1")))
-                .extracting(WebElement::getText)
-                .isEqualTo("Skillia");
+            .extracting(WebElement::getText)
+            .isEqualTo("Skillia");
 
         // Check that some elements are there
         appHeader.findElements(By.tagName("vaadin-drawer-toggle"));
@@ -133,25 +134,25 @@ class LoginTest {
         // Precondition for later assertion
         WebDriver.Options manage = driver.manage();
         assertThat(manage.getCookieNamed(LoginUtility.JWT_HEADER_AND_PAYLOAD_COOKIE_NAME)
-                .getValue())
-                .isNotEmpty();
+            .getValue())
+            .isNotEmpty();
         assertThat(manage.getCookieNamed(LoginUtility.JWT_SIGNATURE_COOKIE_NAME)
-                .getValue())
-                .isNotEmpty();
+            .getValue())
+            .isNotEmpty();
 
         // Click the logout button
         driver.findElement(By.cssSelector(".app-header #app-profile-element vaadin-menu-bar-button"))
-                .click();   // Click the profile button to make the logout one available
+            .click();   // Click the profile button to make the logout one available
         driver.findElement(By.id("app-logout-button"))
-                .click();
+            .click();
 
         waitUntilTitleIs("Login");
 
         // Expect the auth cookies to be cleaned
         assertThat(driver.manage().getCookies())
-                .filteredOn(c -> c.getName().equals(LoginUtility.JWT_HEADER_AND_PAYLOAD_COOKIE_NAME)
-                        || c.getName().equals(LoginUtility.JWT_SIGNATURE_COOKIE_NAME))
-                .isEmpty();
+            .filteredOn(c -> c.getName().equals(LoginUtility.JWT_HEADER_AND_PAYLOAD_COOKIE_NAME)
+                || c.getName().equals(LoginUtility.JWT_SIGNATURE_COOKIE_NAME))
+            .isEmpty();
     }
 
     @Test
@@ -187,28 +188,28 @@ class LoginTest {
 
         JavascriptExecutor js = (JavascriptExecutor) driver;
         Boolean prefersDarkTheme = (Boolean) js.executeScript(
-                "return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;");
+            "return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;");
 
         ColorScheme colorScheme = prefersDarkTheme ? ColorScheme.DARK : ColorScheme.LIGHT;
 
         assertThat(getHtmlRootElement().getAttribute("theme"))
-                .isEqualTo(colorScheme.value);
+            .isEqualTo(colorScheme.value);
         // Local storage property is not set initially
         assertThat(localStorage.getItem("app-theme"))
-                .isNull();
+            .isNull();
 
         // Switch to the second theme
         clickSwitchTheme();
         colorScheme = colorScheme.toggle();
         new WebDriverWait(driver, ofSeconds(2))
-                .until(attributeToBe(getHtmlRootElement(), "theme", colorScheme.value));
+            .until(attributeToBe(getHtmlRootElement(), "theme", colorScheme.value));
         assertThat(localStorage.getItem("app-theme")).isEqualTo(colorScheme.value);
 
         // And back to the preferred one
         clickSwitchTheme();
         colorScheme = colorScheme.toggle();
         new WebDriverWait(driver, ofSeconds(2))
-                .until(attributeToBe(getHtmlRootElement(), "theme", colorScheme.value));
+            .until(attributeToBe(getHtmlRootElement(), "theme", colorScheme.value));
         assertThat(localStorage.getItem("app-theme")).isEqualTo(colorScheme.value);
     }
 
@@ -229,12 +230,11 @@ class LoginTest {
 
     private void clickSwitchTheme() {
         driver.findElement(By.id("app-theme-switcher"))
-                .click();
+            .click();
     }
 
     enum ColorScheme {
         LIGHT("light"),
-
         DARK("dark");
 
         final String value;
