@@ -100,27 +100,43 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private void createDrawer() {
         String username = authentication.getName();
         addToDrawer(new VerticalLayout(createMenuLink(UserProfileView.class, "My profile", VaadinIcon.USER.create(),
-            new RouteParameters(UserProfileView.USERNAME_PATH_PARAMETER, username))));
-        addToDrawer(new VerticalLayout(createMenuLink(SkillsMatrixView.class, "Skills Matrix", VaadinIcon.TABLE.create())));
+            new RouteParameters(UserProfileView.USERNAME_PATH_PARAMETER, username), "my-profile")));
+        addToDrawer(new VerticalLayout(createMenuLink(SkillsMatrixView.class, "Skills Matrix",
+            VaadinIcon.TABLE.create(), "skills-matrix")));
 
         var userAuthorities = authentication.getAuthorities();
         SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
         if (userAuthorities.contains(rhAuthority)) {
-            addToDrawer(new VerticalLayout(createMenuLink(SkillsAssignmentView.class, "Skills Assignment", VaadinIcon.STAR_HALF_LEFT_O.create())));
-            addToDrawer(new VerticalLayout(createMenuLink(SkillsManagementView.class, "Skills Management", VaadinIcon.RECORDS.create())));
-            addToDrawer(new VerticalLayout(createMenuLink(DepartmentsView.class, "Departments", VaadinIcon.WORKPLACE.create())));
+            addToDrawer(new VerticalLayout(createMenuLink(SkillsAssignmentView.class, "Skills Assignment",
+                VaadinIcon.STAR_HALF_LEFT_O.create(), "skills-assignment")));
+            addToDrawer(new VerticalLayout(createMenuLink(SkillsManagementView.class, "Skills Management",
+                VaadinIcon.RECORDS.create(), "skills-management")));
+            addToDrawer(new VerticalLayout(createMenuLink(DepartmentsView.class, "Departments",
+                VaadinIcon.WORKPLACE.create(), "departments")));
         }
     }
 
-    private static RouterLink createMenuLink(Class<? extends Component> viewClass, String caption, Icon icon, RouteParameters routeParameters) {
+    private static RouterLink createMenuLink(
+        Class<? extends Component> viewClass,
+        String caption,
+        Icon icon,
+        RouteParameters routeParameters,
+        String htmlElementIdSuffix
+    ) {
         final RouterLink routerLink = new RouterLink(viewClass, routeParameters);
         routerLink.setClassName("menu-link");
         routerLink.add(icon, new Span(caption));
+        routerLink.setId("drawer-link-" + htmlElementIdSuffix);
         return routerLink;
     }
 
-    private static RouterLink createMenuLink(Class<? extends Component> viewClass, String caption, Icon icon) {
-        return createMenuLink(viewClass, caption, icon, RouteParameters.empty());
+    private static RouterLink createMenuLink(
+        Class<? extends Component> viewClass,
+        String caption,
+        Icon icon,
+        String htmlElementIdSuffix
+    ) {
+        return createMenuLink(viewClass, caption, icon, RouteParameters.empty(), htmlElementIdSuffix);
     }
 
     @Override

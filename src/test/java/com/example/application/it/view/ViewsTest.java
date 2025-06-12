@@ -5,6 +5,8 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -156,28 +158,6 @@ class ViewsTest {
     }
 
     @Test
-    void canNavigateToUserProfile() {
-        LoginUtility.doLogin(driver, loginUrl);
-        getAndWaitUntilTitleIs(homeUrl, "Skillia");
-
-        // Click the profile button to make the profile navigation available
-        driver.findElement(By.cssSelector(".app-header #app-profile-element vaadin-menu-bar-button"))
-            .click();
-
-        // Click the profile/user profile button
-        WebElement profileButton = driver.findElement(By.id("app-my-profile-button"));
-        profileButton.click();
-
-        // Wait for navigation to complete
-        new WebDriverWait(driver, ofSeconds(5), ofSeconds(1))
-            .withMessage("Expecting to get redirected to the profile view")
-            .until(d -> d.getCurrentUrl().contains("/profile"));
-
-        assertThat(driver.getCurrentUrl()).contains("/profile/" + MAIN_USERNAME);
-    }
-
-
-    @Test
     void canSwitchBetweenDarkAndLightTheme() {
         LoginUtility.doLogin(driver, loginUrl);
         getAndWaitUntilTitleIs(homeUrl, "Skillia");
@@ -213,6 +193,46 @@ class ViewsTest {
         assertThat(localStorage.getItem("app-theme")).isEqualTo(colorScheme.value);
     }
 
+    @Test
+    void canNavigateToUserProfile() {
+        LoginUtility.doLogin(driver, loginUrl);
+        getAndWaitUntilTitleIs(homeUrl, "Skillia");
+
+        // Click the profile button to make the profile navigation available
+        driver.findElement(By.cssSelector(".app-header #app-profile-element vaadin-menu-bar-button"))
+            .click();
+
+        // Click the profile/user profile button
+        WebElement profileButton = driver.findElement(By.id("app-my-profile-button"));
+        profileButton.click();
+
+        // Wait for navigation to complete
+        new WebDriverWait(driver, ofSeconds(5), ofSeconds(1))
+            .withMessage("Expecting to get redirected to the profile view")
+            .until(d -> d.getCurrentUrl().contains("/profile"));
+
+        assertThat(driver.getCurrentUrl()).contains("/profile/" + MAIN_USERNAME);
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = DrawerLink.class, names = "MY_PROFILE", mode = EnumSource.Mode.EXCLUDE)
+    void canNavigateToDrawerLinks(DrawerLink drawerLink) {
+        LoginUtility.doLogin(driver, loginUrl);
+        getAndWaitUntilTitleIs(homeUrl, "Skillia");
+
+        // Click the drawer link
+        WebElement drawerLinkElement = driver.findElement(By.id(drawerLink.htmlElementId));
+        drawerLinkElement.click();
+
+        // Wait for navigation to complete
+        new WebDriverWait(driver, ofSeconds(5), ofSeconds(1))
+            .withMessage("Expecting to get redirected to the correct view")
+            .until(d -> d.getCurrentUrl().contains(drawerLink.targetRoute));
+
+        // Verify the URL
+        assertThat(driver.getCurrentUrl()).contains(drawerLink.targetRoute);
+    }
+
     // Helpers
 
     private void waitUntilTitleIs(String title) {
@@ -233,7 +253,7 @@ class ViewsTest {
             .click();
     }
 
-    enum ColorScheme {
+    private enum ColorScheme {
         LIGHT("light"),
         DARK("dark");
 
@@ -251,4 +271,19 @@ class ViewsTest {
         }
     }
 
+    private enum DrawerLink {
+        MY_PROFILE("my-profile", "/profile/%s"),
+        SKILLS_MATRIX("skills-matrix", "/skillsmatrix"),
+        SKILLS_ASSIGNMENT("skills-assignment", "/skillsassignment"),
+        SKILLS_MANAGEMENT("skills-management", "/skillsmanagement"),
+        DEPARTMENTS("departments", "/departments");
+
+        final String htmlElementId;
+        final String targetRoute;
+
+        DrawerLink(String htmlElementIdSuffix, String targetRoute) {
+            this.htmlElementId = "drawer-link-" + htmlElementIdSuffix;
+            this.targetRoute = targetRoute;
+        }
+    }
 }
