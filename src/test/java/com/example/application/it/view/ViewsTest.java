@@ -12,6 +12,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.html5.LocalStorage;
 import org.openqa.selenium.html5.WebStorage;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.util.List;
 
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -214,8 +217,9 @@ class ViewsTest {
         assertThat(driver.getCurrentUrl()).contains("/profile/" + MAIN_USERNAME);
     }
 
+    // Exclude links that are already checked by some other tests
     @ParameterizedTest
-    @EnumSource(value = DrawerLink.class, names = "MY_PROFILE", mode = EnumSource.Mode.EXCLUDE)
+    @EnumSource(value = DrawerLink.class, names = {"MY_PROFILE", "SKILLS_MANAGEMENT"}, mode = EnumSource.Mode.EXCLUDE)
     void canNavigateToDrawerLinks(DrawerLink drawerLink) {
         LoginUtility.doLogin(driver, loginUrl);
         getAndWaitUntilTitleIs(homeUrl, "Skillia");
@@ -231,6 +235,54 @@ class ViewsTest {
 
         // Verify the URL
         assertThat(driver.getCurrentUrl()).contains(drawerLink.targetRoute);
+    }
+
+    // As long as the tabs are not lazy-loaded,
+    // there's no coverage difference between clicking each different tab or not
+    @Test
+    void canViewAllTabsInSkillsManagement() {
+        LoginUtility.doLogin(driver, loginUrl);
+        getAndWaitUntilTitleIs(homeUrl, "Skillia");
+
+        // Navigate to the Skills Management view
+        WebElement skillsManagementLink = driver.findElement(By.id(DrawerLink.SKILLS_MANAGEMENT.htmlElementId));
+        skillsManagementLink.click();
+        new WebDriverWait(driver, ofSeconds(5), ofSeconds(1))
+            .until(d -> d.getCurrentUrl().contains(DrawerLink.SKILLS_MANAGEMENT.targetRoute));
+
+        // Locate the vaadin-tab elements
+        List<WebElement> tabs = driver.findElements(By.cssSelector("vaadin-tabs vaadin-tab"));
+
+        // Verify that there are three tabs
+        assertThat(tabs).hasSize(3);
+
+        // Iterate through each tab and verify it can be selected
+        for (WebElement tab : tabs) {
+            // Click the tab
+            tab.click();
+            new WebDriverWait(driver, ofSeconds(2))
+                .until(attributeToBe(tab, "selected", "true"));
+
+            // Get the tab content
+            String tabId = tab.getAttribute("id");
+            WebElement tabContent = new WebDriverWait(driver, ofSeconds(2))
+                .until(d -> d.findElement(By.cssSelector(
+                    "vaadin-tabsheet vaadin-vertical-layout[tab='%s']".formatted(tabId))));
+            assertThat(tabContent.isDisplayed()).isTrue();
+
+            // Click the button to add a new object, displaying a modal dialog
+            WebElement addObjectButton = tabContent.findElement(By.cssSelector("vaadin-button[theme~='primary']"));
+            addObjectButton.click();
+            WebElement dialog = new WebDriverWait(driver, ofSeconds(2))
+                .until(d -> d.findElement(By.tagName("vaadin-dialog-overlay")));
+            assertThat(dialog.isDisplayed()).isTrue();
+
+            // Close the dialog
+            WebElement closeButton = dialog.findElement(By.className("cancel-button"));
+            closeButton.click();
+            new WebDriverWait(driver, ofSeconds(2))
+                .until(ExpectedConditions.invisibilityOf(dialog));
+        }
     }
 
     // Helpers

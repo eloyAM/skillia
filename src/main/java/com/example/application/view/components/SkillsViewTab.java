@@ -185,7 +185,7 @@ public class SkillsViewTab extends VerticalLayout {
         createButton.addClassName("create-skill-submit-button");
         createButton.addClickShortcut(Key.ENTER);
         Button cancelButton = new Button("Cancel", e -> dialog.close());
-        cancelButton.addClassName("create-skill-cancel-button");
+        cancelButton.addClassNames("create-skill-cancel-button", "cancel-button");
         dialog.getFooter().add(cancelButton, createButton);
 
         Button addSkillButton =

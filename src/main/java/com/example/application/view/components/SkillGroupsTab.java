@@ -212,6 +212,7 @@ public class SkillGroupsTab extends VerticalLayout {
         dialog.add(formLayout);
         dialog.setHeaderTitle((selectedItem == null || selectedItem.getId() == null) ? "Create Group" : "Edit Group");
         Button cancelButton = new Button("Cancel", e -> dialog.close());
+        cancelButton.addClassNames("cancel-button");
         dialog.getFooter().add(cancelButton, saveButton);
         dialog.open();
     }

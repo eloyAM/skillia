@@ -574,7 +574,6 @@
             </build>
             <properties>
                 <activeProfiles>embedded-ldap,embedded-postgres</activeProfiles>
-                <initdbfromjava>false</initdbfromjava>
             </properties>
         </profile>
 
@@ -595,7 +594,7 @@
                             </execution>
                             <execution>
                                 <id>report</id>
-                                <phase>test</phase>
+                                <phase>verify</phase>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>

@@ -108,6 +108,7 @@ public class SkillTagTab extends VerticalLayout {
         Button cancelButton = new Button("Cancel",
             e -> dialog.close()
         );
+        cancelButton.addClassNames("cancel-button");
         dialog.getFooter().add(cancelButton, createButton);
 
         Button addSkillButton = new Button("Add tag", VaadinIcon.PLUS.create(),

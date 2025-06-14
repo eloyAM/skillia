@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DbInitFromLdapTest {
     private static final int LDAP_PORT = 1389;
     private static final String LDAP_BASE = "dc=example,dc=org";
-    public static final String LDAP_ADMIN_SIMPLE_USERNAME = "admin-testcontainers";
+    private static final String LDAP_ADMIN_SIMPLE_USERNAME = "admin-testcontainers";
     private static final String LDAP_ADMIN_DN = "cn=" + LDAP_ADMIN_SIMPLE_USERNAME + ",dc=example,dc=org";
     private static final String LDAP_ADMIN_PWD = "adminpassword";
 
@@ -54,6 +54,7 @@ public class DbInitFromLdapTest {
         registry.add("spring.ldap.base", () -> LDAP_BASE);
         registry.add("spring.ldap.username", () -> LDAP_ADMIN_DN);
         registry.add("spring.ldap.password", () -> LDAP_ADMIN_PWD);
+        registry.add("initdbfromjava", () -> false);
     }
 
     static boolean isDockerAvailable() {
