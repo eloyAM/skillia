@@ -12,7 +12,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <vaadin.version>24.3.0</vaadin.version>
+        <vaadin.version>24.9.2</vaadin.version>
         <activeProfiles>h2,embedded-ldap</activeProfiles>
         <jacoco.plugin.version>0.8.12</jacoco.plugin.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -38,7 +38,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
+        <version>3.5.6</version>
     </parent>
 
     <repositories>
@@ -223,18 +223,13 @@
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <!-- Version provided by Vaaadin -->
+            <version>${selenium.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.github.bonigarcia.</groupId>
             <artifactId>webdrivermanager</artifactId>
             <version>5.6.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-devtools-v126</artifactId>
-            <version>4.22.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

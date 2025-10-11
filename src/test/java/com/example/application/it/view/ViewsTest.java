@@ -10,8 +10,6 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.html5.LocalStorage;
-import org.openqa.selenium.html5.WebStorage;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -165,10 +163,6 @@ class ViewsTest {
         LoginUtility.doLogin(driver, loginUrl);
         getAndWaitUntilTitleIs(homeUrl, "Skillia");
 
-        LocalStorage localStorage = ((WebStorage) driver).getLocalStorage();
-
-        // Theme matches the preferred color scheme of the device (light/dark)
-
         JavascriptExecutor js = (JavascriptExecutor) driver;
         Boolean prefersDarkTheme = (Boolean) js.executeScript(
             "return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;");
@@ -178,7 +172,7 @@ class ViewsTest {
         assertThat(getHtmlRootElement().getAttribute("theme"))
             .isEqualTo(colorScheme.value);
         // Local storage property is not set initially
-        assertThat(localStorage.getItem("app-theme"))
+        assertThat(getLocalStorageItem("app-theme"))
             .isNull();
 
         // Switch to the second theme
@@ -186,14 +180,14 @@ class ViewsTest {
         colorScheme = colorScheme.toggle();
         new WebDriverWait(driver, ofSeconds(2))
             .until(attributeToBe(getHtmlRootElement(), "theme", colorScheme.value));
-        assertThat(localStorage.getItem("app-theme")).isEqualTo(colorScheme.value);
+        assertThat(getLocalStorageItem("app-theme")).isEqualTo(colorScheme.value);
 
         // And back to the preferred one
         clickSwitchTheme();
         colorScheme = colorScheme.toggle();
         new WebDriverWait(driver, ofSeconds(2))
             .until(attributeToBe(getHtmlRootElement(), "theme", colorScheme.value));
-        assertThat(localStorage.getItem("app-theme")).isEqualTo(colorScheme.value);
+        assertThat(getLocalStorageItem("app-theme")).isEqualTo(colorScheme.value);
     }
 
     @Test
@@ -303,6 +297,11 @@ class ViewsTest {
     private void clickSwitchTheme() {
         driver.findElement(By.id("app-theme-switcher"))
             .click();
+    }
+
+    private String getLocalStorageItem(String key) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        return (String) js.executeScript("return window.localStorage.getItem(arguments[0]);", key);
     }
 
     private enum ColorScheme {

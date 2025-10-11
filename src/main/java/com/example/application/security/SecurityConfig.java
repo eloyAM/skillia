@@ -21,11 +21,10 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import javax.crypto.SecretKey;
 import java.util.Objects;
-
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @EnableWebSecurity // <1>
 @Configuration
@@ -57,9 +56,9 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
             auth.requestMatchers(
 //                    PathRequest.toH2Console(),
                     PathRequest.toStaticResources().atCommonLocations(),
-                    antMatcher("/api/auth/**"), // Allow login
-                    antMatcher(HttpMethod.GET, apiDocsPath),    // api-docs (json)
-                    antMatcher(HttpMethod.GET, apiDocsPath + ".yaml") // api-docs.yaml
+                    PathPatternRequestMatcher.withDefaults().matcher("/api/auth/**"), // Allow login
+                    PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, apiDocsPath),    // api-docs (json)
+                    PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, apiDocsPath + ".yaml") // api-docs.yaml
             ).permitAll()   // permitAll() allows both anonymous and authenticated access
                            // anonymous() allows anonymous, but not authenticated access
         );  // <3>
@@ -67,8 +66,8 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers(
                         PathRequest.toH2Console(),  // This allows the h2 console access (connect / test connection, etc)
-                        antMatcher("/api/**"),
-                        antMatcher("/swagger-ui/**")
+                        PathPatternRequestMatcher.withDefaults().matcher("/api/**"),
+                        PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui/**")
                 )
         );
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));    // This allows the different frames of the h2 console to be rendered
