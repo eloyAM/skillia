@@ -33,7 +33,7 @@ import java.util.function.ToIntFunction;
 public final class ViewUtils {
 
     public static String getLevelIndicatorSvgPath(Integer level) {
-        return String.format("icons/level-%d.svg", level);
+        return "icons/level-%d.svg".formatted(level);
     }
 
     @NonNull

@@ -14,7 +14,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -36,7 +35,6 @@ class ViewsTest {
     private final String loginUrl;
     private final String homeUrl;
 
-    @Autowired
     public ViewsTest(
         @Value("${local.server.port}") int localServerPort
     ) {

@@ -193,7 +193,7 @@ public class DbInit {
         int nElements = 11;
         Set<SkillTagDto> tags = new LinkedHashSet<>(nElements);
         for (int i = 0; i < nElements; i++) {
-            String name = String.format("Tag %03d", i);
+            String name = "Tag %03d".formatted(i);
             tags.add(
                 SkillTagDto.builder().name(name).build()
             );
@@ -208,7 +208,7 @@ public class DbInit {
         int nElements = 11;
         Set<SkillDto> tags = new LinkedHashSet<>(nElements);
         for (int i = 0; i < nElements; i++) {
-            String name = String.format("Skill %03d", i);
+            String name = "Skill %03d".formatted(i);
             tags.add(
                 SkillDto.builder().name(name).build()
             );

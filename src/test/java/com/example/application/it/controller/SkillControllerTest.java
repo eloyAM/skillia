@@ -6,7 +6,6 @@ import com.example.application.it.testutils.CleanDbExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.MediaType;
@@ -23,7 +22,6 @@ class SkillControllerTest {
     private String bearerToken = null;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
     public SkillControllerTest(WebTestClient wtc, TestRestTemplate testRestTemplate) {
         this.wtc = wtc;
         this.testRestTemplate = testRestTemplate;

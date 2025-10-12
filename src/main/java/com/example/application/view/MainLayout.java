@@ -27,7 +27,6 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -40,7 +39,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private boolean isDebugMode = false;
     private final Authentication authentication;
 
-    public MainLayout(@Autowired SecurityService securityService) {
+    public MainLayout(SecurityService securityService) {
         this.securityService = securityService;
         this.authentication = securityService.getAuthentication();
         // Create UI
