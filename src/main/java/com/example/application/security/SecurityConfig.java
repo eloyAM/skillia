@@ -3,10 +3,12 @@ package com.example.application.security;
 import com.example.application.ldap.LdapProperties;
 import com.example.application.security.jwt.JwtProperties;
 import com.example.application.view.LoginView;
-import com.vaadin.flow.spring.security.VaadinWebSecurity;
+import com.vaadin.flow.spring.security.VaadinSecurityConfigurer;
+import com.vaadin.flow.spring.security.stateless.VaadinStatelessSecurityConfigurer;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
@@ -20,6 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
@@ -29,7 +32,7 @@ import java.util.Objects;
 @EnableWebSecurity // <1>
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
-public class SecurityConfig extends VaadinWebSecurity { // <2>
+public class SecurityConfig {
     private final AuthenticationProvider jwtAuthenticationProvider;
     private final SecretKey secretKey;
     private final Environment env;
@@ -47,8 +50,8 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
         this.jwtProperties = jwtProperties;
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         final String apiDocsPath = Objects.requireNonNull(
                 env.getProperty("springdoc.api-docs.path"),
                 "springdoc.api-docs.path property required to allow anonymous access");
@@ -65,7 +68,7 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
 
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers(
-                        PathRequest.toH2Console(),  // This allows the h2 console access (connect / test connection, etc)
+                        PathRequest.toH2Console(),  // Allowing h2 console access (connect / test connection, etc.)
                         PathPatternRequestMatcher.withDefaults().matcher("/api/**"),
                         PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui/**")
                 )
@@ -77,10 +80,19 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
         AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver = request -> authenticationManagerBuilder.getOrBuild();
         BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter = new BearerTokenAuthenticationFilter(authenticationManagerResolver);
         http.addFilterBefore(bearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        super.setStatelessAuthentication(http, secretKey, jwtProperties.issuer(), jwtProperties.expirationSeconds());
 
-        super.configure(http);
-        setLoginView(http, LoginView.class); // <4>
+        // Apply Vaadin security configuration (replaces VaadinWebSecurity)
+        http.with(VaadinSecurityConfigurer.vaadin(), vaadin ->
+            vaadin
+                .loginView(LoginView.class)
+        );
+        http.with(new VaadinStatelessSecurityConfigurer<>(), vaadinStateless -> vaadinStateless
+            .issuer(jwtProperties.issuer())
+            .expiresIn(jwtProperties.expirationSeconds())
+            .withSecretKey().secretKey(secretKey)
+        );
+
+        return http.build();
     }
 
 
