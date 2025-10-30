@@ -14,8 +14,10 @@ The HR role is based on LDAP group membership (your_domain->groups->hr).
 No other roles are considered.
 
 A REST API is available as well, under the domain `/api`.
-The OpenAPI doc is automatically generated and retrievable at `/api/openapi/v3/api-docs`
-and the Swagger UI can be accessed through `/swagger-ui/index.html`
+The OpenAPI doc is automatically generated and retrievable at
+`/api/openapi/v3/api-docs` (check the property `springdoc.api-docs.path`),
+and the Swagger UI can be accessed through `/api/openapi/v3/swagger-ui.html`
+(check the property `springdoc.swagger-ui.path`)
 
 ## Try it
 
