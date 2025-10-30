@@ -55,20 +55,17 @@ public class SecurityConfig {
         final String apiDocsPath = Objects.requireNonNull(
                 env.getProperty("springdoc.api-docs.path"),
                 "springdoc.api-docs.path property required to allow anonymous access");
-        http.authorizeHttpRequests(auth ->
-            auth.requestMatchers(
-//                    PathRequest.toH2Console(),
-                    PathRequest.toStaticResources().atCommonLocations(),
-                    PathPatternRequestMatcher.withDefaults().matcher("/api/auth/**"), // Allow login
-                    PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, apiDocsPath),    // api-docs (json)
-                    PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, apiDocsPath + ".yaml") // api-docs.yaml
-            ).permitAll()   // permitAll() allows both anonymous and authenticated access
-                           // anonymous() allows anonymous, but not authenticated access
-        );  // <3>
+        http.authorizeHttpRequests(auth -> auth
+//                .requestMatchers(PathRequest.toH2Console()).permitAll()
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.GET, apiDocsPath, apiDocsPath + ".yaml").permitAll()
+        );
 
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers(
                         PathRequest.toH2Console(),  // Allowing h2 console access (connect / test connection, etc.)
+                        PathRequest.toStaticResources().atCommonLocations(),
                         PathPatternRequestMatcher.withDefaults().matcher("/api/**"),
                         PathPatternRequestMatcher.withDefaults().matcher("/swagger-ui/**")
                 )

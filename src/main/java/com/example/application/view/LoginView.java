@@ -51,7 +51,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     }
 
     private static Image logoImage() {
-        Image logoImg = new Image("icons/icon.png", "Skillia logo");
+        Image logoImg = new Image("images/icons/icon.png", "Skillia logo");
         logoImg.setHeight(128, Unit.PIXELS);
         logoImg.setWidth(128, Unit.PIXELS);
         return logoImg;

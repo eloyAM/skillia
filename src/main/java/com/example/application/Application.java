@@ -26,7 +26,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
         name = "Skillia",
         shortName = "Skillia",
         offlinePath = "offline.html",
-        offlineResources = {"images/offline.png"}
+        offlineResources = {"images/offline/offline.png"},
+        iconPath = "images/icons/icon.png"
 )
 public class Application implements AppShellConfigurator {
 
