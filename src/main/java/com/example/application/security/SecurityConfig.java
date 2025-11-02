@@ -18,6 +18,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.crypto.keygen.BytesKeyGenerator;
+import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -96,19 +99,25 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
             AuthenticationManagerBuilder auth, LdapContextSource contextSource, LdapProperties ldapProperties
     ) throws Exception {
         //@formatter:off
+        // Encoder valid for {SHA} or plain text passwords
+        PasswordEncoder passwordEncoder = new LdapShaPasswordEncoder(new BytesKeyGenerator() {
+            @Override public int getKeyLength() { return 0; }
+            @Override public byte[] generateKey() { return null; }
+        });
+
         auth
                 .ldapAuthentication()
                 .userDnPatterns(ldapProperties.getUserDnPatterns())
                 .userSearchBase(ldapProperties.getUserSearchBase())
                 .userSearchFilter(ldapProperties.getUserLoginFilter())
                 .groupSearchBase(ldapProperties.getGroupSearchBase())
-//                .groupSearchFilter("")  // TODO Could be interesting to allow this
-//                .groupRoleAttribute("cn")   // Default is "cn", currently seems ok
+                .groupSearchSubtree(false)
+                .groupSearchFilter(ldapProperties.getGroupSearchFilter())  // Filter to match which groups a user is member of
+                .groupRoleAttribute(ldapProperties.getGroupRoleAttribute())   // Group attribute that maps to a role name
                 .contextSource(contextSource)
                 .passwordCompare()
                 .passwordAttribute(ldapProperties.getPasswordAttribute())
-//                .passwordEncoder()    // TODO currently relying on plain text passwords. Also check encoder used with OpenLDAP, AD, etc
-        //.passwordEncoder(NoOpPasswordEncoder.getInstance())    // Plain text password encoder (default one, same as not providing it). Deprecation warning is actually a security matter, no plan from Spring to remove it
+                .passwordEncoder(passwordEncoder)
         ;
         //@formatter:on
     }
