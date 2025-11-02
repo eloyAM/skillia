@@ -12,7 +12,7 @@ services:
   db:
     image: postgres:16.1-alpine3.18
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -23,8 +23,7 @@ services:
   openldap:
     image: bitnami/openldap:2.6.6-debian-11-r59
     ports:
-      - 1389:1389
-      - 1636:1636
+      - "1389:1389"
     environment:
       - LDAP_ADMIN_USERNAME=admin
       - LDAP_ADMIN_PASSWORD=adminpassword
@@ -34,7 +33,43 @@ services:
       - ./skillia.ldif:/ldifs/skillia.ldif
     networks:
       - app-network
-
+  lam:
+    image: ghcr.io/ldapaccountmanager/lam:9.3
+    ports:
+      - "8139:80"
+    environment:
+      - LDAP_SERVER=ldap://openldap:1389
+      - LDAP_BASE_DN=dc=example,dc=org
+      - LDAP_USER=cn=admin,dc=example,dc=org
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_USERS_DN=ou=users,dc=example,dc=org
+      - LDAP_GROUPS_DN=ou=groups,dc=example,dc=org
+      - LAM_PASSWORD=lam
+    depends_on:
+      - openldap
+    networks:
+      - app-network
+#  pgweb:
+#    image: sosedoff/pgweb:0.16.2
+#    ports:
+#      - "9234:8081"
+#    environment:
+#      - DATABASE_URL=postgres://postgres:postgres@db:5432/skillia?sslmode=disable
+#    depends_on:
+#      - db
+#    networks:
+#      - app-network
+#  pgadmin:
+#    image: dpage/pgadmin4:9.9.0
+#    ports:
+#      - "8234:80"
+#    environment:
+#      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+#      - PGADMIN_DEFAULT_PASSWORD=admin
+#    depends_on:
+#      - db
+#    networks:
+#      - app-network
 networks:
   app-network:
     driver: bridge
