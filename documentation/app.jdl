@@ -35,25 +35,26 @@ entity Department {
 }
 
 relationship OneToMany {
-  Person to PersonSkill {personSkills required}
+  Person{personSkills} to PersonSkill
+}
+
+relationship ManyToOne {
+  PersonSkill{skill} to Skill
+  PersonSkill{person} to Person
+}
+
+relationship ManyToMany {
+  Skill{tags} to SkillTag
+}
+
+relationship ManyToMany {
+  SkillGroup{skills} to Skill
+}
+
+relationship ManyToMany {
+  Department{skillGroups} to SkillGroup
 }
 
 relationship OneToMany {
-  Skill to PersonSkill {personSkills required}
-}
-
-relationship ManyToMany {
-  Skill to SkillTag {tags required}
-}
-
-relationship ManyToMany {
-  SkillGroup to Skill {skills required}
-}
-
-relationship ManyToMany {
-  Department to SkillGroup {skillGroups required}
-}
-
-relationship OneToMany {
-  Department to Person {people}
+  Department{people} to Person
 }

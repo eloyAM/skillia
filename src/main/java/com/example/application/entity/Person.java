@@ -17,7 +17,7 @@ import java.util.Collection;
 @Entity
 @Table(name = "person")
 public class Person {
-    public static final String COLUMN_DEPARMENT = "department";
+    public static final String COLUMN_DEPARTMENT = "department";
 
     @Id
     @Column(name = "username", nullable = false, length = 40)
@@ -39,7 +39,7 @@ public class Person {
     // Hint: without the "updatable = false", H2 creates another column with the same name for
     // the @JoinColumn (look at the Department entity) instead of using this one
     // Not a problem with a custom initialization of the schema (SQl script/flyway/liquibase)
-    @Column(name = "department", length = 50, updatable = false)
+    @Column(name = COLUMN_DEPARTMENT, length = 50, updatable = false)
     private String department;
 
     @OneToMany(mappedBy = "person")

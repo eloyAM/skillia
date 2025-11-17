@@ -25,5 +25,5 @@ public class PersonSkillId implements Serializable {
     @NonNull
     @NotNull
     @Column(name = "skill_id", nullable = false)
-    private Long skillId;   // TODO use generated id or given name as key?
+    private Long skillId;
 }

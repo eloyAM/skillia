@@ -1,0 +1,61 @@
+erDiagram
+    person {
+        varchar(40) username PK
+        varchar(100) full_name
+        varchar(254) email
+        varchar(50) title
+        varchar(50) department
+    }
+
+    department {
+        bigint id PK
+        varchar(50) name UK
+    }
+
+    skill_group {
+        bigint id PK
+        varchar(50) name UK
+        varchar(250) description
+    }
+
+    skill {
+        bigint id PK
+        varchar(70) name UK
+        varchar(250) description
+    }
+
+    skill_tag {
+        bigint id PK
+        varchar(70) name UK
+    }
+
+    person_skill {
+        varchar(40) person_id PK, FK
+        bigint skill_id PK, FK
+        integer level
+        timestamp last_modified_date
+    }
+
+    skill_tagging {
+        bigint skill_id PK, FK
+        bigint tag_id PK, FK
+    }
+
+    skill_group_skills {
+        bigint group_id PK, FK
+        bigint skill_id PK, FK
+    }
+
+    department_skill_groups {
+        bigint department_id PK, FK
+        bigint group_id PK, FK
+    }
+
+    person ||--|{ person_skill: "has"
+    skill ||--|{ person_skill: "is acquired by"
+    skill ||--|{ skill_tagging: "is tagged with"
+    skill_tag ||--|{ skill_tagging: "tags"
+    skill_group ||--|{ skill_group_skills: "contains"
+    skill ||--|{ skill_group_skills: "is part of"
+    department ||--|{ department_skill_groups: "has"
+    skill_group ||--|{ department_skill_groups: "is available in"

@@ -1,0 +1,47 @@
+classDiagram
+    class Department {
+        + id: Long
+        + name: String
+        + people: Person[]
+    }
+
+    class SkillGroup {
+        + id: Long
+        + name: String
+        + description: String
+        + skills: Skill[]
+    }
+
+    class Skill {
+        + id: Long
+        + name: String
+        + description: String
+        + tags: SkillTag[]
+    }
+
+    class SkillTag {
+        + id: Long
+        + name: String
+    }
+
+    class Person {
+        + username: String
+        + fullName: String
+        + email: String
+        + title: String
+        + department: String
+        + personSkills: AcquiredSkill[]
+    }
+
+    class AcquiredSkill {
+        + level: Integer
+        + skill: Skill
+        + modifiedAt: Date
+    }
+
+    Department "1" o--> "*" Person: people
+    Department "*" o--> "*" SkillGroup: skillGroups
+    SkillGroup "*" o--> "*" Skill: skills
+    Person "1" *--> "*" AcquiredSkill: personSkills
+    AcquiredSkill "*" --> "1" Skill: skill
+    Skill "*" o--> "*" SkillTag: tags

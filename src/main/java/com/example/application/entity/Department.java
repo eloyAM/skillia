@@ -35,7 +35,7 @@ public class Department {
     private List<SkillGroup> skillGroups = new ArrayList<>();
 
     @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = Person.COLUMN_DEPARMENT, referencedColumnName = COLUMN_NAME)
+    @JoinColumn(name = Person.COLUMN_DEPARTMENT, referencedColumnName = COLUMN_NAME)
     private List<Person> people = new ArrayList<>();
 
 }

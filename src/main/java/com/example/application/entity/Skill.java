@@ -10,7 +10,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -42,8 +41,8 @@ public class Skill {
     @Column(name = "description", length = 250)
     private String description;
 
-    @OneToMany(mappedBy = "skill")
-    private Collection<PersonSkill> personSkills;
+//    @OneToMany(mappedBy = "skill")
+//    private Collection<PersonSkill> personSkills;
 
     // Delete rule -> deleting a skill or a tag should delete the related record of the join table
     @OnDelete(action = OnDeleteAction.CASCADE)

@@ -27,7 +27,7 @@ public interface IDtoEntityMapper {
 
     SkillDto toSkillDto(Skill skill);
 
-    @Mapping(target = "personSkills", ignore = true)
+//    @Mapping(target = "personSkills", ignore = true)
     Skill toSkill(SkillDto skillDto);
 
     // Skill entity from id
@@ -41,6 +41,7 @@ public interface IDtoEntityMapper {
     @Mapping(target = "personSkillId.skillId", source = "skillId")
     @Mapping(target = "person", source = "personId")
     @Mapping(target = "skill", source = "skillId")
+    @Mapping(target = "lastModifiedDate", ignore = true)
     PersonSkill toPersonSkill(PersonSkillBasicDto personDto);
 
     @Mapping(target = "personId", source = "personSkillId.personId")
