@@ -1,10 +1,11 @@
-package com.example.application.view;
+package com.example.application.view.utils;
 
 import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
 import com.example.application.view.internal.PersonGridView;
 import com.example.application.view.internal.PersonSkillGridView;
 import com.example.application.view.internal.SkillGridView;
+import com.example.application.view.page.*;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;

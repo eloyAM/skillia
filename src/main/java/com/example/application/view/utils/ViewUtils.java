@@ -1,4 +1,4 @@
-package com.example.application.view;
+package com.example.application.view.utils;
 
 import com.example.application.dto.AcquiredSkillDto;
 import com.example.application.dto.PersonWithLevelDto;

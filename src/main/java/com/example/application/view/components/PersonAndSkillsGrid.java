@@ -4,7 +4,7 @@ import com.example.application.dto.AcquiredSkillDto;
 import com.example.application.dto.PersonDto;
 import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.service.PersonSkillService;
-import com.example.application.view.ViewUtils;
+import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import org.checkerframework.checker.nullness.qual.NonNull;

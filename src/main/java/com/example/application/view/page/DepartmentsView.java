@@ -1,10 +1,12 @@
-package com.example.application.view;
+package com.example.application.view.page;
 
 import com.example.application.dto.DepartmentDto;
 import com.example.application.dto.SkillGroupDto;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.SkillService;
 import com.example.application.utils.Validators;
+import com.example.application.view.utils.MainLayout;
+import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;

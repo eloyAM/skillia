@@ -1,10 +1,11 @@
-package com.example.application.view;
+package com.example.application.view.page;
 
 import com.example.application.security.SecConstants;
 import com.example.application.service.SkillService;
 import com.example.application.view.components.SkillGroupsTab;
 import com.example.application.view.components.SkillTagTab;
 import com.example.application.view.components.SkillsViewTab;
+import com.example.application.view.utils.MainLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
 import com.vaadin.flow.router.PageTitle;

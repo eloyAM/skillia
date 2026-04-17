@@ -1,4 +1,4 @@
-package com.example.application.view;
+package com.example.application.view.page;
 
 import com.example.application.dto.PersonDto;
 import com.example.application.dto.PersonSkillBasicDto;
@@ -10,6 +10,7 @@ import com.example.application.service.SkillService;
 import com.example.application.utils.Comparators;
 import com.example.application.view.components.PersonAndSkillsGrid;
 import com.example.application.view.components.SkillAndPeopleWithLevelGrid;
+import com.example.application.view.utils.MainLayout;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -31,7 +32,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 
-import static com.example.application.view.ViewUtils.notificationTopCenter;
+import static com.example.application.view.utils.ViewUtils.notificationTopCenter;
 
 @RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skillsassignment")

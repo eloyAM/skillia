@@ -1,4 +1,4 @@
-package com.example.application.view;
+package com.example.application.view.utils;
 
 public class LumoVars {
     private LumoVars() {

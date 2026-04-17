@@ -1,5 +1,6 @@
-package com.example.application.view;
+package com.example.application.view.page;
 
+import com.example.application.view.utils.MainLayout;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;

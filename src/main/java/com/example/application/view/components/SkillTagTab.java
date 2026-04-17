@@ -3,7 +3,7 @@ package com.example.application.view.components;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
-import com.example.application.view.ViewUtils;
+import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;

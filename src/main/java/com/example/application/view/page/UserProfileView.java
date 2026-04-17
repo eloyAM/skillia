@@ -1,4 +1,4 @@
-package com.example.application.view;
+package com.example.application.view.page;
 
 import com.example.application.dto.*;
 import com.example.application.security.SecConstants;
@@ -6,6 +6,7 @@ import com.example.application.security.SecurityService;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;
+import com.example.application.view.utils.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -24,8 +25,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.example.application.view.ViewUtils.createAndInitialize;
-import static com.example.application.view.ViewUtils.notificationTopCenter;
+import static com.example.application.view.utils.ViewUtils.createAndInitialize;
+import static com.example.application.view.utils.ViewUtils.notificationTopCenter;
 
 @PermitAll
 @Route(layout = MainLayout.class, value = "/profile/:username")

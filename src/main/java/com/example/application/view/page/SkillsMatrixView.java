@@ -1,4 +1,4 @@
-package com.example.application.view;
+package com.example.application.view.page;
 
 import com.example.application.dto.PersonDto;
 import com.example.application.dto.PersonWithSkillsDto;
@@ -6,6 +6,8 @@ import com.example.application.dto.SkillTagDto;
 import com.example.application.service.PersonSkillService;
 import com.example.application.service.SkillService;
 import com.example.application.utils.Validators;
+import com.example.application.view.utils.MainLayout;
+import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.ItemLabelGenerator;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
