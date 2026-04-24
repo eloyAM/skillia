@@ -17,6 +17,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.router.*;
+import elemental.json.JsonArray;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +26,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.example.application.view.utils.JsonUtils.toJsonArray;
 import static com.example.application.view.utils.ViewUtils.createAndInitialize;
 import static com.example.application.view.utils.ViewUtils.notificationTopCenter;
 
@@ -45,6 +47,8 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
     private final DepartmentService departmentService;
 
     private String routeUsername;
+    private boolean useChartJs;
+    private boolean useEcharts;
 
     public UserProfileView(
         SecurityService securityService,
@@ -63,6 +67,9 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         this.routeUsername = event.getRouteParameters().get(USERNAME_PATH_PARAMETER).orElseThrow();
+        var params = event.getLocation().getQueryParameters().getParameters();
+        this.useChartJs = params.containsKey("useChartJs");
+        this.useEcharts = params.containsKey("useEcharts");
     }
 
     @Override
@@ -87,8 +94,11 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
 
         List<AcquiredSkillDto> acquiredSkills = personSkillService.findAllAcquiredSkillByPersonId(person.getUsername());
 
-        add(new H4("Tree grid Skills"));
+        add(new H4("Skills"));
         add(createSkillsTreegrid(person, acquiredSkills));
+
+        add(new H4("Stats"));
+        add(createChartSection(acquiredSkills));
     }
 
     private static Component createUserDetailsSection(PersonDto personDto) {
@@ -139,14 +149,16 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         return userCard;
     }
 
-
+// TODO group name should be different to the skill
     private TreeGrid<?> createSkillsTreegrid(PersonDto person, List<AcquiredSkillDto> acquiredSkills) {
         var tree = new TreeGrid<AcquiredSkillDto>();
 
         tree.setWidthFull();
         tree.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
-        // Scroll if the screen is not big enough, we don't want to cut the level column
+        // Horizontal scroll if the screen is not big enough, we don't want to cut the level selector
         tree.setMinWidth("400px");
+        // Min height to avoid shrinking due to another section
+        tree.setMinHeight("300px");
 
         tree.addHierarchyColumn(sk -> sk.getSkill().getName())
             .setHeader("Skill")
@@ -292,5 +304,48 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         Collection<? extends GrantedAuthority> userAuthorities = authentication.getAuthorities();
         SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
         return userAuthorities.contains(rhAuthority);
+    }
+
+    private Component createChartSection(List<AcquiredSkillDto> acquiredSkills) {
+        VerticalLayout wrapper = new VerticalLayout();
+        wrapper.addClassName("user-profile-charts-layout");
+        wrapper.setPadding(false);
+        wrapper.setSpacing(true);
+        wrapper.setWidthFull();
+
+        ArrayList<String> labels = new ArrayList<>();
+        ArrayList<Integer> values = new ArrayList<>();
+        for (var as : acquiredSkills) {
+            labels.add(as.getSkill().getName());
+            values.add(as.getLevel());
+        }
+        JsonArray labelsJsonArray = toJsonArray(labels);
+        JsonArray valuesJsonArray = toJsonArray(values);
+
+        if (this.useChartJs) {
+            Div chartJsContainer = new Div();
+            chartJsContainer.setId("profile-chartjs");
+            chartJsContainer.setWidthFull();
+            chartJsContainer.setHeight("320px");
+            chartJsContainer.getElement().executeJs(
+                "globalThis.skillia.renderSkillsBarChartChartJs($0, $1, $2);",
+                "profile-chartjs", labelsJsonArray, valuesJsonArray
+            );
+            wrapper.add(new H5("Chart.js"), chartJsContainer);
+        }
+
+        if (this.useEcharts) {
+            Div echartsContainer = new Div();
+            echartsContainer.setId("profile-echarts");
+            echartsContainer.setWidthFull();
+            echartsContainer.setHeight("320px");
+            echartsContainer.getElement().executeJs(
+                "globalThis.skillia.renderSkillsBarChartEcharts($0, $1, $2);",
+                "profile-echarts", labelsJsonArray, valuesJsonArray
+            );
+            wrapper.add(new H5("Apache ECharts"), echartsContainer);
+        }
+
+        return wrapper;
     }
 }
