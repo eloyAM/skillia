@@ -29,6 +29,10 @@ vaadin-grid-tree-toggle {
     line-height: var(--lumo-line-height-xs);
 }
 
+.readonly-level-item {
+  cursor: not-allowed;
+}
+
 vaadin-grid[theme~=my-grid-spacing-theme]::part(body-cell) {
     padding-top: var(--lumo-space-s);
     padding-bottom: var(--lumo-space-s);

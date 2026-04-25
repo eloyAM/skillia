@@ -229,9 +229,9 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         int higherLevel = levels.get(levels.size() - 1);
         List<MenuItem> menuItems = new ArrayList<>(levels.size());
         for (Integer level : levels) {
-            String levelWithLabel = "%s - %s".formatted(level, PersonSkillService.getLevelName(level));
+            String tooltipLevelWithLabel = "%s - %s".formatted(level, PersonSkillService.getLevelName(level));
             String text = String.valueOf(level);    // Compact format - show only the number, not the level label
-            MenuItem menuItem = menuBar.addItem(text, levelWithLabel);
+            MenuItem menuItem = menuBar.addItem(text, tooltipLevelWithLabel);
             menuItems.add(menuItem);
 
             addSkillSelectorClickListenerIfPermitted(skillIid, menuItem, menuItems);
@@ -288,6 +288,8 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
                     old.removeThemeNames(LUMO_MENU_BAR_PRIMARY_THEME_VARIANT_NAME);
                 });
             });
+        } else {
+            menuItem.addClassName("readonly-level-item");
         }
     }
 
