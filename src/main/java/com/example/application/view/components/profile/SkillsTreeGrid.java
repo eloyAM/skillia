@@ -17,7 +17,7 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
         PersonDto person,
         List<AcquiredSkillDto> acquiredSkills,
         Authentication authentication,
-        String routeUsername,
+        String username,
         PersonSkillService personSkillService,
         DepartmentService departmentService
     ) {
@@ -39,12 +39,14 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
             .setHeader("Skill")
             .setFlexGrow(1);
 
+        boolean isMyProfileOrPermittedRole = new ProfilePermissionsHelper(authentication, username)
+            .isMyProfileOrPermittedRole();
         tree.addComponentColumn(v -> {
                 if (v.getLevel() == -1) {
                     return new Span();   // Special case for the grouping element
                 }
                 return new SkillLevelSelector(v.getLevel(), v.getSkill().getId(),
-                    authentication, routeUsername, personSkillService);
+                    username, personSkillService, isMyProfileOrPermittedRole);
             })
             .setHeader("Level")
             .setSortable(true)
