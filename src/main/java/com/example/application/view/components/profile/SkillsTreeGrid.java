@@ -28,7 +28,7 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
         // Horizontal scroll if the screen is not big enough, we don't want to cut the level selector
         tree.setMinWidth("400px");
         // Min height to avoid shrinking due to another section
-        tree.setMinHeight("300px");
+        tree.setMinHeight("350px");
 
         tree.addComponentHierarchyColumn(sk -> {
                 var div = new Div(sk.getSkill().getName());

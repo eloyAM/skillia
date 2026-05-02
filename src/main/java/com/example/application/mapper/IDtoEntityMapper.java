@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-@Mapper(componentModel = "spring", uses = {IDtoEntityMapper.class})
+@Mapper(componentModel = "spring")
 public interface IDtoEntityMapper {
     // Person
 

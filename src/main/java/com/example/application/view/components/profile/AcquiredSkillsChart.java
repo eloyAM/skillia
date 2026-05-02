@@ -1,33 +1,48 @@
 package com.example.application.view.components.profile;
 
 import com.example.application.dto.AcquiredSkillDto;
+import com.example.application.dto.StatValue;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import elemental.json.Json;
 import elemental.json.JsonArray;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.example.application.view.utils.JsonUtils.toJsonArray;
+import static com.example.application.view.utils.JsonUtils.setJsonValue;
 
 public class AcquiredSkillsChart extends VerticalLayout {
 
-    public AcquiredSkillsChart(boolean useChartJs, boolean useEcharts, List<AcquiredSkillDto> acquiredSkills) {
+    public AcquiredSkillsChart(
+        boolean useChartJs, boolean useEcharts, List<AcquiredSkillDto> acquiredSkills, Map<Long, StatValue> skillStats
+    ) {
         VerticalLayout wrapper = this;
         wrapper.addClassName("user-profile-charts-layout");
         wrapper.setPadding(false);
         wrapper.setSpacing(true);
         wrapper.setWidthFull();
 
-        ArrayList<String> labels = new ArrayList<>();
-        ArrayList<Integer> values = new ArrayList<>();
+        JsonArray labelsJsonArray = Json.createArray();
+        JsonArray valuesJsonArray = Json.createArray();
+        JsonArray minValuesJsonArray = Json.createArray();
+        JsonArray maxValuesJsonArray = Json.createArray();
+        JsonArray avgValuesJsonArray = Json.createArray();
+        JsonArray countValuesJsonArray = Json.createArray();
+        int i = 0;
         for (var as : acquiredSkills) {
-            labels.add(as.getSkill().getName());
-            values.add(as.getLevel());
+            setJsonValue(labelsJsonArray, i, as.getSkill().getName());
+            setJsonValue(valuesJsonArray, i, as.getLevel());
+            Optional<StatValue> statValueOpt = Optional.ofNullable(skillStats.get(as.getSkill().getId()));
+            setJsonValue(minValuesJsonArray, i, statValueOpt.map(StatValue::getMin).orElse(null));
+            setJsonValue(avgValuesJsonArray, i, statValueOpt.map(StatValue::getAverage).orElse(null));
+            setJsonValue(maxValuesJsonArray, i, statValueOpt.map(StatValue::getMax).orElse(null));
+            setJsonValue(countValuesJsonArray, i, statValueOpt.map(StatValue::getCount).orElse(null));
+            i++;
         }
-        JsonArray labelsJsonArray = toJsonArray(labels);
-        JsonArray valuesJsonArray = toJsonArray(values);
+
 
         if (useChartJs) {
             Div chartJsContainer = new Div();
@@ -52,5 +67,18 @@ public class AcquiredSkillsChart extends VerticalLayout {
             );
             wrapper.add(new H5("Apache ECharts"), echartsContainer);
         }
+
+        Div chartContainer = new Div();
+        String id = "profile-echarts-bullet";
+        chartContainer.setId(id);
+        chartContainer.setWidthFull();
+        chartContainer.setHeight("350px");
+        chartContainer.getElement().executeJs(
+            "globalThis.skillia.renderSkillsBulletChartForProfile($0, $1, $2, $3, $4, $5, $6);",
+            id,
+            labelsJsonArray, valuesJsonArray,
+            minValuesJsonArray, avgValuesJsonArray, maxValuesJsonArray, countValuesJsonArray
+        );
+        wrapper.add(chartContainer);
     }
 }

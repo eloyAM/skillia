@@ -13,18 +13,27 @@ public class JsonUtils {
         JsonArray arr = Json.createArray();
         int i = 0;
         for (var o : list) {
-            JsonValue v;
-            if (o == null) {
-                v = Json.createNull();
-            } else if (o instanceof Number n) {
-                v = Json.create(n.doubleValue());
-            } else if (o instanceof Boolean b) {
-                v = Json.create(b);
-            } else {
-                v = Json.create(o.toString());
-            }
+            JsonValue v = getJsonValue(o);
             arr.set(i++, v);
         }
         return arr;
+    }
+
+    public static JsonValue getJsonValue(Object o) {
+        JsonValue v;
+        if (o == null) {
+            v = Json.createNull();
+        } else if (o instanceof Number n) {
+            v = Json.create(n.doubleValue());
+        } else if (o instanceof Boolean b) {
+            v = Json.create(b);
+        } else {
+            v = Json.create(o.toString());
+        }
+        return v;
+    }
+
+    public static void setJsonValue(JsonArray arr, int index, Object o) {
+        arr.set(index, getJsonValue(o));
     }
 }

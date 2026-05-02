@@ -1,27 +1,30 @@
 console.debug("Loading ECharts module");
 
 
-function cssVar(name, fallback) {
-    const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-    return v || fallback;
+function cssVarOr(name, fallback) {
+    return cssVar(name) || fallback;
+}
+
+function cssVar(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
 function buildVaadinEchartsTheme() {
     // Vaadin Lumo tokens (fallbacks included)
-    const bgBase = cssVar("--lumo-base-color", "#ffffff");
-    const bgContrast = cssVar("--lumo-contrast-5pct", "rgba(0,0,0,0.05)");
-    const textPrimary = cssVar("--lumo-body-text-color", "#1f2937");
-    const textSecondary = cssVar("--lumo-secondary-text-color", "#6b7280");
-    const border = cssVar("--lumo-contrast-20pct", "rgba(0,0,0,0.2)");
+    const bgBase = cssVarOr("--lumo-base-color", "#ffffff");
+    const bgContrast = cssVarOr("--lumo-contrast-5pct", "rgba(0,0,0,0.05)");
+    const textPrimary = cssVarOr("--lumo-body-text-color", "#1f2937");
+    const textSecondary = cssVarOr("--lumo-secondary-text-color", "#6b7280");
+    const border = cssVarOr("--lumo-contrast-20pct", "rgba(0,0,0,0.2)");
 
-    const primary = cssVar("--lumo-primary-color", "#2563eb");
-    const success = cssVar("--lumo-success-color", "#16a34a");
-    const warning = cssVar("--lumo-warning-color", "#d97706");
-    const error = cssVar("--lumo-error-color", "#dc2626");
+    const primary = cssVarOr("--lumo-primary-color", "#2563eb");
+    const success = cssVarOr("--lumo-success-color", "#16a34a");
+    const warning = cssVarOr("--lumo-warning-color", "#d97706");
+    const error = cssVarOr("--lumo-error-color", "#dc2626");
 
     // Extra palette slots (secondary/tertiary style)
-    const primary50 = cssVar("--lumo-primary-color-50pct", "rgba(37,99,235,0.5)");
-    const primary10 = cssVar("--lumo-primary-color-10pct", "rgba(37,99,235,0.1)");
+    const primary50 = cssVarOr("--lumo-primary-color-50pct", "rgba(37,99,235,0.5)");
+    const primary10 = cssVarOr("--lumo-primary-color-10pct", "rgba(37,99,235,0.1)");
 
     return {
         color: [primary, success, warning, error, primary50, "#7c3aed", "#0ea5e9"],
@@ -66,7 +69,7 @@ function buildVaadinEchartsTheme() {
         // Optional defaults for bars/lines
         bar: {
             itemStyle: {
-                borderRadius: [6, 6, 0, 0]
+                borderRadius: [6, 6, 6, 6]
             }
         },
         line: {
@@ -90,6 +93,21 @@ function registerOrUpdateVaadinTheme() {
     echarts.registerTheme("vaadin-lumo", buildVaadinEchartsTheme());
 }
 
+function remToPx(rem) {
+    if (typeof rem !== 'number' || Number.isNaN(rem)) {
+        throw new Error("Invalid input: rem must be a number");
+    }
+    const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return rem * rootFontSize;
+}
+
+function parseRemString(remString) {
+    if (typeof remString !== 'string' || !remString.endsWith('rem')) {
+        throw new Error("Invalid rem string");
+    }
+    const remValue = Number.parseFloat(remString);
+    return remToPx(remValue);
+}
 
 globalThis.skillia = globalThis.skillia || {};
 globalThis.skillia.renderSkillsBarChartEcharts = function renderSkillsBarChartEcharts(containerId, labels, values) {
@@ -156,3 +174,195 @@ globalThis.skillia.renderSkillsBarChartEcharts = function renderSkillsBarChartEc
         mo.disconnect();
     }
 }
+
+globalThis.skillia.renderSkillsBulletChartForProfile = function (
+    containerId,
+    skillNames,
+    skillLevels,
+    minLevels,
+    averageLevels,
+    maxLevels,
+    recordCounts
+) {
+    console.debug("Rendering ECharts bullet chart", {
+        containerId,
+        skillNames,
+        skillLevels,
+        minLevels,
+        averageLevels,
+        maxLevels,
+        recordCounts
+    });
+    const host = document.getElementById(containerId);
+    if (!host) {
+        console.error("Chart container not found:", containerId);
+        return;
+    }
+
+    const chart = echarts.init(host);
+
+    const cssVarNames = {
+        lumoPrimaryColor: '--lumo-primary-color',
+        lumoShade10Pct: '--lumo-shade-10pct',
+        lumoBodyTextColor: '--lumo-body-text-color',
+        lumoSecondaryTextColor: '--lumo-secondary-text-color',
+        lumoFontFamily: '--lumo-font-family',
+        lumoFontSizeS: '--lumo-font-size-s',
+        lumoLineHeightS: '--lumo-line-height-s',
+        lumoFontSizeXS: '--lumo-font-size-xs',
+        lumoLineHeightXS: '--lumo-line-height-xs'
+    };
+
+    const {
+        lumoPrimaryColor,
+        lumoShade10Pct,
+        lumoBodyTextColor,
+        lumoSecondaryTextColor,
+        lumoFontFamily,
+        lumoFontSizeS,
+        lumoLineHeightS,
+        lumoFontSizeXS,
+        lumoLineHeightXS
+    } = Object.entries(cssVarNames).reduce((acc, [key, cssVarOr]) => {
+        acc[key] = cssVar(cssVarOr);
+        return acc;
+    }, {});
+
+    const minColor = '#5db5ee';
+    const levelColor = lumoPrimaryColor;
+    const avgColor = '#189bf3';
+    const maxColor = lumoShade10Pct;
+    const textColor = lumoBodyTextColor;
+    const textSecondary = lumoSecondaryTextColor;
+    const fontSize = parseRemString(lumoFontSizeS || "0.875rem");
+    const fontLineHeight = Number.parseInt(lumoLineHeightS || 1.375) * fontSize;
+    const fontSizeSmaller = parseRemString(lumoFontSizeXS || "0.8125rem");
+    const fontLineHeightSmaller = Number.parseInt(lumoLineHeightXS || 1.25) * fontSizeSmaller;
+
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {type: 'shadow'},
+            extraCssText: 'max-width: 250px; white-space: normal; word-break: break-word;'
+        },
+        legend: {
+            data: ['Person Level', 'Min', 'Average', 'Max'],
+            textStyle: {color: textColor}
+        },
+        xAxis: {
+            type: 'value',
+            max: 5,
+            splitLine: {show: false},
+            axisLabel: {
+                color: textSecondary,
+                textStyle: {
+                    fontFamily: lumoFontFamily,
+                    lineHeight: fontLineHeightSmaller,
+                    fontSize: fontSizeSmaller
+                }
+            }
+        },
+        yAxis: {
+            type: 'category',
+            data: skillNames,
+            axisTick: {show: false},
+            axisLabel: {
+                width: 60, // Wrap if greater than this
+                overflow: 'break',
+                interval: 0, // Prevent skipping labels
+                textStyle: {
+                    fontFamily: lumoFontFamily,
+                    lineHeight: fontLineHeight,
+                    fontSize: fontSize
+                },
+                color: textSecondary
+            }
+        },
+        grid: {
+            left: 10,
+            right: 30,
+            top: 30,
+            bottom: 10,
+            containLabel: true
+        },
+        dataZoom: [
+            {
+                type: 'slider',
+                show: true,
+                yAxisIndex: 0,
+                // Window size and initial position
+                start: 100,
+                end: 75,
+                // Margin and size
+                right: 10,
+                width: 10
+            },
+            {
+                // Scroll naturally inside the chart area (instead of moving the slider)
+                type: 'inside',
+                yAxisIndex: 0,
+                zoomOnMouseWheel: 'shift',  // Hold shift button to zoom
+                moveOnMouseWheel: true
+            }
+        ],
+        series: [
+            {
+                name: 'Person Level',
+                type: 'bar',
+                z: 2,
+                barWidth: '30%',
+                barMinWidth: 10,
+                barMaxWidth: 15,
+                itemStyle: {color: levelColor},
+                data: skillLevels
+            },
+            {
+                name: 'Min',
+                type: 'pictorialBar',
+                symbol: 'rect',
+                symbolSize: [4, '100%'],
+                symbolPosition: 'end',
+                z: 3,
+                barMinWidth: 10,
+                barMaxWidth: 15,
+                itemStyle: {color: minColor},
+                data: minLevels
+            },
+            {
+                name: 'Average',
+                type: 'pictorialBar',
+                symbol: 'rect',
+                symbolSize: [4, '100%'],
+                symbolPosition: 'end',
+                z: 3,
+                barMinWidth: 10,
+                barMaxWidth: 15,
+                itemStyle: {color: avgColor},
+                data: averageLevels,
+                tooltip: {
+                    valueFormatter: function (value, dataIndex) {
+                        const v = value == null ? value : Number(value).toFixed(2);
+                        return `Over ${recordCounts?.[dataIndex] ?? 'N/A'} ratings: ${v}`;
+                    }
+                }
+            },
+            {
+                name: 'Max',
+                type: 'bar',
+                barGap: '-100%',
+                z: 1,
+                barWidth: '60%',
+                barMinWidth: 10,
+                barMaxWidth: 15,
+                itemStyle: {color: maxColor},
+                data: maxLevels
+            }
+        ]
+    };
+
+    chart.setOption(option);
+
+    new ResizeObserver(() => {
+        chart.resize();
+    }).observe(host);
+};

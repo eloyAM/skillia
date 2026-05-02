@@ -3,6 +3,7 @@ package com.example.application.repo;
 import com.example.application.dto.AcquiredSkillDto;
 import com.example.application.dto.PersonSkillBasicDto;
 import com.example.application.dto.PersonWithLevelDto;
+import com.example.application.dto.SkillStatValue;
 import com.example.application.entity.PersonSkill;
 import com.example.application.entity.PersonSkillId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,4 +44,12 @@ public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillI
     List<PersonWithLevelDto> findAllPersonWithLevelBySkillId(Long skillId);
 
     Optional<PersonSkill> findByPersonSkillId_PersonIdAndPersonSkillId_SkillId(String personId, Long skillId);
+
+    @Query("""
+        select new com.example.application.dto.SkillStatValue(
+            p.personSkillId.skillId,
+            new com.example.application.dto.StatValue(count(*), min(p.level), max(p.level), avg(p.level))
+        )
+        from PersonSkill p group by p.personSkillId.skillId""")
+    List<SkillStatValue> calculateAllStatValue();
 }

@@ -6,10 +6,14 @@ import com.example.application.security.SecurityService;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;
+import com.example.application.service.StatsService;
 import com.example.application.view.components.profile.AcquiredSkillsChart;
 import com.example.application.view.components.profile.SkillsTreeGrid;
 import com.example.application.view.components.profile.UserDetailsCard;
+import com.example.application.view.utils.LumoVars;
 import com.example.application.view.utils.MainLayout;
+import com.example.application.view.utils.ViewUtils;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -31,6 +35,7 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
     private final PersonService personService;
     private final PersonSkillService personSkillService;
     private final DepartmentService departmentService;
+    private final StatsService statsService;
 
     private String routeUsername;
     private boolean useChartJs;
@@ -40,14 +45,15 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         SecurityService securityService,
         PersonService personService,
         PersonSkillService personSkillService,
-        DepartmentService departmentService
-    ) {
+        DepartmentService departmentService,
+        StatsService statsService) {
         // We can't create the UI here as we have a dependency on the route parameters,
         // who are read later, not here
         this.authentication = securityService.getAuthentication();
         this.personService = personService;
         this.personSkillService = personSkillService;
         this.departmentService = departmentService;
+        this.statsService = statsService;
     }
 
     @Override
@@ -80,13 +86,15 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
 
         List<AcquiredSkillDto> acquiredSkills = personSkillService.findAllAcquiredSkillByPersonId(person.getUsername());
 
-        add(new H4("Skills"));
+        add(new H4("Assigned skills"));
         add(new SkillsTreeGrid(person, acquiredSkills,
             this.authentication, this.routeUsername, this.personSkillService, this.departmentService));
 
-        add(new H4("Stats"));
+        add(
+            ViewUtils.createAndInitialize(new Div(), d -> d.getStyle().setPaddingTop(LumoVars.LUMO_SPACE_L)),
+            new H4("Stats"));
         add(new AcquiredSkillsChart(this.useChartJs, this.useEcharts,
-            acquiredSkills));
+            acquiredSkills, statsService.getAllStats()));
     }
 
 }
