@@ -33,6 +33,8 @@
         <checker.version>3.42.0</checker.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <zonky-embedded-postgres-runner.version>2.1.0</zonky-embedded-postgres-runner.version>
+        <groovy.version>4.0.26</groovy.version>
+        <spock.version>2.4-M4-groovy-4.0</spock.version>
     </properties>
 
     <parent>
@@ -263,6 +265,24 @@
             <artifactId>popup</artifactId>
             <version>24.1.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>${groovy.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+            <version>${spock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-spring</artifactId>
+            <version>${spock.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -334,9 +354,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <excludes>
-                        <exclude>**/it/**/*.java</exclude>
-                    </excludes>
+                    <includes>
+                        <include>**/ut/**/*.java</include>
+                        <include>**/ut/**/*.groovy</include>
+                    </includes>
                 </configuration>
             </plugin>
             <plugin>
@@ -356,6 +377,7 @@
                     <enableAssertions>true</enableAssertions>
                     <includes>
                         <include>**/it/**/*.java</include>
+                        <include>**/it/**/*.groovy</include>
                     </includes>
                 </configuration>
             </plugin>
@@ -408,6 +430,19 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven-dependency-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>4.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>addTestSources</goal>
+                            <goal>compileTests</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
