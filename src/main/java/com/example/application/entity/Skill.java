@@ -48,7 +48,8 @@ public class Skill {
     @JoinTable(
         name = "skill_tagging",
         joinColumns = @JoinColumn(name = "skill_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__skill")),
-        inverseJoinColumns = @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__tag"))
+        inverseJoinColumns = @JoinColumn(name = "tag_id", foreignKey = @ForeignKey(name = "FK__skill_tagging__tag")),
+        indexes = @Index(name = "IDX__skill_tagging__skill_id", columnList = "skill_id")
     )
     @Builder.Default
     private Set<SkillTag> tags = new LinkedHashSet<>();

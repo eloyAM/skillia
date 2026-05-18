@@ -73,6 +73,10 @@ create table department_skill_groups
     primary key (department_id, group_id)
 );
 
+create index IDX__department_skill_groups__department_id on department_skill_groups (department_id);
+create index IDX__skill_group_skills__group_id on skill_group_skills (group_id);
+create index IDX__skill_tagging__skill_id on skill_tagging (skill_id);
+
 alter table person_skill
     add constraint FK__person_skill__person
         foreign key (person_id)

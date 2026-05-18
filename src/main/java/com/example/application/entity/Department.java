@@ -30,7 +30,10 @@ public class Department {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "department_skill_groups",
         joinColumns = @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "FK__department_skill_groups__department_id")),
-        inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(name = "FK__department_skill_groups__group_id"))
+        inverseJoinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(name = "FK__department_skill_groups__group_id")),
+        // List type -> no unique constraint is generated (as opposed to the Set type) -> constraint added manually
+        uniqueConstraints = @UniqueConstraint(name = "UQ__department_skill_groups__department_id__group_id", columnNames = {"department_id", "group_id"}),
+        indexes = @Index(name = "IDX__department_skill_groups__department_id", columnList = "department_id")
     )
     private List<SkillGroup> skillGroups = new ArrayList<>();
 

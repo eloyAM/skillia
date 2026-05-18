@@ -31,7 +31,8 @@ public class SkillGroup {
     @JoinTable(name = "skill_group_skills",
         joinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(name = "FK__skill_group_skills__group_id")),
         inverseJoinColumns = @JoinColumn(name = "skill_id", foreignKey = @ForeignKey(name = "FK__skill_group_skills__skill_id")),
-        indexes = {@Index(name = "UIX__skill_group_skills__composite_id", unique = true, columnList = "group_id, skill_id")}
+        // Set type -> both columns are used as primary key -> no need to add manually a unique constraint
+        indexes = @Index(name = "IDX__skill_group_skills__group_id", columnList = "group_id")
     )
     private Set<Skill> skills = new HashSet<>();
 

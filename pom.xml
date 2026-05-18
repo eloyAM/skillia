@@ -409,6 +409,17 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven-dependency-plugin.version}</version>
             </plugin>
+            <!-- Flyway maven plugin used only to run migrations manually,
+            the config here won't be used on the application -->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <configuration>
+                    <configFiles>
+                        <configFile>flyway-maven-plugin.conf</configFile>
+                    </configFiles>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
