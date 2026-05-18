@@ -67,15 +67,6 @@ public final class DtoEntityMapping {
             .build();
     }
 
-    // TODO not used
-    public static PersonWithSkillsDto mapPersonSkillEntityToPersonWithSkillsDto(
-        PersonSkill personSkill) {
-        return PersonWithSkillsDto.builder()
-            .person(mapPersonEntityToPersonDto(personSkill.getPerson()))
-            .skills(List.of(mapPersonSkillEntityToAcquiredSkillDto(personSkill)))
-            .build();
-    }
-
     public static List<PersonWithSkillsDto> mapPersonSkillEntityToPersonWithSkillsDto(
         List<PersonSkill> personSkillList
     ) {
@@ -102,10 +93,6 @@ public final class DtoEntityMapping {
                 .build());
         }
         return result;
-    }
-
-    public static PersonSkillId mapPersonSkillIdDtoToPersonSkillIdEntity(PersonSkillIdDto personSkillIdDto) {
-        return new PersonSkillId(personSkillIdDto.getPersonId(), personSkillIdDto.getSkillId());
     }
 
     public static SkillTagDto mapSkillTagEntityToSkillTagDto(SkillTag skillTag) {

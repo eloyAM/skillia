@@ -32,11 +32,6 @@ public final class MappingAdapter implements IDtoEntityMapper {
     }
 
     @Override
-    public Person toPerson(String personId) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
-
-    @Override
     public SkillDto toSkillDto(Skill skill) {
         return DtoEntityMapping.mapSkillEntityToSkillDto(skill);
     }
@@ -44,11 +39,6 @@ public final class MappingAdapter implements IDtoEntityMapper {
     @Override
     public Skill toSkill(SkillDto skillDto) {
         return DtoEntityMapping.mapSkillDtoToSkillEntity(skillDto);
-    }
-
-    @Override
-    public Skill toSkill(Long skillId) {
-        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
@@ -96,7 +86,7 @@ public final class MappingAdapter implements IDtoEntityMapper {
 
     @Override
     public PersonSkillId toPersonSkillId(PersonSkillIdDto personSkillIdDto) {
-        return DtoEntityMapping.mapPersonSkillIdDtoToPersonSkillIdEntity(personSkillIdDto);
+        throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override

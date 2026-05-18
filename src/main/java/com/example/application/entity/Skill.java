@@ -41,9 +41,6 @@ public class Skill {
     @Column(name = "description", length = 250)
     private String description;
 
-//    @OneToMany(mappedBy = "skill")
-//    private Collection<PersonSkill> personSkills;
-
     // Delete rule -> deleting a skill or a tag should delete the related record of the join table
     @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull

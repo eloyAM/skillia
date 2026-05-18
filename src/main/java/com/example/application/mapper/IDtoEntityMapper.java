@@ -18,34 +18,22 @@ public interface IDtoEntityMapper {
 
     PersonDto toPersonDto(Person person);
 
-    // Person entity from username
-    @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-    @Mapping(target = "username", source = "personId")
-    Person toPerson(String personId);
-
     // Skill
 
     SkillDto toSkillDto(Skill skill);
 
-//    @Mapping(target = "personSkills", ignore = true)
     Skill toSkill(SkillDto skillDto);
-
-    // Skill entity from id
-    @BeanMapping(unmappedTargetPolicy = ReportingPolicy.IGNORE)
-    @Mapping(target = "id", source = "skillId")
-    Skill toSkill(Long skillId);
 
     // PersonSkill
 
     @Mapping(target = "personSkillId.personId", source = "personId")
     @Mapping(target = "personSkillId.skillId", source = "skillId")
-    @Mapping(target = "person", source = "personId")
-    @Mapping(target = "skill", source = "skillId")
+    @Mapping(target = "person.username", source = "personId")
+    @Mapping(target = "skill.id", source = "skillId")
     @Mapping(target = "lastModifiedDate", ignore = true)
     PersonSkill toPersonSkill(PersonSkillBasicDto personDto);
 
-    @Mapping(target = "personId", source = "personSkillId.personId")
-    @Mapping(target = "skillId", source = "personSkillId.skillId")
+    @InheritInverseConfiguration
     PersonSkillBasicDto toPersonSkillBasicDto(PersonSkill personSkill);
 
     AcquiredSkillDto toAcquiredSkillDto(PersonSkill personSkill);
@@ -89,9 +77,6 @@ public interface IDtoEntityMapper {
 
         return list;
     }
-
-    // Not implemented on the manual mapping
-    // PersonSkillIdDto toPersonSkillIdDto(PersonSkillId personSkillId);
 
     PersonSkillId toPersonSkillId(PersonSkillIdDto personSkillIdDto);
 

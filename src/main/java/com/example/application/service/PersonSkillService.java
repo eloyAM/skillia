@@ -4,6 +4,7 @@ import com.example.application.dto.*;
 import com.example.application.entity.PersonSkill;
 import com.example.application.entity.PersonSkillId;
 import com.example.application.mapper.DtoEntityMapping;
+import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.utils.FunctionalUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -18,9 +19,11 @@ import java.util.Optional;
 @Service
 public class PersonSkillService {
     private final PersonSkillRepo personSkillRepo;
+    private final IDtoEntityMapper dtoEntityMapper;
 
-    public PersonSkillService(PersonSkillRepo personSkillRepo) {
+    public PersonSkillService(PersonSkillRepo personSkillRepo, IDtoEntityMapper dtoEntityMapper) {
         this.personSkillRepo = personSkillRepo;
+        this.dtoEntityMapper = dtoEntityMapper;
     }
 
     @Nullable
@@ -98,7 +101,7 @@ public class PersonSkillService {
     }
 
     public void deletePersonSkillById(PersonSkillIdDto idDto) {
-        PersonSkillId entityId = DtoEntityMapping.mapPersonSkillIdDtoToPersonSkillIdEntity(idDto);
+        PersonSkillId entityId = dtoEntityMapper.toPersonSkillId(idDto);
         personSkillRepo.deleteById(entityId);
     }
 }
