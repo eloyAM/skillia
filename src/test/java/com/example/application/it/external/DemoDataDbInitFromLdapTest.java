@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("default")   // Be careful to don't runt it with the embedded postgres or LDAP to avoid conflicts
 @SpringBootTest
 @Testcontainers
-public class DbInitFromLdapTest {
+class DemoDataDbInitFromLdapTest {
     private static final int LDAP_PORT = 1389;
     private static final String LDAP_BASE = "dc=example,dc=org";
     private static final String LDAP_ADMIN_SIMPLE_USERNAME = "admin-testcontainers";

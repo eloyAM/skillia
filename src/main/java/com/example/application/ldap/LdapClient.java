@@ -1,21 +1,20 @@
-package com.example.application.service;
+package com.example.application.ldap;
 
 import com.example.application.dto.PersonDto;
-import com.example.application.ldap.LdapProperties;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import java.util.List;
 
-@Service
-public class LdapService {
+@Component
+public class LdapClient {
     private final LdapTemplate ldapTemplate;
     private final LdapProperties ldapProperties;
 
-    public LdapService(LdapTemplate ldapTemplate, LdapProperties ldapProperties) {
+    public LdapClient(LdapTemplate ldapTemplate, LdapProperties ldapProperties) {
         this.ldapTemplate = ldapTemplate;
         this.ldapProperties = ldapProperties;
     }
@@ -41,3 +40,4 @@ public class LdapService {
         return attrValue.toString();
     }
 }
+

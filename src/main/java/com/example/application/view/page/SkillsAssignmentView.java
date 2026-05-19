@@ -7,7 +7,7 @@ import com.example.application.security.SecConstants;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;
 import com.example.application.service.SkillService;
-import com.example.application.utils.Comparators;
+import com.example.application.view.utils.Comparators;
 import com.example.application.view.components.PersonAndSkillsGrid;
 import com.example.application.view.components.SkillAndPeopleWithLevelGrid;
 import com.example.application.view.utils.MainLayout;

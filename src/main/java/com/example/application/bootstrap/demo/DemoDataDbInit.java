@@ -1,4 +1,4 @@
-package com.example.application.utils;
+package com.example.application.bootstrap.demo;
 
 import com.example.application.dto.PersonDto;
 import com.example.application.dto.SkillDto;
@@ -18,18 +18,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Important:
- * take care with dependencies/overwriting data
- * imported from LDAP through the runner {@link com.example.application.ImportLdapUsersToDbAppRunner}
+ * Note:
+ * This creates some demo data in addition to the initialization already done by the {@link com.example.application.bootstrap.ImportLdapUsersToDbAppRunner}
  */
-public class DbInit {
+public class DemoDataDbInit {
+
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final PersonService personService;
     private final SkillService skillService;
     private final PersonSkillRepo personSkillRepo;
     private final DepartmentService departmentService;
 
-    public DbInit(
+    public DemoDataDbInit(
         PersonService personService,
         SkillService skillService,
         PersonSkillRepo personSkillRepo,
@@ -220,7 +221,7 @@ public class DbInit {
     }
 
     private static int randomUpTo(int max) {
-        return new SecureRandom().nextInt(max) + 1;
+        return RANDOM.nextInt(max) + 1;
     }
 
     private static int randomLvl() {

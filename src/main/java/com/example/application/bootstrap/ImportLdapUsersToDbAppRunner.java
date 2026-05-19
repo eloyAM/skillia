@@ -1,20 +1,23 @@
-package com.example.application;
+package com.example.application.bootstrap;
 
-import com.example.application.service.LdapDbService;
+import com.example.application.ldap.LdapSynchronizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+/**
+ * Runs on application startup to import users and departments from LDAP
+ */
 @Slf4j
 @Order(1)
 @Component
 public class ImportLdapUsersToDbAppRunner implements ApplicationRunner {
 
-    private final LdapDbService ldapDbService;
+    private final LdapSynchronizationService ldapDbService;
 
-    public ImportLdapUsersToDbAppRunner(LdapDbService ldapDbService) {
+    public ImportLdapUsersToDbAppRunner(LdapSynchronizationService ldapDbService) {
         this.ldapDbService = ldapDbService;
     }
 

@@ -1,7 +1,7 @@
 package com.example.application.controller.internal;
 
 import com.example.application.dto.PersonDto;
-import com.example.application.service.LdapService;
+import com.example.application.ldap.LdapClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,14 +12,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/ldap")
 public class LdapUserInfoController {
-    private final LdapService ldapService;
+    private final LdapClient ldapClient;
 
-    public LdapUserInfoController(LdapService ldapService) {
-        this.ldapService = ldapService;
+    public LdapUserInfoController(LdapClient ldapClient) {
+        this.ldapClient = ldapClient;
     }
 
     @GetMapping("/users")
     public List<PersonDto> get() {
-        return ldapService.findAllUsers();
+        return ldapClient.findAllUsers();
     }
 }

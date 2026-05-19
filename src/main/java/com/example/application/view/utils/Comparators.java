@@ -1,4 +1,4 @@
-package com.example.application.utils;
+package com.example.application.view.utils;
 
 import com.example.application.dto.PersonDto;
 import jakarta.annotation.Nullable;
