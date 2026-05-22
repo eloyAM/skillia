@@ -31,6 +31,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.provider.*;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.Setter;
 
 import java.util.Comparator;
@@ -70,13 +71,23 @@ public class SkillsViewTab extends VerticalLayout {
         ConfigurableFilterDataProvider<SkillDto, Void, SkillDtoFilter> filterDataProvider = dataProvider
             .withConfigurableFilter();
 
-        // Name column
-        Grid.Column<SkillDto> nameColumn = skillGrid.addColumn(SkillDto::getName)
+        // Name column -> Name with description bellow
+        Grid.Column<SkillDto> nameColumn = skillGrid.addComponentColumn(skillDto -> {
+                var nameDiv = new Div(skillDto.getName());
+                nameDiv.setTitle(nameDiv.getText());
+                nameDiv.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER);
+                var descriptionDiv = new Div(skillDto.getDescription());    // Empty display if description null
+                descriptionDiv.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL);
+                var result = new VerticalLayout(nameDiv, descriptionDiv);
+                result.setSpacing(false);
+                return result;
+            })
             .setHeader("Name")
             .setKey(GRID_NAME_COLUMN_NAME)
-            .setSortable(true);
+            .setSortable(true)
+            .setFlexGrow(2);
 
-        // Tags column
+        // Tags column -> Badges
         Grid.Column<SkillDto> tagsColumn = skillGrid.addComponentColumn(skillDto -> {
                 FlexLayout tagsContainer = skillDto.getTags().stream()
                     .map(SkillTagDto::getName)
@@ -98,21 +109,22 @@ public class SkillsViewTab extends VerticalLayout {
                 return tagsContainer;
             })
             .setHeader("Tags")
-            .setKey("tags");
+            .setKey("tags")
+            .setFlexGrow(1);
 
         // Actions column
         skillGrid.addComponentColumn(selectedSkill -> {
-                // Edit
+                // Edit button
                 Dialog editSkillDialog = createEditSkillDialog(selectedSkill, skillGrid);
                 Button editButton = new Button(VaadinIcon.EDIT.create(), e -> editSkillDialog.open());
                 editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
                 editButton.addClassName("edit-skill-button");
-                // Delete
+                // Delete button
                 ConfirmDialog deleteSkillDialog = createDeleteSkillDialog(selectedSkill, skillGrid);
                 Button deleteButton = new Button(VaadinIcon.TRASH.create(), e -> deleteSkillDialog.open());
                 deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
                 deleteButton.addClassName("delete-skill-button");
-                // Result
+
                 HorizontalLayout result = new HorizontalLayout(editButton, deleteButton);
                 result.setSpacing(false);
                 return result;
@@ -123,6 +135,8 @@ public class SkillsViewTab extends VerticalLayout {
             .setFlexGrow(0);
 
         skillGrid.setItems(filterDataProvider);
+
+        // Header filters
 
         HeaderRow headerRow = skillGrid.appendHeaderRow();
 
@@ -141,6 +155,7 @@ public class SkillsViewTab extends VerticalLayout {
         });
         headerRow.getCell(tagsColumn).setComponent(tagSelectorFilter);
 
+        // Result layout
         add(
             createSkillAdderWithDialog(skillGrid),
             skillGrid

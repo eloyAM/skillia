@@ -35,6 +35,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.requireNonNullElseGet;
+
 public class SkillGroupsTab extends VerticalLayout {
 
     private final SkillService skillService;
@@ -75,7 +77,7 @@ public class SkillGroupsTab extends VerticalLayout {
             })
             .setHeader("Name")
             .setKey("name")
-            .setSortable(true);
+            .setComparator(SkillGroupDto::getName);
 
         List<SkillGroupDto> items = skillService.getAllGroups();
         // If the item collection is not mutable, we'll have troubles adding data dynamically
@@ -94,7 +96,7 @@ public class SkillGroupsTab extends VerticalLayout {
                     .map(name -> {
                         Span span = new Span(name);
                         span.setTitle(name);    // Tooltip
-                        span.getElement().getThemeList().add("badge contrast pill");
+                        span.getElement().getThemeList().add("badge contrast");
                         Popup popup = new Popup();
                         popup.setTarget(span.getElement());
                         popup.setHeaderTitle(name);
@@ -166,7 +168,7 @@ public class SkillGroupsTab extends VerticalLayout {
         binder.forField(nameField).asRequired("Name is required").bind(SkillGroupDto::getName, SkillGroupDto::setName);
         binder.forField(descriptionField).bind(SkillGroupDto::getDescription, SkillGroupDto::setDescription);
         binder.forField(skillSelector).bind(
-            group -> group.getSkills() == null ? new HashSet<>() : group.getSkills(),
+            group -> requireNonNullElseGet(group.getSkills(), HashSet::new),
             SkillGroupDto::setSkills
         );
 

@@ -3,10 +3,12 @@ package com.example.application.view.components.profile;
 import com.example.application.dto.*;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonSkillService;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.security.core.Authentication;
 
 import java.util.*;
@@ -26,15 +28,34 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
         tree.setWidthFull();
         tree.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
         // Horizontal scroll if the screen is not big enough, we don't want to cut the level selector
-        tree.setMinWidth("400px");
+        tree.setMinWidth("500px");
         // Min height to avoid shrinking due to another section
-        tree.setMinHeight("350px");
+        tree.setMinHeight("400px");
 
         tree.addComponentHierarchyColumn(sk -> {
-                var div = new Div(sk.getSkill().getName());
-                if (sk.getLevel() == -1L)
-                    div.addClassName("vaadin-grid-tree-toggle-skill-group-cell-slot");
-                return div;
+                var skill = sk.getSkill();
+                String skillDescriptionStr = skill.getDescription();
+
+                if (sk.getLevel() == -1L) {
+                    // Group -> display with description below
+                    var container = new VerticalLayout(new Span(skill.getName()));
+                    container.addClassName("vaadin-grid-tree-toggle-skill-group-cell-slot");
+
+                    if (skillDescriptionStr != null && !skillDescriptionStr.isBlank()) {
+                        var description = new Span(skillDescriptionStr);
+                        description.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+                        container.add(description);
+                    }
+                    return container;
+                } else {
+                    // Skill -> display using a details component
+                    String descText = Optional.ofNullable(skillDescriptionStr).filter(s -> !s.isBlank()).orElse("No description available");
+                    Span name = new Span(skill.getName());
+                    name.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER);
+                    var description = new Span(descText);
+                    description.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+                    return new Details(name, description);
+                }
             })
             .setHeader("Skill")
             .setFlexGrow(1);
@@ -66,7 +87,11 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
                 return (skills == null || skills.isEmpty()) ? Integer.MAX_VALUE : skills.size();
             }))
             .collect(Collectors.toMap(
-                skillGroup -> new AcquiredSkillDto(-1L, skillGroup.getName(), -1),
+                skillGroup -> {
+                    var skill = SkillDto.builder().id(-1L).name(skillGroup.getName())
+                        .description(skillGroup.getDescription()).build();
+                    return new AcquiredSkillDto(skill, -1);
+                },
                 SkillGroupDto::getSkills,
                 (a, b) -> a,
                 LinkedHashMap::new
@@ -86,7 +111,7 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
                             .filter(as -> as.getSkill().getId().equals(skill.getId()))
                             .findFirst();
                         int level = acquiredSkill.map(AcquiredSkillDto::getLevel).orElse(0);
-                        return new AcquiredSkillDto(skill.getId(), skill.getName(), level);
+                        return new AcquiredSkillDto(skill, level);
                     })
                     .toList();
             }

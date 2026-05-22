@@ -82,31 +82,43 @@ public class DemoDataDbInit {
             .collect(Collectors.toMap(SkillTagDto::getName, Function.identity()));
         Iterable<SkillDto> skills = List.of(
             SkillDto.builder().name("C++")
+                .description("General-purpose programming language created as an extension of the C programming language, or \"C with Classes\". It has imperative, object-oriented and generic programming features, while also providing facilities for low-level memory manipulation.")
                 .tags(Set.of(tagsByName.get(TagsNames.PROGRAMMING_LANGUAGES)))
                 .build(),
             SkillDto.builder().name("Java")
+                .description("Knowledge of the language and its ecosystem, such as libraries, frameworks, and tools commonly used. E.g. Maven, JUnit, Mockito, JPA, Spring, Tomcat, Swing, remote debugging, etc.")
                 .tags(Set.of(tagsByName.get(TagsNames.PROGRAMMING_LANGUAGES)))
                 .build(),
             SkillDto.builder().name("SQL - Structured Query Language")
+                .description("General notion of SQL: queries, functions, views, database design (constraints, indexes), etc. May involve some experience with specific RDBMS such as MySQL, PostgreSQL, SQL Server or Oracle.")
                 .tags(Set.of(tagsByName.get(TagsNames.PROGRAMMING_LANGUAGES)))
                 .build(),
             SkillDto.builder().name("English")
                 .tags(Set.of(tagsByName.get(TagsNames.LANGUAGES)))
                 .build(),
             new SkillDto(null, "Korean", tagsByName.get(TagsNames.PROGRAMMING_LANGUAGES)),
-            SkillDto.builder().name("Communication").build(),
-            SkillDto.builder().name("Testing").build(),
-            SkillDto.builder().name("Open source").build(),
+            SkillDto.builder().name("Communication")
+                .description("Effective communication skills, including verbal and written communication, active listening, and the ability to convey complex ideas clearly and concisely.")
+                .tags(Set.of(tagsByName.get("Soft skills")))
+                .build(),
+            SkillDto.builder().name("Testing")
+                .description("General testing knowledge, such as different types of testing (unit, integration, end-to-end, performance, etc.), testing strategies, test automation, common tools such as Selenium, Cucumber, JUnit, Postman, JMeter, etc.")
+                .build(),
+            SkillDto.builder().name("Open source")
+                .description("Contributing to open source projects, such as submitting pull requests, reporting issues, or participating in discussions in open source communities.")
+                .build(),
             SkillDto.builder().name("JUnit")
+                .description("Writing and running unit tests using the JUnit framework, including test annotations, assertions, test suites, and integration with build tools like Maven or Gradle.")
                 .tags(Set.of(tagsByName.get(TagsNames.UNIT_TESTING), tagsByName.get("Java")))
                 .build(),
             SkillDto.builder().name("Mockito")
+                .description("Stubbing and verification of mocks during unit tests.")
                 .tags(Set.of(tagsByName.get(TagsNames.UNIT_TESTING), tagsByName.get("Java"), tagsByName.get("Mocking libraries")))
                 .build(),
-            new SkillDto(null,
-                "MS Project",
-                tagsByName.get("Project Management"), tagsByName.get("Tools")
-            )
+            SkillDto.builder().name("MS Project")
+                .description("Usage of Microsoft Project for project management, such as creating and managing project plans, timelines, resources, and tasks.")
+                .tags(Set.of(tagsByName.get("Project Management"), tagsByName.get("Tools")))
+                .build()
         );
         return skillService.saveSkill(skills);
     }
@@ -142,7 +154,8 @@ public class DemoDataDbInit {
                 SkillTagDto.builder().name(TagsNames.UNIT_TESTING).build(),
                 SkillTagDto.builder().name("Java").build(),
                 SkillTagDto.builder().name("Mocking libraries").build(),
-                SkillTagDto.builder().name("Performance testing tools").build()
+                SkillTagDto.builder().name("Performance testing tools").build(),
+                SkillTagDto.builder().name("Soft skills").build()
             )
             .stream()
             .map(item -> skillService
@@ -199,25 +212,20 @@ public class DemoDataDbInit {
                 SkillTagDto.builder().name(name).build()
             );
         }
-        for (SkillTagDto tag : tags) {
-            skillService.saveSkillTag(tag)
-                .orElseThrow();
-        }
+        tags.forEach(tag -> skillService.saveSkillTag(tag).orElseThrow());
     }
 
     private void createSkillsRandom() {
         int nElements = 11;
-        Set<SkillDto> tags = new LinkedHashSet<>(nElements);
+        Set<SkillDto> skills = new LinkedHashSet<>(nElements);
         for (int i = 0; i < nElements; i++) {
             String name = String.format("Skill %03d", i);
-            tags.add(
-                SkillDto.builder().name(name).build()
+            String desc = String.format("Description for skill %03d", i);
+            skills.add(
+                SkillDto.builder().name(name).description(desc).build()
             );
         }
-        for (SkillDto tag : tags) {
-            skillService.saveSkill(tag)
-                .orElseThrow();
-        }
+        skills.forEach(s -> skillService.saveSkill(s).orElseThrow());
     }
 
     private static int randomUpTo(int max) {

@@ -81,7 +81,6 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
 
         setSizeFull();
 
-        add(new H4("Profile information"));
         add(new UserDetailsCard(person));
 
         List<AcquiredSkillDto> acquiredSkills = personSkillService.findAllAcquiredSkillByPersonId(person.getUsername());

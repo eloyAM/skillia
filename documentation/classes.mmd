@@ -43,5 +43,7 @@ classDiagram
     Department "*" o--> "*" SkillGroup: skillGroups
     SkillGroup "*" o--> "*" Skill: skills
     Person "1" *--> "*" AcquiredSkill: personSkills
+    %% Reference from AcquiredSkill to Person omitted as present on the model rather for ORM purposes
+    %% The only usage of that relation comes from the skill matrix, retrieving all AcquiredSkill to finally build a Person with its acquired skills
     AcquiredSkill "*" --> "1" Skill: skill
     Skill "*" o--> "*" SkillTag: tags

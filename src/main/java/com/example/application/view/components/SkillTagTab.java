@@ -4,6 +4,7 @@ import com.example.application.dto.SkillTagDto;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.view.utils.ViewUtils;
+import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.Key;
@@ -17,6 +18,7 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -45,10 +47,22 @@ public class SkillTagTab extends VerticalLayout {
         Grid<SkillTagDto> grid = new Grid<>(SkillTagDto.class, false);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 
-        Grid.Column<SkillTagDto> nameColumn = grid.addColumn(SkillTagDto::getName)
+        // Name column as a badge
+        Grid.Column<SkillTagDto> nameColumn = grid
+            .addComponentColumn(skillTag -> {
+                var name = skillTag.getName();
+                Span span = new Span(name);
+                span.setTitle(name);    // Tooltip
+                span.getElement().getThemeList().add("badge contrast pill");
+                span.getStyle().set("font-weight", "600");
+                Popup popup = new Popup();
+                popup.setTarget(span.getElement());
+                popup.setHeaderTitle(name);
+                return new Span(span, popup);
+            })
             .setHeader("Name")
             .setKey("name")
-            .setSortable(true);
+            .setComparator(SkillTagDto::getName);
 
         List<SkillTagDto> items = skillService.getAllSkillTag();
         // If the item collection is not mutable, we'll have troubles adding data dynamically
@@ -111,7 +125,7 @@ public class SkillTagTab extends VerticalLayout {
         cancelButton.addClassNames("cancel-button");
         dialog.getFooter().add(cancelButton, createButton);
 
-        Button addSkillButton = new Button("Add tag", VaadinIcon.PLUS.create(),
+        Button addSkillButton = new Button("Add Tag", VaadinIcon.PLUS.create(),
             e -> dialog.open()
         );
         addSkillButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
