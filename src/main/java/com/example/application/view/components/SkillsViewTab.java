@@ -15,6 +15,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -42,6 +45,7 @@ import java.util.stream.Stream;
 
 import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WARNING;
 
+@CssImport("./styles/responsive-action-buttons.css")
 public class SkillsViewTab extends VerticalLayout {
 
     private static final String GRID_NAME_COLUMN_NAME = "name";
@@ -114,20 +118,33 @@ public class SkillsViewTab extends VerticalLayout {
 
         // Actions column
         skillGrid.addComponentColumn(selectedSkill -> {
-                // Edit button
                 Dialog editSkillDialog = createEditSkillDialog(selectedSkill, skillGrid);
+                ConfirmDialog deleteSkillDialog = createDeleteSkillDialog(selectedSkill, skillGrid);
+
+                // Mobile view: ContextMenu
+                Button contextMenuButton = new Button(VaadinIcon.ELLIPSIS_DOTS_V.create());
+                contextMenuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                contextMenuButton.addClassName("mobile-actions");
+
+                ContextMenu contextMenu = new ContextMenu(contextMenuButton);
+                contextMenu.setOpenOnClick(true);
+                MenuItem editItem = ViewUtils.createIconItem(contextMenu, VaadinIcon.EDIT, "Edit", e -> editSkillDialog.open());
+                editItem.getElement().getStyle().set("color", "var(--lumo-primary-text-color)");
+                MenuItem deleteItem = ViewUtils.createIconItem(contextMenu, VaadinIcon.TRASH, "Delete", e -> deleteSkillDialog.open());
+                deleteItem.getElement().getStyle().set("color", "var(--lumo-error-text-color)");
+
+                // Desktop view: Buttons
                 Button editButton = new Button(VaadinIcon.EDIT.create(), e -> editSkillDialog.open());
                 editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-                editButton.addClassName("edit-skill-button");
-                // Delete button
-                ConfirmDialog deleteSkillDialog = createDeleteSkillDialog(selectedSkill, skillGrid);
                 Button deleteButton = new Button(VaadinIcon.TRASH.create(), e -> deleteSkillDialog.open());
                 deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-                deleteButton.addClassName("delete-skill-button");
+                HorizontalLayout desktopActions = new HorizontalLayout(editButton, deleteButton);
+                desktopActions.setSpacing(false);
+                desktopActions.addClassName("desktop-actions");
 
-                HorizontalLayout result = new HorizontalLayout(editButton, deleteButton);
-                result.setSpacing(false);
-                return result;
+                Div container = new Div(contextMenuButton, desktopActions);
+                container.addClassName("actions-container");
+                return container;
             })
             .setHeader("Actions")
             .setKey("actions")
@@ -135,6 +152,12 @@ public class SkillsViewTab extends VerticalLayout {
             .setFlexGrow(0);
 
         skillGrid.setItems(filterDataProvider);
+
+        // Resize listener to adapt column widths
+        getElement().executeJs(
+            "globalThis.addEventListener('resize', () => { $0.recalculateColumnWidths(); });",
+            skillGrid.getElement()
+        );
 
         // Header filters
 

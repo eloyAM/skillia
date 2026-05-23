@@ -5,13 +5,14 @@ import com.example.application.dto.PersonWithLevelDto;
 import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.SkillAndPeopleWithLevel;
 import com.example.application.utils.Validators;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.ItemLabelGenerator;
-import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBoxVariant;
+import com.vaadin.flow.component.contextmenu.HasMenuItems;
+import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -156,5 +157,17 @@ public final class ViewUtils {
     public static <T extends Component> T createAndInitialize(T component, Consumer<T> initializer) {
         initializer.accept(component);
         return component;
+    }
+
+    public static MenuItem createIconItem(
+        HasMenuItems menu, VaadinIcon vaadinIcon, String label,
+        ComponentEventListener<ClickEvent<MenuItem>> onClick
+    ) {
+        Icon icon = new Icon(vaadinIcon);
+        icon.getStyle().setMarginRight("var(--lumo-space-m");
+        MenuItem item = menu.addItem(icon, onClick);
+        item.add(new Text(label));
+        item.setAriaLabel(label);
+        return item;
     }
 }

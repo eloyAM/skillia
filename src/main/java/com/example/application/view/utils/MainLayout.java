@@ -6,13 +6,14 @@ import com.example.application.view.internal.PersonGridView;
 import com.example.application.view.internal.PersonSkillGridView;
 import com.example.application.view.internal.SkillGridView;
 import com.example.application.view.page.*;
-import com.vaadin.flow.component.*;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -31,6 +32,8 @@ import com.vaadin.flow.router.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import static com.example.application.view.utils.ViewUtils.createIconItem;
 
 @CssImport("./styles/shared-styles.css")
 @JsModule("./js/light-dark-theme-chooser.js")
@@ -185,15 +188,4 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
             new RouteParam(UserProfileView.USERNAME_PATH_PARAMETER, username)));
     }
 
-    private static MenuItem createIconItem(
-        HasMenuItems menu, VaadinIcon vaadinIcon, String label,
-        ComponentEventListener<ClickEvent<MenuItem>> onClick
-    ) {
-        Icon icon = new Icon(vaadinIcon);
-        icon.getStyle().setMarginRight("var(--lumo-space-m");
-        MenuItem item = menu.addItem(icon, onClick);
-        item.add(new Text(label));
-        item.setAriaLabel(label);
-        return item;
-    }
 }

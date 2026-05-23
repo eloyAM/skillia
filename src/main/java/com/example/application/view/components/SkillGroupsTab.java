@@ -5,14 +5,17 @@ import com.example.application.dto.SkillGroupDto;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.utils.Validators;
-import com.example.application.view.utils.ViewUtils;
 import com.example.application.view.utils.LumoVars;
+import com.example.application.view.utils.ViewUtils;
 import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.contextmenu.ContextMenu;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -23,6 +26,7 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -37,6 +41,7 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNullElseGet;
 
+@CssImport("./styles/responsive-action-buttons.css")
 public class SkillGroupsTab extends VerticalLayout {
 
     private final SkillService skillService;
@@ -65,11 +70,11 @@ public class SkillGroupsTab extends VerticalLayout {
                 nameDiv.getStyle()
                     .set("font-size", "var(--lumo-font-size-m)")
                     .set("font-weight", "600")
-                    .set("color", "var(--lumo-header-text-color)");
+                    .setColor("var(--lumo-header-text-color)");
                 var descriptionDiv = new Div(group.getDescription());
                 descriptionDiv.getStyle()
                     .set("font-size", "var(--lumo-font-size-s)")
-                    .set("color", "var(--lumo-secondary-text-color)");
+                    .setColor("var(--lumo-secondary-text-color)");
                 var result = new VerticalLayout(nameDiv, descriptionDiv);
                 result.setSpacing(false);
                 result.getThemeList().add("spacing-xs");
@@ -81,8 +86,7 @@ public class SkillGroupsTab extends VerticalLayout {
 
         List<SkillGroupDto> items = skillService.getAllGroups();
         // If the item collection is not mutable, we'll have troubles adding data dynamically
-        ArrayList<SkillGroupDto> fixedItems = new ArrayList<>(items);
-        GridListDataView<SkillGroupDto> dataView = grid.setItems(fixedItems);
+        GridListDataView<SkillGroupDto> dataView = grid.setItems(new ArrayList<>(items));
 
         HeaderRow headerRow = grid.appendHeaderRow();
         SkillGroupFilter skillGroupFilter = new SkillGroupFilter(dataView);
@@ -118,23 +122,44 @@ public class SkillGroupsTab extends VerticalLayout {
 
 
         createActionsColumn(grid);
+
+        // Resize listener to adapt column widths
+        getElement().executeJs(
+            "globalThis.addEventListener('resize', () => { $0.recalculateColumnWidths(); });",
+            grid.getElement()
+        );
+
         return grid;
     }
 
     private void createActionsColumn(Grid<SkillGroupDto> grid) {
         grid.addComponentColumn(group -> {
-                // Edit
-                Button editButton = new Button(VaadinIcon.EDIT.create(),
-                    e -> openAddOrEditGroupDialog(group, grid)
-                );
+                // Mobile view: ContextMenu
+                Button contextMenuButton = new Button(VaadinIcon.ELLIPSIS_DOTS_V.create());
+                contextMenuButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+                contextMenuButton.addClassName("mobile-actions");
+
+                ContextMenu contextMenu = new ContextMenu(contextMenuButton);
+                contextMenu.setOpenOnClick(true);
+                MenuItem editItem = ViewUtils.createIconItem(contextMenu, VaadinIcon.EDIT, "Edit",
+                    e -> openAddOrEditGroupDialog(group, grid));
+                editItem.getElement().getStyle().set("color", "var(--lumo-primary-text-color)");
+                MenuItem deleteItem = ViewUtils.createIconItem(contextMenu, VaadinIcon.TRASH, "Delete",
+                    e -> openDeleteGroupDialog(group, grid));
+                deleteItem.getElement().getStyle().set("color", "var(--lumo-error-text-color)");
+
+                // Desktop view: Buttons
+                Button editButton = new Button(VaadinIcon.EDIT.create(), e -> openAddOrEditGroupDialog(group, grid));
                 editButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-                // Delete
-                Button deleteButton = new Button(VaadinIcon.TRASH.create(),
-                    e -> openDeleteGroupDialog(group, grid)
-                );
+                Button deleteButton = new Button(VaadinIcon.TRASH.create(), e -> openDeleteGroupDialog(group, grid));
                 deleteButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
-                // Result component
-                return new Div(editButton, deleteButton);
+                HorizontalLayout desktopActions = new HorizontalLayout(editButton, deleteButton);
+                desktopActions.setSpacing(false);
+                desktopActions.addClassName("desktop-actions");
+
+                Div container = new Div(contextMenuButton, desktopActions);
+                container.addClassName("actions-container");
+                return container;
             })
             .setHeader("Actions")
             .setKey("actions")
