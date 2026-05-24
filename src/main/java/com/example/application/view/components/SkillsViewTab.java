@@ -43,7 +43,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WARNING;
+import static com.example.application.view.utils.ViewUtils.notificationTopCenter;
+import static com.vaadin.flow.component.notification.NotificationVariant.*;
 
 @CssImport("./styles/responsive-action-buttons.css")
 public class SkillsViewTab extends VerticalLayout {
@@ -201,16 +202,16 @@ public class SkillsViewTab extends VerticalLayout {
                 skillBinder.writeBean(formDto);
                 skillName = formDto.getName();
             } catch (ValidationException ex) {
-                ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
+                notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
             Optional<SkillDto> newSkill = skillService.saveSkill(formDto);
             if (newSkill.isPresent()) {
                 skillGrid.getDataProvider().refreshAll();
                 refreshTagSelectorItems();
-                ViewUtils.notificationTopCenter("Skill \"" + skillName + "\" created", true).open();
+                notificationTopCenter(skillNameAndActionMessage(skillName, "created"), true).open();
             } else {
-                ViewUtils.notificationTopCenter(new Div(
+                notificationTopCenter(new Div(
                     new Div("Unable to create the skill"),
                     new Div(" \"" + skillName + "\" "),
                     new Div("It may already exist")
@@ -233,6 +234,10 @@ public class SkillsViewTab extends VerticalLayout {
         return addSkillButton;
     }
 
+    private static String skillNameAndActionMessage(String skillName, String action) {
+        return "Skill \"" + skillName + "\" " + action;
+    }
+
     private Dialog createEditSkillDialog(SkillDto currentSkill, Grid<SkillDto> grid) {
         Dialog dialog = new Dialog();
         dialog.setHeaderTitle("Edit skill \"" + currentSkill.getName() + "\"");
@@ -249,14 +254,14 @@ public class SkillsViewTab extends VerticalLayout {
                 skillBinder.writeBean(formDto);
                 formDto.setId(currentSkill.getId());
             } catch (ValidationException ex) {
-                ViewUtils.notificationTopCenter("Please fill in the required fields correctly", false).open();
+                notificationTopCenter("Please fill in the required fields correctly", false).open();
                 return;
             }
             String newName = formDto.getName();
             Optional<SkillDto> updatedSkillOpt =
                 skillService.saveSkill(formDto);
             if (updatedSkillOpt.isPresent()) {
-                ViewUtils.notificationTopCenter("Skill \"" + newName + "\" updated", true).open();
+                notificationTopCenter(skillNameAndActionMessage(newName, "updated"), true).open();
                 skillBinder.getFields().forEach(HasValue::clear);
                 grid.getDataProvider().refreshAll();    // TODO IMPROVEMENT how to get that single entry updated with `refreshItem` instead of `refreshAll`
                 refreshTagSelectorItems();
@@ -310,7 +315,14 @@ public class SkillsViewTab extends VerticalLayout {
         confirmDialog.setConfirmText("Delete");
         confirmDialog.setConfirmButtonTheme("error primary");
         confirmDialog.addConfirmListener(e -> {
-            skillService.deleteSkillById(selectedSkill.getId());
+            try {
+                skillService.deleteSkillById(selectedSkill.getId());
+            } catch (Exception ex) {
+                notificationTopCenter("Unexcepted error.", LUMO_ERROR).open();
+                throw new RuntimeException(ex);
+            }
+            notificationTopCenter(
+                skillNameAndActionMessage(selectedSkill.getName(), "deleted"), LUMO_SUCCESS).open();
             skillGrid.getDataProvider().refreshAll();
             refreshTagSelectorItems();
         });

@@ -13,4 +13,8 @@ public interface SkillRepo extends JpaRepository<Skill, Long> {
     @Query("update Skill s set s.name = :name where s.id = :id")
     int updateNameById(Long id, String name);
 
+    // Delete from join table due to FK constraint
+    @Modifying
+    @Query(value = "DELETE FROM skill_group_skills WHERE skill_id = :skillId", nativeQuery = true)
+    Integer deleteSkillGroupSkillsBySkillId(Long skillId);
 }

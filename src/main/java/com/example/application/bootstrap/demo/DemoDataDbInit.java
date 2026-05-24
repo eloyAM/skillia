@@ -1,9 +1,6 @@
 package com.example.application.bootstrap.demo;
 
-import com.example.application.dto.PersonDto;
-import com.example.application.dto.SkillDto;
-import com.example.application.dto.SkillGroupDto;
-import com.example.application.dto.SkillTagDto;
+import com.example.application.dto.*;
 import com.example.application.entity.PersonSkill;
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.DepartmentService;
@@ -75,6 +72,9 @@ public class DemoDataDbInit {
 
         List<SkillGroupDto> skillGroups = createSkillGroups(skills);
         setDeparmentSkillsGroups(skillGroups);
+
+        createEmptyDepartment();
+        createPersonWithRandomDepartment();
     }
 
     private List<SkillDto> createSkills(Set<SkillTagDto> skillTags) {
@@ -234,6 +234,20 @@ public class DemoDataDbInit {
 
     private static int randomLvl() {
         return randomUpTo(5);
+    }
+
+    private void createEmptyDepartment() {
+        DepartmentDto emptyDepartment = new DepartmentDto();
+        emptyDepartment.setName("Empty department");
+        departmentService.saveDepartment(emptyDepartment).orElseThrow();
+    }
+
+    private void createPersonWithRandomDepartment() {
+        personService.savePerson(new PersonDto("person.randomdeparment")
+            .setEmail("person.randomdeparment@example.com")
+            .setFullName("Some person")
+            .setTitle("Employee")
+            .setDepartment("Random department " + java.time.Instant.now().getEpochSecond()));
     }
 
     // Constants

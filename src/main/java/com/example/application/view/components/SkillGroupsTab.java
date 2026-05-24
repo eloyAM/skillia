@@ -25,6 +25,7 @@ import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -219,13 +220,11 @@ public class SkillGroupsTab extends VerticalLayout {
             Optional<SkillGroupDto> savedGroup = skillService.saveGroup(inputItem);
             if (savedGroup.isPresent()) {
                 // Refresh the grid after adding/modifying a record
-                final String successMessage;
                 if (isCreationMode) {
                     grid.getListDataView().addItem(savedGroup.get());
-                    successMessage = "Skill group \"" + savedGroup.get().getName() + "\" created";
-                } else {
-                    successMessage = "Skill group \"" + savedGroup.get().getName() + "\" updated";
                 }
+                final String successMessage = "Skill group \"" + savedGroup.get().getName()
+                    + (isCreationMode ? "\" created" : "\" updated");
                 ViewUtils.notificationTopCenter(successMessage, true).open();
                 grid.getListDataView().refreshAll();
                 // Close the dialog
@@ -257,7 +256,14 @@ public class SkillGroupsTab extends VerticalLayout {
         confirmDialog.setConfirmText("Delete");
         confirmDialog.setConfirmButtonTheme("error primary");
         confirmDialog.addConfirmListener(e -> {
-            skillService.deleteGroupById(selectedItem.getId());
+            try {
+                skillService.deleteGroupById(selectedItem.getId());
+            } catch (Exception ex) {
+                ViewUtils.notificationTopCenter("Unexpected error.", NotificationVariant.LUMO_ERROR).open();
+                throw new RuntimeException(ex);
+            }
+            ViewUtils.notificationTopCenter("Skill group \"" + selectedItem.getName() + "\" deleted",
+                NotificationVariant.LUMO_SUCCESS).open();
             grid.getListDataView().removeItem(selectedItem);
         });
         confirmDialog.setCancelable(true);

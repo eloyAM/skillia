@@ -15,7 +15,9 @@ import java.util.Collection;
 @Accessors(chain = true)
 @Builder(toBuilder = true)
 @Entity
-@Table(name = "person")
+@Table(name = "person", indexes = {
+    @Index(name = "IDX__person_department", columnList = Person.COLUMN_DEPARTMENT)
+})
 public class Person {
     public static final String COLUMN_DEPARTMENT = "department";
 

@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.vaadin.flow.component.notification.NotificationVariant.LUMO_WARNING;
+import static com.vaadin.flow.component.notification.NotificationVariant.*;
 
 public class SkillTagTab extends VerticalLayout {
 
@@ -170,7 +170,14 @@ public class SkillTagTab extends VerticalLayout {
         confirmDialog.setConfirmText("Delete");
         confirmDialog.setConfirmButtonTheme("error primary");
         confirmDialog.addConfirmListener(e -> {
-            skillService.deleteSkillTagById(selectedItem.getId());
+            try {
+                skillService.deleteSkillTagById(selectedItem.getId());
+            } catch (Exception ex) {
+                ViewUtils.notificationTopCenter("Unexpected error.", LUMO_ERROR).open();
+                throw new RuntimeException(ex);
+            }
+            ViewUtils.notificationTopCenter(
+                "Tag \"" + selectedItem.getName() + "\" deleted", LUMO_SUCCESS).open();
             grid.getListDataView().removeItem(selectedItem);
         });
         confirmDialog.setCancelable(true);

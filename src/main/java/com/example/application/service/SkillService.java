@@ -12,6 +12,7 @@ import com.example.application.repo.SkillGroupRepository;
 import com.example.application.repo.SkillRepo;
 import com.example.application.repo.SkillTagRepository;
 import com.example.application.utils.FunctionalUtils;
+import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +22,9 @@ import java.util.Optional;
 
 @Service
 public class SkillService {
-    protected final SkillTagRepository skillTagRepo;
     private final IDtoEntityMapper dtoEntityMapper;
+
+    private final SkillTagRepository skillTagRepo;
     private final SkillGroupRepository skillGroupRepository;
     private final SkillRepo skillRepo;
 
@@ -81,8 +83,10 @@ public class SkillService {
         }
     }
 
+    @Transactional
     public void deleteSkillById(Long id) {
-        // This silently fails if there's no entity with the given id
+        // Each delete silently fails if there's no entity with the given id
+        skillRepo.deleteSkillGroupSkillsBySkillId(id);
         skillRepo.deleteById(id);
     }
 
@@ -101,7 +105,9 @@ public class SkillService {
         }
     }
 
+    @Transactional
     public void deleteGroupById(Long id) {
+        skillGroupRepository.deleteDepartmentSkillGroupByGroupId(id);
         skillGroupRepository.deleteById(id);
     }
 
@@ -147,7 +153,9 @@ public class SkillService {
         }
     }
 
+    @Transactional
     public void deleteSkillTagById(Long id) {
+        skillTagRepo.deleteSkillTaggingByTagId(id);
         skillTagRepo.deleteById(id);
     }
 

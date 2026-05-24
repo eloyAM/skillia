@@ -16,4 +16,9 @@ public interface SkillTagRepository extends JpaRepository<SkillTag, Long> {
 
     @Query("select distinct skill.tags from Skill skill")
     List<SkillTag> findAllUsedOnSkillTagging();
+
+    // Delete from join table due to FK constraint
+    @Modifying
+    @Query(value = "delete from skill_tagging where tag_id = ?1", nativeQuery = true)
+    void deleteSkillTaggingByTagId(Long tagId);
 }
