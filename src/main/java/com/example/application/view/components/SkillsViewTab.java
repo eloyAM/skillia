@@ -286,7 +286,9 @@ public class SkillsViewTab extends VerticalLayout {
         TextArea descriptionField = new TextArea("Description");
         descriptionField.setMaxLength(ValidationConstraints.Skill.DESCRIPTION_MAX_LENGTH);
 
-        MultiSelectComboBox<SkillTagDto> tagMultiSelectComboBox = createTagMultiSelectComboBox();
+        MultiSelectComboBox<SkillTagDto> tagMultiSelectComboBox = ViewUtils
+            .createMultiSelectComboBox(skillService::getAllSkillTag, SkillTagDto::getName, null);
+        tagMultiSelectComboBox.setLabel("Tags");
         tagMultiSelectComboBox.setRequired(false);
 
         binder.forField(skillNameTextField)
@@ -328,17 +330,6 @@ public class SkillsViewTab extends VerticalLayout {
         });
         confirmDialog.setCancelable(true);
         return confirmDialog;
-    }
-
-    private MultiSelectComboBox<SkillTagDto> createTagMultiSelectComboBox() {
-        MultiSelectComboBox<SkillTagDto> tagSelector = new MultiSelectComboBox<>();
-        tagSelector.setLabel("Tags");
-        tagSelector.setSelectedItemsOnTop(true);
-        tagSelector.setWidthFull();
-        tagSelector.setMaxWidth("100%");
-        tagSelector.setItemLabelGenerator(SkillTagDto::getName);
-        tagSelector.setItems(skillService.getAllSkillTag());
-        return tagSelector;
     }
 
     @Setter

@@ -1,0 +1,4 @@
+vaadin-list-box > vaadin-item {
+    padding-block: var(--lumo-space-m); /* Inter-item spacing */
+    align-items: flex-start; /* Top alignment of items (checkmark) */
+}

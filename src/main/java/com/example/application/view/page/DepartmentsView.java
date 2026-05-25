@@ -7,9 +7,13 @@ import com.example.application.service.SkillService;
 import com.example.application.utils.Validators;
 import com.example.application.view.utils.MainLayout;
 import com.example.application.view.utils.ViewUtils;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.details.Details;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -19,8 +23,10 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 
 import java.util.List;
@@ -30,6 +36,7 @@ import java.util.Set;
 @RolesAllowed("HR")
 @Route(layout = MainLayout.class, value = "departments")
 @PageTitle("Departments")
+@CssImport("./styles/vaadin-list-box.css")
 public class DepartmentsView extends VerticalLayout {
 
     private final DepartmentService departmentService;
@@ -51,21 +58,27 @@ public class DepartmentsView extends VerticalLayout {
         List<DepartmentDto> departments = departmentService.findAllDepartment();
         Grid<DepartmentDto> grid = new Grid<>(DepartmentDto.class, false);
         grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        grid.setMinWidth(300, Unit.PIXELS);
         GridListDataView<DepartmentDto> gridListDataView = grid.setItems(departments);
 
-        Grid.Column<DepartmentDto> departmentNameColumn = grid.addColumn(DepartmentDto::getName)
+        Grid.Column<DepartmentDto> departmentNameColumn = grid.addComponentColumn(department -> {
+                Div nameDiv = new Div(department.getName());
+                nameDiv.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
+                return nameDiv;
+            })
             .setHeader("Name")
             .setKey("name")
-            .setSortable(true);
+            .setComparator(DepartmentDto::getName)
+            .setFlexGrow(1);
 
         Grid.Column<DepartmentDto> skillGroupsColumn = grid.addComponentColumn(department ->
                 department.getSkillGroups().stream()
-                    .map(SkillGroupDto::getName)
-                    .map(Div::new)
+                    .map(group -> skillGroupDetails(group, true))
                     .collect(VerticalLayout::new, HasComponents::add, HasComponents::add)
             )
             .setHeader("Skill groups")
-            .setKey("skill-groups");
+            .setKey("skill-groups")
+            .setFlexGrow(2);
 
         grid.addComponentColumn(department -> {
                 Button editButton = new Button(
@@ -92,12 +105,12 @@ public class DepartmentsView extends VerticalLayout {
         add(grid);
     }
 
-
     private void openSkillGroupDialog(DepartmentDto selectedItem, Grid<?> grid) {
         Dialog dialog = new Dialog();
 
         MultiSelectListBox<SkillGroupDto> skillGroupListBox = new MultiSelectListBox<>();
         skillGroupListBox.setItemLabelGenerator(SkillGroupDto::getName);
+        skillGroupListBox.setRenderer(new ComponentRenderer<>(group -> skillGroupDetails(group, false)));
         skillGroupListBox.setItems(skillService.getAllGroups());
         skillGroupListBox.setValue(
             Optional.ofNullable(selectedItem.getSkillGroups()).map(Set::copyOf).orElse(Set.of())
@@ -122,6 +135,41 @@ public class DepartmentsView extends VerticalLayout {
         dialog.add(skillGroupListBox);
         dialog.getFooter().add(cancelButton, saveButton);
         dialog.open();
+    }
+
+    private static Component skillGroupDetails(SkillGroupDto group, boolean useDetailsComponent) {
+        // Name text
+        var nameComponent = new Div(group.getName());
+        nameComponent.addClassNames(LumoUtility.TextColor.BODY);
+        // Applied to the rest of the details component
+        nameComponent.getStyle().set("white-space", "normal");
+        nameComponent.getStyle().set("overflow-wrap", "break-word");
+
+        // Description text
+        String skillDescriptionStr = group.getDescription();
+        String descText = Optional.ofNullable(skillDescriptionStr)
+            .filter(s -> !s.isBlank()).orElse("No description available");
+        var descriptionComponent = new Div(descText);
+        descriptionComponent.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+
+        // Details content -> description + skills as badges if present
+        VerticalLayout detailsContent = new VerticalLayout(descriptionComponent);
+        if (!group.getSkills().isEmpty()) {
+            detailsContent.add(ViewUtils.skillsAsBadges(group));
+        }
+        detailsContent.setSpacing(false);
+        detailsContent.getThemeList().add("spacing-xs");
+        detailsContent.setPadding(false);
+
+        if (useDetailsComponent) {
+            return new Details(nameComponent, detailsContent);
+        } else {
+            VerticalLayout verticalLayout = new VerticalLayout(nameComponent, detailsContent);
+            verticalLayout.setSpacing(false);
+            verticalLayout.getThemeList().add("spacing-xs");
+            verticalLayout.setPadding(false);
+            return verticalLayout;
+        }
     }
 
     private static class DepartmentGridFilter {

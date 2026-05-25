@@ -5,10 +5,7 @@ import com.example.application.dto.SkillGroupDto;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.utils.Validators;
-import com.example.application.view.utils.LumoVars;
 import com.example.application.view.utils.ViewUtils;
-import com.vaadin.componentfactory.Popup;
-import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -23,10 +20,8 @@ import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridListDataView;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.NotificationVariant;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -95,26 +90,7 @@ public class SkillGroupsTab extends VerticalLayout {
             ViewUtils.createFilterTextField("Search", skillGroupFilter::setGroupNameOrDescription)
         );
 
-        Grid.Column<SkillGroupDto> skillsColumn = grid.addComponentColumn(group -> {
-                FlexLayout tagsContainer = group.getSkills().stream()
-                    .map(SkillDto::getName)
-                    .map(name -> {
-                        Span span = new Span(name);
-                        span.setTitle(name);    // Tooltip
-                        span.getElement().getThemeList().add("badge contrast");
-                        Popup popup = new Popup();
-                        popup.setTarget(span.getElement());
-                        popup.setHeaderTitle(name);
-                        return new Span(span, popup);
-                    })
-                    .collect(FlexLayout::new, HasComponents::add, HasComponents::add);
-                tagsContainer.setFlexWrap(FlexLayout.FlexWrap.WRAP);
-                tagsContainer.getStyle()
-                    .set("gap", LumoVars.LUMO_SPACE_S)
-                    .set("padding-top", LumoVars.LUMO_SPACE_S)
-                    .set("padding-bottom", LumoVars.LUMO_SPACE_S);
-                return tagsContainer;
-            })
+        Grid.Column<SkillGroupDto> skillsColumn = grid.addComponentColumn(ViewUtils::skillsAsBadges)
             .setHeader("Skills")
             .setKey("skills");
         headerRow.getCell(skillsColumn).setComponent(
@@ -187,9 +163,9 @@ public class SkillGroupsTab extends VerticalLayout {
         TextArea descriptionField = new TextArea("Description");
         descriptionField.setMaxLength(ValidationConstraints.SkillGroup.DESCRIPTION_MAX_LENGTH);
 
-        MultiSelectComboBox<SkillDto> skillSelector = new MultiSelectComboBox<>("Skills");
-        skillSelector.setItems(skillService.getAllSkill());
-        skillSelector.setItemLabelGenerator(SkillDto::getName);
+        MultiSelectComboBox<SkillDto> skillSelector = ViewUtils
+            .createMultiSelectComboBox(skillService::getAllSkill, SkillDto::getName, null);
+        skillSelector.setLabel("Skills");
 
         binder.forField(nameField).asRequired("Name is required").bind(SkillGroupDto::getName, SkillGroupDto::setName);
         binder.forField(descriptionField).bind(SkillGroupDto::getDescription, SkillGroupDto::setDescription);

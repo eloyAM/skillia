@@ -1,10 +1,8 @@
 package com.example.application.view.utils;
 
-import com.example.application.dto.AcquiredSkillDto;
-import com.example.application.dto.PersonWithLevelDto;
-import com.example.application.dto.PersonWithSkillsDto;
-import com.example.application.dto.SkillAndPeopleWithLevel;
+import com.example.application.dto.*;
 import com.example.application.utils.Validators;
+import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBoxVariant;
@@ -12,6 +10,7 @@ import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -84,6 +83,13 @@ public final class ViewUtils {
         return textField;
     }
 
+    // Alias
+    public static <T> MultiSelectComboBox<T> createMultiSelectComboBox(
+        Supplier<List<T>> itemsSupplier, ItemLabelGenerator<T> itemLabelGenerator, String placeholder
+    ) {
+        return createMultiSelectComboBoxFilter(itemsSupplier, itemLabelGenerator, placeholder);
+    }
+
     public static <T> MultiSelectComboBox<T> createMultiSelectComboBoxFilter(
         Supplier<List<T>> itemsSupplier, ItemLabelGenerator<T> itemLabelGenerator, String placeholder
     ) {
@@ -96,6 +102,7 @@ public final class ViewUtils {
         selector.setMaxWidth("100%");
         selector.setItemLabelGenerator(itemLabelGenerator);
         selector.setItems(itemsSupplier.get());
+        selector.setAutoExpand(MultiSelectComboBox.AutoExpandMode.BOTH);
         return selector;
     }
 
@@ -169,5 +176,26 @@ public final class ViewUtils {
         item.add(new Text(label));
         item.setAriaLabel(label);
         return item;
+    }
+
+    public static FlexLayout skillsAsBadges(SkillGroupDto group) {
+        FlexLayout tagsContainer = group.getSkills().stream()
+            .map(SkillDto::getName)
+            .map(name -> {
+                Span span = new Span(name);
+                span.setTitle(name);    // Tooltip
+                span.getElement().getThemeList().add("badge contrast");
+                Popup popup = new Popup();
+                popup.setTarget(span.getElement());
+                popup.setHeaderTitle(name);
+                return new Span(span, popup);
+            })
+            .collect(FlexLayout::new, HasComponents::add, HasComponents::add);
+        tagsContainer.setFlexWrap(FlexLayout.FlexWrap.WRAP);
+        tagsContainer.getStyle()
+            .set("gap", LumoVars.LUMO_SPACE_S)
+            .set("padding-top", LumoVars.LUMO_SPACE_S)
+            .set("padding-bottom", LumoVars.LUMO_SPACE_S);
+        return tagsContainer;
     }
 }
