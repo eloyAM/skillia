@@ -200,21 +200,59 @@ public class SkillsAssignmentView extends TabSheet implements BeforeEnterObserve
         skillComboBox.setRequired(true);
         skillComboBox.setWidthFull();
         skillComboBox.setItemLabelGenerator(SkillDto::getName);
+        skillComboBox.setPlaceholder("Select a skill");
+        skillComboBox.setRenderer(new ComponentRenderer<>(skill -> {
+            Span name = new Span(skill.getName());
 
+            VerticalLayout result = new VerticalLayout(name);
+            result.setSpacing(false);
+            result.getThemeList().add("spacing-s");
+            result.setPadding(false);
+            result.getStyle().set("padding-block", "var(--lumo-space-s)");
+
+            if (skill.getTags() != null && !skill.getTags().isEmpty()) {
+                Div tagsContainer = new Div();
+                tagsContainer.getStyle()
+                    .set("display", "flex")
+                    .set("flex-wrap", "wrap")
+                    .set("gap", "var(--lumo-space-xs)");
+                skill.getTags().forEach(tag -> {
+                    Span tagBadge = new Span(tag.getName());
+                    tagBadge.getElement().getThemeList().add("badge contrast pill small");
+                    tagsContainer.add(tagBadge);
+                });
+                result.add(tagsContainer);
+            }
+
+            if (skill.getDescription() != null && !skill.getDescription().isEmpty()) {
+                Div description = new Div();
+                description.setText(skill.getDescription());
+                description.getStyle()
+                    .set("font-size", "var(--lumo-font-size-s)")
+                    .set("color", "var(--lumo-secondary-text-color)");
+                result.add(description);
+            }
+
+            return result;
+        }));
         List<SkillDto> allSkill = skillService.getAllSkill();
-        skillComboBox.setItems(allSkill);
+        skillComboBox.setItems(Comparators::skillDtoAttributesContains, allSkill);
         return skillComboBox;
     }
 
     private MultiSelectComboBox<PersonDto> createPersonMultiSelectComboBox() {
         MultiSelectComboBox<PersonDto> selector = new MultiSelectComboBox<>("People");
         configurePersonComboBox(selector);
+        selector.setPlaceholder("Select people");
+        selector.setAutoExpand(MultiSelectComboBox.AutoExpandMode.BOTH);
+        selector.setSelectedItemsOnTop(true);
         return selector;
     }
 
     private ComboBox<PersonDto> createPersonComboBox() {
         ComboBox<PersonDto> selector = new ComboBox<>("Person");
         configurePersonComboBox(selector);
+        selector.setPlaceholder("Select a person");
         return selector;
     }
 

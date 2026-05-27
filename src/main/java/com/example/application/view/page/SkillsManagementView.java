@@ -47,7 +47,6 @@ public class SkillsManagementView extends TabSheet implements BeforeEnterObserve
         setSizeFull();
 
         SkillsViewTab skillsViewTab = new SkillsViewTab(skillService);
-
         add(createTab("Skills", tabNameToTab), skillsViewTab);
 
         SkillTagTab skillTagTab = new SkillTagTab(skillService);

@@ -148,7 +148,7 @@ public class SkillsMatrixView extends VerticalLayout {
             filterManager.setSkillsFilter(filterValue);
             filterManager.applyFilters();
         });
-        skillSearchTextField.setTooltipText("Find persons by skill name or level");
+        skillSearchTextField.setTooltipText("Find people by skill name or level");
         return skillSearchTextField;
     }
 
@@ -157,7 +157,7 @@ public class SkillsMatrixView extends VerticalLayout {
             filterManager.setPersonContactFilter(filterValue);
             filterManager.applyFilters();
         });
-        personSearchTextField.setTooltipText("Find persons by name, username or email");
+        personSearchTextField.setTooltipText("Find people by name, username or email");
         return personSearchTextField;
     }
 

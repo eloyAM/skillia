@@ -4,6 +4,7 @@ import com.example.application.dto.SkillDto;
 import com.example.application.dto.SkillTagDto;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
+import com.example.application.utils.Validators;
 import com.example.application.view.utils.LumoVars;
 import com.example.application.view.utils.ViewUtils;
 import com.vaadin.componentfactory.Popup;
@@ -80,7 +81,7 @@ public class SkillsViewTab extends VerticalLayout {
         Grid.Column<SkillDto> nameColumn = skillGrid.addComponentColumn(skillDto -> {
                 var nameDiv = new Div(skillDto.getName());
                 nameDiv.setTitle(nameDiv.getText());
-                nameDiv.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER);
+                nameDiv.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
                 var descriptionDiv = new Div(skillDto.getDescription());    // Empty display if description null
                 descriptionDiv.addClassNames(LumoUtility.TextColor.SECONDARY, LumoUtility.FontSize.SMALL);
                 var result = new VerticalLayout(nameDiv, descriptionDiv);
@@ -164,11 +165,13 @@ public class SkillsViewTab extends VerticalLayout {
 
         HeaderRow headerRow = skillGrid.appendHeaderRow();
 
+        TextField searchTextField = ViewUtils.createFilterTextField("Search", str -> {
+            skillFilter.setText(str);
+            filterDataProvider.setFilter(skillFilter);
+        });
+        searchTextField.setTooltipText("Search by name or description");
         headerRow.getCell(nameColumn).setComponent(
-            ViewUtils.createFilterTextField("Search", str -> {
-                skillFilter.setName(str);
-                filterDataProvider.setFilter(skillFilter);
-            })
+            searchTextField
         );
 
         tagSelectorFilter = ViewUtils.createMultiSelectComboBoxFilter(
@@ -177,6 +180,7 @@ public class SkillsViewTab extends VerticalLayout {
             skillFilter.setTags(tagSelectorFilter.getSelectedItems());
             filterDataProvider.setFilter(skillFilter);
         });
+        tagSelectorFilter.setTooltipText("Matching all selected tags");
         headerRow.getCell(tagsColumn).setComponent(tagSelectorFilter);
 
         // Result layout
@@ -334,18 +338,21 @@ public class SkillsViewTab extends VerticalLayout {
 
     @Setter
     private static class SkillDtoFilter {
-        private String name;
+        private String text;    // Name or description
         private Set<SkillTagDto> tags;
 
         private boolean test(SkillDto skillDto) {
-            boolean matchesName = matches(skillDto.getName(), name);
-            boolean containsAllSelectedTags = tags == null
+            return (matches(skillDto.getName(), text) || matches(skillDto.getDescription(), text))
+                && containsAllSelectedTags(skillDto);
+        }
+
+        private boolean containsAllSelectedTags(SkillDto skillDto) {
+            return tags == null
                 || (skillDto.getTags() != null && skillDto.getTags().containsAll(tags));
-            return matchesName && containsAllSelectedTags;
         }
 
         private static boolean matches(String value, String searchTerm) {
-            return searchTerm == null || searchTerm.isEmpty()
+            return Validators.isNullOrEmpty(searchTerm)
                 || (value != null && value.toLowerCase().contains(searchTerm.toLowerCase()));
         }
     }

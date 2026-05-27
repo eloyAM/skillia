@@ -64,9 +64,7 @@ public class SkillGroupsTab extends VerticalLayout {
                 var nameDiv = new Div(group.getName());
                 nameDiv.setTitle(nameDiv.getText());
                 nameDiv.getStyle()
-                    .set("font-size", "var(--lumo-font-size-m)")
-                    .set("font-weight", "600")
-                    .setColor("var(--lumo-header-text-color)");
+                    .set("font-weight", "600");
                 var descriptionDiv = new Div(group.getDescription());
                 descriptionDiv.getStyle()
                     .set("font-size", "var(--lumo-font-size-s)")

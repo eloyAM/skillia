@@ -1,6 +1,7 @@
 package com.example.application.view.utils;
 
 import com.example.application.dto.PersonDto;
+import com.example.application.dto.SkillDto;
 import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
@@ -24,5 +25,18 @@ public final class Comparators {
             || StringUtils.containsIgnoreCase(person.getTitle(), filterValue)
             || StringUtils.containsIgnoreCase(person.getDepartment(), filterValue)
             || StringUtils.containsIgnoreCase(person.getEmail(), filterValue);
+    }
+
+    public static boolean skillDtoAttributesContains(
+        @Nullable SkillDto skill,
+        @Nullable String filterValue
+    ) {
+        if (skill == null) {
+            return false;
+        }
+        return StringUtils.containsIgnoreCase(skill.getName(), filterValue)
+            || StringUtils.containsIgnoreCase(skill.getDescription(), filterValue)
+            || skill.getTags() != null && skill.getTags().stream()
+            .anyMatch(tag -> StringUtils.containsIgnoreCase(tag.getName(), filterValue));
     }
 }

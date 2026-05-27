@@ -121,7 +121,7 @@ public class PersonSkillsController {
         return personSkillService.findAllAcquiredSkillByPersonId(personId);
     }
 
-    @Operation(description = "Find all the persons and the level for the given skill")
+    @Operation(description = "Find all the people and the level for the given skill")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Ok")
     })

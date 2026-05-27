@@ -55,10 +55,14 @@ public class SkillTagTab extends VerticalLayout {
                 span.setTitle(name);    // Tooltip
                 span.getElement().getThemeList().add("badge contrast pill");
                 span.getStyle().set("font-weight", "600");
+                span.getStyle().setFontSize("var(--lumo-font-size-s)");
                 Popup popup = new Popup();
                 popup.setTarget(span.getElement());
                 popup.setHeaderTitle(name);
-                return new Span(span, popup);
+                VerticalLayout result = new VerticalLayout(new Span(span, popup));
+                result.setSpacing(false);
+                result.getThemeList().add("spacing-xs");
+                return result;
             })
             .setHeader("Name")
             .setKey("name")
