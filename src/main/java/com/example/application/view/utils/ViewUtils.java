@@ -16,14 +16,19 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
+import com.vaadin.flow.router.Location;
+import com.vaadin.flow.router.QueryParameters;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -31,6 +36,8 @@ import java.util.function.ToIntFunction;
 
 @UtilityClass
 public final class ViewUtils {
+
+    public static final String SELECTED_VIEW_PARAM = "selectedView";
 
     public static String getLevelIndicatorSvgPath(Integer level) {
         return String.format("icons/level-%d.svg", level);
@@ -197,5 +204,31 @@ public final class ViewUtils {
             .set("padding-top", LumoVars.LUMO_SPACE_S)
             .set("padding-bottom", LumoVars.LUMO_SPACE_S);
         return tagsContainer;
+    }
+
+    // Updates the page URL, adding/updating the query param
+    public static void updateQueryParameter(String paramName, String value) {
+        Location currentLocation = UI.getCurrent().getActiveViewLocation();
+        Map<String, List<String>> params = new HashMap<>(currentLocation.getQueryParameters().getParameters());
+        params.put(paramName, List.of(value));
+        QueryParameters qp = new QueryParameters(params);
+        Location newLocation = new Location(currentLocation.getPath(), qp);
+        // Update without reloading the page
+        UI.getCurrent().getPage().getHistory().replaceState(null, newLocation);
+    }
+
+    public static void updateUrlWithTab(String tabName, boolean shouldUpdate) {
+        if (!shouldUpdate) {
+            return; // Avoid updating URL before initial navigation
+        }
+        if (UI.getCurrent().getActiveViewLocation() != null) {
+            updateQueryParameter(SELECTED_VIEW_PARAM, tabName);
+        }
+    }
+
+    public static Tab createTab(String label, Map<String, Tab> tabNameToTab) {
+        Tab tab = new Tab(label);
+        tabNameToTab.put(label, tab);
+        return tab;
     }
 }
