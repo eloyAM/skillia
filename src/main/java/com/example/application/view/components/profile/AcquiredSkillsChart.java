@@ -22,6 +22,7 @@ public class AcquiredSkillsChart extends VerticalLayout {
         VerticalLayout wrapper = this;
         wrapper.addClassName("user-profile-charts-layout");
         wrapper.setPadding(false);
+        wrapper.getStyle().setPaddingBottom("var(--lumo-space-xl)");
         wrapper.setSpacing(true);
         wrapper.setWidthFull();
 

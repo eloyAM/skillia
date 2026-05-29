@@ -17,6 +17,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.ComboBoxBase;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -40,6 +41,7 @@ import java.util.Map;
 import static com.example.application.view.utils.ViewUtils.createTab;
 import static com.example.application.view.utils.ViewUtils.notificationTopCenter;
 
+@CssImport("./styles/vaadin-selector-elements.css")
 @RolesAllowed(SecConstants.HR)
 @Route(layout = MainLayout.class, value = "skillsassignment")
 @PageTitle("Assign")
