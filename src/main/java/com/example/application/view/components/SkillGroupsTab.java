@@ -30,10 +30,7 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.Objects.requireNonNullElseGet;
 
@@ -164,6 +161,7 @@ public class SkillGroupsTab extends VerticalLayout {
         MultiSelectComboBox<SkillDto> skillSelector = ViewUtils
             .createMultiSelectComboBox(skillService::getAllSkill, SkillDto::getName, null);
         skillSelector.setLabel("Skills");
+        skillSelector.setAutoExpand(MultiSelectComboBox.AutoExpandMode.VERTICAL);
 
         binder.forField(nameField).asRequired("Name is required").bind(SkillGroupDto::getName, SkillGroupDto::setName);
         binder.forField(descriptionField).bind(SkillGroupDto::getDescription, SkillGroupDto::setDescription);
@@ -184,7 +182,7 @@ public class SkillGroupsTab extends VerticalLayout {
             // Merge the selected item with the new values from the form
             // The selected item, if present, will get updated directly
             // But we still need to refresh the grid manually
-            var inputItem = Optional.ofNullable(selectedItem).orElse(new SkillGroupDto());
+            var inputItem = Objects.requireNonNullElseGet(selectedItem, SkillGroupDto::new);
             try {
                 binder.writeBean(inputItem);
             } catch (ValidationException ex) {

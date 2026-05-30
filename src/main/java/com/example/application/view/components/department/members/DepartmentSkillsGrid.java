@@ -7,6 +7,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -40,15 +41,21 @@ public class DepartmentSkillsGrid extends TreeGrid<DepartmentSkillRowData> {
         setMinHeight("400px");
 
         addComponentHierarchyColumn(row -> {
-            Span span = new Span(row.getDisplayName());
+            Span name = new Span(row.getDisplayName());
+            Div result = new Div(name);
             switch (row.getKind()) {
-                case PERSON -> span.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
-                case SKILL_GROUP -> span.addClassNames(LumoUtility.TextColor.SECONDARY);
-                case SKILL -> span.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontWeight.SEMIBOLD);
+                case PERSON -> {
+                    name.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
+                    Div personInfo = new Div(row.person().getTitle());
+                    personInfo.getStyle().setFontSize("var(--lumo-font-size-s)");
+                    result.add(personInfo);
+                }
+                case SKILL_GROUP -> name.addClassNames(LumoUtility.TextColor.SECONDARY);
+                case SKILL -> name.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontWeight.SEMIBOLD);
                 default -> {    // No action
                 }
             }
-            return span;
+            return result;
         })
             .setHeader("Name")
             .setFlexGrow(1);

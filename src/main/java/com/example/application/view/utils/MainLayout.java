@@ -111,12 +111,12 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         var userAuthorities = authentication.getAuthorities();
         SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
         if (userAuthorities.contains(rhAuthority)) {
+            addToDrawer(new VerticalLayout(createMenuLink(DepartmentsView.class, "Departments",
+                VaadinIcon.WORKPLACE.create(), "departments")));
             addToDrawer(new VerticalLayout(createMenuLink(SkillsAssignmentView.class, "Skills Assignment",
                 VaadinIcon.STAR_HALF_LEFT_O.create(), "skills-assignment")));
             addToDrawer(new VerticalLayout(createMenuLink(SkillsManagementView.class, "Skills Management",
                 VaadinIcon.RECORDS.create(), "skills-management")));
-            addToDrawer(new VerticalLayout(createMenuLink(DepartmentsView.class, "Departments",
-                VaadinIcon.WORKPLACE.create(), "departments")));
         }
     }
 

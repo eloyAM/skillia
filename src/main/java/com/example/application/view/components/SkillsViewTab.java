@@ -294,6 +294,7 @@ public class SkillsViewTab extends VerticalLayout {
             .createMultiSelectComboBox(skillService::getAllSkillTag, SkillTagDto::getName, null);
         tagMultiSelectComboBox.setLabel("Tags");
         tagMultiSelectComboBox.setRequired(false);
+        tagMultiSelectComboBox.setAutoExpand(MultiSelectComboBox.AutoExpandMode.VERTICAL);
 
         binder.forField(skillNameTextField)
             .asRequired("Name is required")
