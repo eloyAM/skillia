@@ -5,10 +5,14 @@ import com.example.application.service.PersonSkillService;
 import com.example.application.view.components.profile.SkillLevelSelector;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.treegrid.TreeGrid;
+import com.vaadin.flow.data.provider.hierarchy.TreeData;
+import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import java.util.List;
@@ -19,6 +23,7 @@ import java.util.stream.Collectors;
 public class DepartmentSkillsGrid extends TreeGrid<DepartmentSkillRowData> {
 
     private final PersonSkillService personSkillService;
+    private final NameFilter nameFilter = new NameFilter();
 
     private DepartmentDto department;
     private Map<String, List<AcquiredSkillDto>> acquiredSkillsByPerson;
@@ -59,16 +64,35 @@ public class DepartmentSkillsGrid extends TreeGrid<DepartmentSkillRowData> {
     private void setAndExpandItems(List<PersonWithSkillsDto> departmentPeopleSkills) {
         this.rootItems = departmentPeopleSkills.stream()
             .map(PersonWithSkillsDto::getPerson).map(DepartmentSkillRowData::new).toList();
-        // People as root items -> for each person -> the department skill groups will be loaded -> and for each group its skills
-        setItems(this.rootItems, this::getChildren);
+        // Build hierarchy: person -> skill group -> skill
+        TreeData<DepartmentSkillRowData> data = new TreeData<>();
+        for (DepartmentSkillRowData personRow : rootItems) {
+            data.addItem(null, personRow);
+            for (SkillGroupDto group : department.getSkillGroups()) {
+                DepartmentSkillRowData groupRow = new DepartmentSkillRowData(personRow.person(), group);
+                data.addItem(personRow, groupRow);
+                Set<SkillDto> skills = group.getSkills();
+                if (skills != null) {
+                    for (SkillDto skill : skills) {
+                        data.addItem(groupRow, new DepartmentSkillRowData(personRow.person(), group, skill));
+                    }
+                }
+            }
+        }
+        TreeDataProvider<DepartmentSkillRowData> provider = new TreeDataProvider<>(data);
+        setDataProvider(provider);
+        nameFilter.updateDataAndApply(data, provider);
         expandAll();
     }
 
     public HorizontalLayout createExpandCollapseButtons() {
-        return new HorizontalLayout(
-            new Button("Expand all", e -> expandAll()),
-            new Button("Collapse all", e1 -> collapseAll())
-        );
+        Button expandButton = new Button(
+            "Expand all", VaadinIcon.ANGLE_DOUBLE_DOWN.create(), e -> expandAll());
+        expandButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        Button collapseButton = new Button(
+            "Collapse all", VaadinIcon.ANGLE_DOUBLE_UP.create(), e1 -> collapseAll());
+        collapseButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
+        return new HorizontalLayout(expandButton, collapseButton);
     }
 
     private Component renderLevelSelector(DepartmentSkillRowData row) {
@@ -89,29 +113,6 @@ public class DepartmentSkillsGrid extends TreeGrid<DepartmentSkillRowData> {
         }
         return new Span();
     }
-
-    // Hierarchy: Person -> Skill Group -> Skill
-    // Method called recursively
-    private List<DepartmentSkillRowData> getChildren(DepartmentSkillRowData parent) {
-        // Note : parent.person() always present
-        if (parent.skillGroup() == null) { // Person level -> returns the department skill groups as the children
-            return department.getSkillGroups().stream()
-                .map(group -> new DepartmentSkillRowData(parent.person(), group))
-                .toList();  // Empty list if no skill groups -> no more recursion
-        } else if (parent.skill() == null) { // Skill group level -> returns its skills as the children
-            Set<SkillDto> skills = parent.skillGroup().getSkills();
-            if (skills != null) {
-                return skills.stream()
-                    .map(skill -> new DepartmentSkillRowData(parent.person(), parent.skillGroup(), skill))
-                    .toList();
-            } else {
-                return List.of(); // Empty skill group -> no more children
-            }
-        } else {
-            return List.of(); // Skill -> last level, no more children
-        }
-    }
-
 
     public void expandAll() {
         if (rootItems != null && !rootItems.isEmpty()) {
@@ -137,4 +138,78 @@ public class DepartmentSkillsGrid extends TreeGrid<DepartmentSkillRowData> {
             setAndExpandItems(departmentPeopleSkills);
         }
     }
+
+    public void setFilterText(String text) {
+        nameFilter.setFilterText(text);
+        nameFilter.apply();
+        expandAll();
+    }
+
+    private static class NameFilter {
+        private TreeData<DepartmentSkillRowData> treeData;
+        private TreeDataProvider<DepartmentSkillRowData> treeDataProvider;
+        private String filterText = "";
+
+        void updateDataAndApply(TreeData<DepartmentSkillRowData> treeData, TreeDataProvider<DepartmentSkillRowData> treeDataProvider) {
+            this.treeData = treeData;
+            this.treeDataProvider = treeDataProvider;
+            apply();
+        }
+
+        void setFilterText(String rawValue) {
+            this.filterText = rawValue == null ? "" : rawValue.trim().toLowerCase();
+        }
+
+        private boolean hasNoFilter() {
+            return filterText == null || filterText.isBlank();
+        }
+
+        void apply() {
+            if (treeDataProvider == null) {
+                return;
+            }
+            if (hasNoFilter()) {
+                treeDataProvider.setFilter(null);
+            } else {
+                treeDataProvider.setFilter(this::matchesCurrentOrAnyParentOrChild);
+            }
+        }
+
+        private boolean matchesCurrentOrAnyParentOrChild(DepartmentSkillRowData row) {
+            return dataMatches(row)
+                || anyParentMatches(row) || anyChildMatches(row);
+        }
+
+        private boolean dataMatches(DepartmentSkillRowData row) {
+            return stringMatches(row.getDisplayName());
+        }
+
+        private boolean stringMatches(String value) {
+            return hasNoFilter()
+                || (value != null && value.toLowerCase().contains(filterText));
+        }
+
+        private boolean anyParentMatches(DepartmentSkillRowData row) {
+            if (treeData == null) {
+                return false;
+            }
+            DepartmentSkillRowData parent = treeData.getParent(row);
+            while (parent != null) {
+                if (dataMatches(parent)) {
+                    return true;
+                }
+                parent = treeData.getParent(parent);
+            }
+            return false;
+        }
+
+        private boolean anyChildMatches(DepartmentSkillRowData row) {
+            if (treeData == null) {
+                return false;
+            }
+            return treeData.getChildren(row).stream()
+                .anyMatch(child -> dataMatches(child) || anyChildMatches(child));
+        }
+    }
+
 }

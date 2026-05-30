@@ -10,14 +10,12 @@ import com.example.application.view.utils.MainLayout;
 import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabSheet;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import jakarta.annotation.security.RolesAllowed;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RolesAllowed("HR")
 @Route(layout = MainLayout.class, value = "departments")
@@ -30,6 +28,8 @@ public class DepartmentsView extends TabSheet implements BeforeEnterObserver {
     private final SkillService skillService;
     private final PersonService personService;
     private final PersonSkillService personSkillService;
+
+    private DepartmentMembersRatingTab departmentMembersRatingTab;
 
     public DepartmentsView(
         DepartmentService departmentService,
@@ -51,7 +51,7 @@ public class DepartmentsView extends TabSheet implements BeforeEnterObserver {
         var departmentsSkillGroupsViewTab = new DepartmentsSkillGroupsViewTab(departmentService, skillService);
         add(ViewUtils.createTab("Skill groups", tabNameToTab), departmentsSkillGroupsViewTab);
 
-        var departmentMembersRatingTab = new DepartmentMembersRatingTab(departmentService, personService, personSkillService);
+        departmentMembersRatingTab = new DepartmentMembersRatingTab(departmentService, personService, personSkillService);
         add(ViewUtils.createTab("Members rating", tabNameToTab), departmentMembersRatingTab);
 
         addSelectedChangeListener(e -> {
@@ -64,8 +64,11 @@ public class DepartmentsView extends TabSheet implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        event.getLocation().getQueryParameters()
-            .getSingleParameter(ViewUtils.SELECTED_VIEW_PARAM).ifPresent(this::selectTabByName);
+        QueryParameters queryParams = event.getLocation().getQueryParameters();
+        Optional<String> selectedViewParam = queryParams.getSingleParameter(ViewUtils.SELECTED_VIEW_PARAM);
+        Optional<String> departmentNameParam = queryParams.getSingleParameter(DepartmentMembersRatingTab.PARAM_DEPARTMENT_NAME);
+        selectedViewParam.ifPresent(this::selectTabByName);
+        departmentNameParam.ifPresent(departmentMembersRatingTab::selectDepartmentByName);
         isInitialized = true;
     }
 

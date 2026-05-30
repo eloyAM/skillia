@@ -6,16 +6,19 @@ import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;
+import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DepartmentMembersRatingTab extends VerticalLayout {
+    public static final String PARAM_DEPARTMENT_NAME = "departmentName";
 
     private final transient DepartmentService departmentService;
     private final transient PersonService personService;
@@ -24,6 +27,9 @@ public class DepartmentMembersRatingTab extends VerticalLayout {
     // Content
     private final ComboBox<DepartmentDto> departmentSelector;
     private DepartmentSkillsGrid membersGrid;
+    private HorizontalLayout expandCollapseButtons;
+    private TextField nameTextFieldFilter;
+    private DepartmentDto currentDepartment;
 
     public DepartmentMembersRatingTab(DepartmentService departmentService, PersonService personService, PersonSkillService personSkillService) {
         this.departmentService = departmentService;
@@ -35,7 +41,18 @@ public class DepartmentMembersRatingTab extends VerticalLayout {
         // The selector will be in charge of the membersGrid's content
         departmentSelector = createDepartmentSelector();
         departmentSelector.getStyle().setPaddingTop("0px");
+
         add(departmentSelector);
+    }
+
+    private TextField createGridFilter() {
+        TextField textField = ViewUtils.createFilterTextField("Search", str ->
+            // Trigger data update & filter application (refreshing to ensure the data is not outdated)
+            updateSkillsGrid(currentDepartment)
+        );
+        textField.setValueChangeTimeout(500);
+        textField.setTooltipText("Filter by person name, skill group name or skill name");
+        return textField;
     }
 
     private ComboBox<DepartmentDto> createDepartmentSelector() {
@@ -46,23 +63,49 @@ public class DepartmentMembersRatingTab extends VerticalLayout {
         selector.setMaxWidth("100%");
         selector.setItemLabelGenerator(DepartmentDto::getName);
         selector.setItems(departmentService.findAllDepartment());
-        selector.addValueChangeListener(event -> Optional.ofNullable(event.getValue())
-            .ifPresentOrElse(this::updateSkillsGrid, this::removeSkillsGrid));
+        selector.addValueChangeListener(event -> {
+            DepartmentDto department = event.getValue();
+            if (department != null) {
+                updateSkillsGrid(department);
+                ViewUtils.updateQueryParameter(PARAM_DEPARTMENT_NAME, department.getName());
+            } else {
+                removeGridElements();
+                ViewUtils.removeQueryParameter(PARAM_DEPARTMENT_NAME);
+            }
+        });
         return selector;
     }
 
+    public void selectDepartmentByName(String departmentName) {
+        departmentService.findDepartmentByName(departmentName).ifPresent(departmentSelector::setValue);
+    }
+
+    // Initialize or update grid stuff
     private void updateSkillsGrid(DepartmentDto department) {
+        this.currentDepartment = department;
         List<PersonWithSkillsDto> personWithSkillsDtos = getAllDepartmentPeopleAndSkills(department);
-        if (membersGrid == null) {
+        if (membersGrid == null) {  // Initialize
+            nameTextFieldFilter = createGridFilter();
             membersGrid = new DepartmentSkillsGrid(department, personSkillService, personWithSkillsDtos);
-            add(membersGrid.createExpandCollapseButtons());
-            add(membersGrid);
+            expandCollapseButtons = membersGrid.createExpandCollapseButtons();
+            add(nameTextFieldFilter, expandCollapseButtons, membersGrid);
         } else {
             membersGrid.setDepartment(department, personWithSkillsDtos);
+            if (nameTextFieldFilter.getValue() != null) {
+                membersGrid.setFilterText(nameTextFieldFilter.getValue());
+            }
         }
     }
 
-    private void removeSkillsGrid() {
+    private void removeGridElements() {
+        if (nameTextFieldFilter != null) {
+            remove(nameTextFieldFilter);
+            nameTextFieldFilter = null;
+        }
+        if (expandCollapseButtons != null) {
+            remove(expandCollapseButtons);
+            expandCollapseButtons = null;
+        }
         if (membersGrid != null) {
             remove(membersGrid);
             membersGrid = null;

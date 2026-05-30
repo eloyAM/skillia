@@ -26,7 +26,7 @@ import com.vaadin.flow.router.QueryParameters;
 import lombok.experimental.UtilityClass;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -206,15 +206,27 @@ public final class ViewUtils {
         return tagsContainer;
     }
 
-    // Updates the page URL, adding/updating the query param
-    public static void updateQueryParameter(String paramName, String value) {
+    // Updates the page URL, setting/removing the query param
+    private static void doUpdateQueryParameter(String paramName, String value) {
         Location currentLocation = UI.getCurrent().getActiveViewLocation();
-        Map<String, List<String>> params = new HashMap<>(currentLocation.getQueryParameters().getParameters());
-        params.put(paramName, List.of(value));
+        Map<String, List<String>> params = new LinkedHashMap<>(currentLocation.getQueryParameters().getParameters());
+        if (value != null) {
+            params.put(paramName, List.of(value));
+        } else {
+            params.remove(paramName);
+        }
         QueryParameters qp = new QueryParameters(params);
         Location newLocation = new Location(currentLocation.getPath(), qp);
         // Update without reloading the page
         UI.getCurrent().getPage().getHistory().replaceState(null, newLocation);
+    }
+
+    public static void updateQueryParameter(String paramName, String value) {
+        doUpdateQueryParameter(paramName, value);
+    }
+
+    public static void removeQueryParameter(String paramName) {
+        doUpdateQueryParameter(paramName, null);
     }
 
     public static void updateUrlWithTab(String tabName, boolean shouldUpdate) {
