@@ -26,4 +26,9 @@ public interface PersonRepo extends JpaRepository<Person, String> {
     List<String> findDistinctDepartments();
 
     Optional<Person> findByUsername(String username);
+
+    @Query("select new com.example.application.dto.PersonDto("
+        + "p.username, p.fullName, p.email, p.title, p.department)"
+        + " from Person p where p.department = :departmentName")
+    List<PersonDto> findAllByDepartment(String departmentName);
 }

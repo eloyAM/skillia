@@ -27,6 +27,7 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
 
         tree.setWidthFull();
         tree.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
+        tree.addClassName("person-skills-tree-grid");
         // Horizontal scroll if the screen is not big enough, we don't want to cut the level selector
         tree.setMinWidth("500px");
         // Min height to avoid shrinking due to another section
@@ -51,7 +52,7 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
                     // Skill -> display using a details component
                     String descText = Optional.ofNullable(skillDescriptionStr).filter(s -> !s.isBlank()).orElse("No description available");
                     Span name = new Span(skill.getName());
-                    name.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.HEADER);
+                    name.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.BODY);
                     var description = new Span(descText);
                     description.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
                     return new Details(name, description);

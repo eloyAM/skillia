@@ -62,6 +62,11 @@ public class PersonSkillService {
         return DtoEntityMapping.mapPersonSkillEntityToPersonWithSkillsDto(personSkillOriginal);
     }
 
+    public List<PersonWithSkillsDto> getAllPersonSkillForDepartment(String departmentName) {
+        List<PersonSkill> personSkillOriginal = personSkillRepo.findPersonWithSkillsByDepartment(departmentName);
+        return DtoEntityMapping.mapPersonSkillEntityToPersonWithSkillsDto(personSkillOriginal);
+    }
+
     public List<PersonWithLevelDto> findAllPersonWithLevelBySkillId(Long skillId) {
         return personSkillRepo.findAllPersonWithLevelBySkillId(skillId);
     }

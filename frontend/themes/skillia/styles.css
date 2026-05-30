@@ -5,8 +5,12 @@
     }
 }
 
-vaadin-grid-tree-toggle {
-    --vaadin-grid-tree-toggle-level-offset: 0em;
+.person-skills-tree-grid vaadin-grid-tree-toggle {
+    --vaadin-grid-tree-toggle-level-offset: 0rem;
+}
+
+.members-tree-grid vaadin-grid-tree-toggle {
+    --vaadin-grid-tree-toggle-level-offset: var(--lumo-space-s);
 }
 
 .skill-level-selector .first-level {

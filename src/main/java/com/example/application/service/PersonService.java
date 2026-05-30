@@ -50,4 +50,8 @@ public class PersonService {
     public PersonDto findPersonByUsername(String username) {
         return personRepo.findByUsername(username).map(dtoEntityMapper::toPersonDto).orElse(null);
     }
+
+    public List<PersonDto> findPeopleByDepartment(String departmentName) {
+        return personRepo.findAllByDepartment(departmentName);
+    }
 }

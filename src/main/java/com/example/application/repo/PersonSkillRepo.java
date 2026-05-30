@@ -52,4 +52,9 @@ public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillI
         )
         from PersonSkill p group by p.personSkillId.skillId""")
     List<SkillStatValue> calculateAllStatValue();
+
+    @Query("""
+        select ps from PersonSkill ps
+        where ps.person.department = :departmentName""")
+    List<PersonSkill> findPersonWithSkillsByDepartment(String departmentName);
 }

@@ -1,7 +1,10 @@
 package com.example.application.view.page;
 
 import com.example.application.service.DepartmentService;
+import com.example.application.service.PersonService;
+import com.example.application.service.PersonSkillService;
 import com.example.application.service.SkillService;
+import com.example.application.view.components.department.members.DepartmentMembersRatingTab;
 import com.example.application.view.components.department.skillgroups.DepartmentsSkillGroupsViewTab;
 import com.example.application.view.utils.MainLayout;
 import com.example.application.view.utils.ViewUtils;
@@ -25,13 +28,19 @@ public class DepartmentsView extends TabSheet implements BeforeEnterObserver {
 
     private final DepartmentService departmentService;
     private final SkillService skillService;
+    private final PersonService personService;
+    private final PersonSkillService personSkillService;
 
     public DepartmentsView(
         DepartmentService departmentService,
-        SkillService skillService
+        SkillService skillService,
+        PersonService personService,
+        PersonSkillService personSkillService
     ) {
         this.departmentService = departmentService;
         this.skillService = skillService;
+        this.personService = personService;
+        this.personSkillService = personSkillService;
         //
         createUi();
     }
@@ -41,6 +50,9 @@ public class DepartmentsView extends TabSheet implements BeforeEnterObserver {
 
         var departmentsSkillGroupsViewTab = new DepartmentsSkillGroupsViewTab(departmentService, skillService);
         add(ViewUtils.createTab("Skill groups", tabNameToTab), departmentsSkillGroupsViewTab);
+
+        var departmentMembersRatingTab = new DepartmentMembersRatingTab(departmentService, personService, personSkillService);
+        add(ViewUtils.createTab("Members rating", tabNameToTab), departmentMembersRatingTab);
 
         addSelectedChangeListener(e -> {
             Tab selectedTab = e.getSelectedTab();
