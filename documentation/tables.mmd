@@ -1,4 +1,5 @@
 erDiagram
+%%    direction LR
     person {
         varchar(40) username PK
         varchar(100) full_name
@@ -51,11 +52,21 @@ erDiagram
         bigint group_id PK, FK
     }
 
-    person ||--|{ person_skill: "has"
-    skill ||--|{ person_skill: "is acquired by"
-    skill ||--|{ skill_tagging: "is tagged with"
-    skill_tag ||--|{ skill_tagging: "tags"
-    skill_group ||--|{ skill_group_skills: "contains"
-    skill ||--|{ skill_group_skills: "is part of"
-    department ||--|{ department_skill_groups: "has"
-    skill_group ||--|{ department_skill_groups: "is available in"
+    department ||--o{ department_skill_groups: "has"
+    skill_group ||--o{ department_skill_groups: "is available in"
+    skill_group ||--o{ skill_group_skills: "contains"
+    skill ||--o{ person_skill: "is acquired by"
+    person ||--o{ person_skill: "has"
+    skill ||--o{ skill_group_skills: "is part of"
+    skill ||--o{ skill_tagging: "is tagged with"
+    skill_tag ||--o{ skill_tagging: "tags"
+
+%% Alternative for TB/LR direction
+%% skill||--o{skill_group_skills:"is part of"
+%% person||--o{person_skill:"has"
+%% skill||--o{skill_tagging:"is tagged with"
+%% skill_tag||--o{skill_tagging:"tags"
+%% skill||--o{person_skill:"is acquired by"
+%% skill_group||--o{skill_group_skills:"contains"
+%% skill_group||--o{department_skill_groups:"is available in"
+%% department||--o{department_skill_groups:"has"

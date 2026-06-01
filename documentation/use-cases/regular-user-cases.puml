@@ -1,0 +1,21 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Usuario\ncomún" as Usuario
+
+rectangle Sistema {
+  usecase "Iniciar sesión" as Login
+  usecase "Cerrar sesión" as Logout
+  usecase "Ver cualquier perfil" as VerPerfil
+  usecase "Autoevaluarse" as Autoevaluarse
+  usecase "Consultar y filtrar matriz\nempleado-habilidades" as VerAsociacionEmpleadosHabilidades
+}
+
+Usuario --> Login : A partir de su correo y contraseña corporativa
+Usuario --> Logout : Cerrar sesión
+Usuario --> VerPerfil : Consultar datos de usuario y habilidades,\npara uno mismo o para cualquier otro empleado
+Usuario --> Autoevaluarse : Autoevaluar las habilidades asignadas,\nestableciendo un nivel de competencia para cada una
+Usuario --> VerAsociacionEmpleadosHabilidades : Consultar y filtrar según diferentes criterios\nla lista de empleados junto a sus habilidades
+
+@enduml

@@ -1,0 +1,22 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Personal\nde RRHH" as Usuario
+
+rectangle Sistema {
+  usecase "Gestionar\nhabilidades" as CRUDHabilidades
+  usecase "Gestionar\netiquetas de habilidades" as CRUDEtiquetasHabilidades
+  usecase "Gestionar\ngrupos de habilidades" as CRUDGruposHabilidades
+  usecase "Gestionar asignación de\ngrupos de habilidades\na departamentos" as CRUDAsignacionGruposHabilidades
+  usecase "Evaluar\nhabilidades de empleados" as EvaluarHabilidadesEmpleados
+  usecase "Evaluar\nhabilidades en perfil" as EvaluarHabilidadesPerfil
+}
+
+Usuario --> CRUDHabilidades : Consultar, crear, editar y eliminar\nhabilidades
+Usuario --> CRUDEtiquetasHabilidades : Consultar, crear, editar y eliminar\netiquetas de habilidades
+Usuario --> CRUDGruposHabilidades : Consultar, crear, editar y eliminar\ngrupos de habilidades
+Usuario --> CRUDAsignacionGruposHabilidades : Consultar, añadir y eliminar las asignaciones\nde grupos de habilidades a departamentos
+Usuario --> EvaluarHabilidadesEmpleados : Evaluar el nivel de las habilidades\nde los empleados, del 1 al 5
+Usuario --> EvaluarHabilidadesPerfil : Evaluar el nivel de las habilidades\nen cualquier perfil, del 1 al 5
+@enduml

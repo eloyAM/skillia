@@ -1,0 +1,175 @@
+<?plantuml 1.2026.2?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css"
+     data-diagram-type="DESCRIPTION" height="595px" preserveAspectRatio="none"
+     style="width:620px;height:595px;background:#FFFFFF;" version="1.1" viewBox="0 0 620 595" width="620px"
+     zoomAndPan="magnify">
+    <defs/>
+    <g><!--cluster Sistema-->
+        <g class="cluster" data-qualified-name="Sistema" data-source-line="6" id="ent0003">
+            <rect fill="none" height="580" rx="2.5" ry="2.5" style="stroke:#181818;stroke-width:1;" width="243" x="371"
+                  y="7"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing"
+                  textLength="53.6963" x="465.6519" y="24.1074">Sistema
+            </text>
+        </g><!--entity CRUDHabilidades-->
+        <g class="entity" data-qualified-name="Sistema.CRUDHabilidades" data-source-line="7" id="ent0004">
+            <ellipse cx="492.4519" cy="72.9744" fill="#F1F1F1" rx="51.4519" ry="28.4744"
+                     style="stroke:#181818;stroke-width:0.5;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.6963"
+                  x="462.1038" y="68.2373">Gestionar
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="70.834"
+                  x="457.0349" y="86.8584">habilidades
+            </text>
+        </g><!--entity CRUDEtiquetasHabilidades-->
+        <g class="entity" data-qualified-name="Sistema.CRUDEtiquetasHabilidades" data-source-line="8" id="ent0005">
+            <ellipse cx="492.7393" cy="163.2353" fill="#F1F1F1" rx="99.2393" ry="26.7353"
+                     style="stroke:#181818;stroke-width:0.5;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.6963"
+                  x="462.3912" y="155.8321">Gestionar
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="151.0059"
+                  x="417.2364" y="174.4532">etiquetas de habilidades
+            </text>
+        </g><!--entity CRUDGruposHabilidades-->
+        <g class="entity" data-qualified-name="Sistema.CRUDGruposHabilidades" data-source-line="9" id="ent0006">
+            <ellipse cx="492.6783" cy="251.8359" fill="#F1F1F1" rx="90.6783" ry="26.8359"
+                     style="stroke:#181818;stroke-width:0.5;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="60.6963"
+                  x="462.3301" y="244.5945">Gestionar
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.9922"
+                  x="424.1822" y="263.2156">grupos de habilidades
+            </text>
+        </g><!--entity CRUDAsignacionGruposHabilidades-->
+        <g class="entity" data-qualified-name="Sistema.CRUDAsignacionGruposHabilidades" data-source-line="10"
+           id="ent0007">
+            <ellipse cx="492.6168" cy="354.0424" fill="#F1F1F1" rx="103.1168" ry="40.0424"
+                     style="stroke:#181818;stroke-width:0.5;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="150.9854"
+                  x="417.1242" y="344.8332">Gestionar asignaci&#243;n de
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="136.9922"
+                  x="424.1207" y="363.4543">grupos de habilidades
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="105.0684"
+                  x="440.0827" y="382.0754">a departamentos
+            </text>
+        </g><!--entity EvaluarHabilidadesEmpleados-->
+        <g class="entity" data-qualified-name="Sistema.EvaluarHabilidadesEmpleados" data-source-line="11" id="ent0008">
+            <ellipse cx="492.72" cy="456.0163" fill="#F1F1F1" rx="105.72" ry="26.5163"
+                     style="stroke:#181818;stroke-width:0.5;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47.4688"
+                  x="468.9856" y="448.2575">Evaluar
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="162.6748"
+                  x="411.3825" y="466.8785">habilidades de empleados
+            </text>
+        </g><!--entity EvaluarHabilidadesPerfil-->
+        <g class="entity" data-qualified-name="Sistema.EvaluarHabilidadesPerfil" data-source-line="12" id="ent0009">
+            <ellipse cx="492.7092" cy="544.1884" fill="#F1F1F1" rx="82.2092" ry="26.6884"
+                     style="stroke:#181818;stroke-width:0.5;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="47.4688"
+                  x="468.9748" y="536.7095">Evaluar
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="124.5303"
+                  x="430.444" y="555.3306">habilidades en perfil
+            </text>
+        </g><!--entity Usuario-->
+        <g class="entity" data-qualified-name="Usuario" data-source-line="4" id="ent0002">
+            <ellipse cx="35.9517" cy="270" fill="#F1F1F1" rx="8" ry="8" style="stroke:#181818;stroke-width:0.5;"/>
+            <path d="M35.9517,278 L35.9517,305 M22.9517,286 L48.9517,286 M35.9517,305 L22.9517,320 M35.9517,305 L48.9517,320"
+                  fill="none" style="stroke:#181818;stroke-width:0.5;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="55.2549"
+                  x="6" y="336.6074">Personal
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacing" textLength="59.9033"
+                  x="6" y="355.2285">de RRHH
+            </text>
+        </g><!--link Usuario to CRUDHabilidades-->
+        <g class="link" data-entity-1="ent0002" data-entity-2="ent0004" data-link-type="dependency"
+           data-source-line="15" id="lnk10">
+            <path d="M39.05,261.18 C43.59,219.28 57.06,160.65 96,128 C195.6,44.49 355.5235,53.0009 437.1535,63.9709"
+                  fill="none" id="Usuario-to-CRUDHabilidades" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818" points="443.1,64.77,434.7129,59.6069,438.1445,64.1041,433.6474,67.5357,443.1,64.77"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="191.458"
+                  x="130" y="37.0283">Consultar, crear, editar y eliminar
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="65.7744"
+                  x="192.8418" y="54.3193">habilidades
+            </text>
+        </g><!--link Usuario to CRUDEtiquetasHabilidades-->
+        <g class="link" data-entity-1="ent0002" data-entity-2="ent0005" data-link-type="dependency"
+           data-source-line="16" id="lnk11">
+            <path d="M59.56,261.37 C68.8,246.48 80.92,231.54 96,222 C144.4,191.38 288.7255,176.1513 389.4655,168.8913"
+                  fill="none" id="Usuario-to-CRUDEtiquetasHabilidades" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="395.45,168.46,386.1858,165.1173,390.4629,168.8194,386.7608,173.0966,395.45,168.46"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="191.458"
+                  x="130" y="151.0283">Consultar, crear, editar y eliminar
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="140.2197"
+                  x="155.6191" y="168.3193">etiquetas de habilidades
+            </text>
+        </g><!--link Usuario to CRUDGruposHabilidades-->
+        <g class="link" data-entity-1="ent0002" data-entity-2="ent0006" data-link-type="dependency"
+           data-source-line="17" id="lnk12">
+            <path d="M66.02,303.59 C75.54,301.62 86.19,299.56 96,298 C202.15,281.06 319.2985,268.3144 399.6085,260.4544"
+                  fill="none" id="Usuario-to-CRUDGruposHabilidades" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="405.58,259.87,396.2332,256.7657,400.6038,260.357,397.0124,264.7276,405.58,259.87"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="191.458"
+                  x="130" y="245.0283">Consultar, crear, editar y eliminar
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="127.207"
+                  x="162.1255" y="262.3193">grupos de habilidades
+            </text>
+        </g><!--link Usuario to CRUDAsignacionGruposHabilidades-->
+        <g class="link" data-entity-1="ent0002" data-entity-2="ent0007" data-link-type="dependency"
+           data-source-line="18" id="lnk13">
+            <path d="M66.15,326.68 C75.4,331.18 85.87,335.5 96,338 C194.08,362.19 303.934,364.0887 384.804,361.1387"
+                  fill="none" id="Usuario-to-CRUDAsignacionGruposHabilidades" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="390.8,360.92,381.6602,357.2507,385.8033,361.1023,381.9518,365.2454,390.8,360.92"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="257.9624"
+                  x="97" y="317.0283">Consultar, a&#241;adir y eliminar las asignaciones
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="246.4541"
+                  x="102.7542" y="334.3193">de grupos de habilidades a departamentos
+            </text>
+        </g><!--link Usuario to EvaluarHabilidadesEmpleados-->
+        <g class="link" data-entity-1="ent0002" data-entity-2="ent0008" data-link-type="dependency"
+           data-source-line="19" id="lnk14">
+            <path d="M55.69,358.69 C65.07,376.73 78.29,395.55 96,407 C185.34,464.74 304.0378,471.1068 389.3878,466.7368"
+                  fill="none" id="Usuario-to-EvaluarHabilidadesEmpleados" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="395.38,466.43,386.1872,462.8954,390.3865,466.6857,386.5963,470.885,395.38,466.43"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="195.8442"
+                  x="128" y="386.0283">Evaluar el nivel de las habilidades
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="161.8843"
+                  x="144.98" y="403.3193">de los empleados, del 1 al 5
+            </text>
+        </g><!--link Usuario to EvaluarHabilidadesPerfil-->
+        <g class="link" data-entity-1="ent0002" data-entity-2="ent0009" data-link-type="dependency"
+           data-source-line="20" id="lnk15">
+            <path d="M36.57,358.78 C39.04,405.84 50.82,475.19 96,512 C189.33,588.04 333.6293,576.2669 419.5693,560.4369"
+                  fill="none" id="Usuario-to-EvaluarHabilidadesPerfil" style="stroke:#181818;stroke-width:1;"/>
+            <polygon fill="#181818"
+                     points="425.47,559.35,415.8943,557.0465,420.5527,560.2558,417.3435,564.9142,425.47,559.35"
+                     style="stroke:#181818;stroke-width:1;"/>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="195.8442"
+                  x="128" y="491.0283">Evaluar el nivel de las habilidades
+            </text>
+            <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="162.6016"
+                  x="144.6213" y="508.3193">en cualquier perfil, del 1 al 5
+            </text>
+        </g>
+        <?plantuml-src ZPCxRi9048RxFSM86eeKQL94YWY24e7eQ2RsO4PPxvfz8A4eXufo12wMCJ5FsvZ6bdTcls-ryrlJAa2mu3XR1qZPKHBO6kK_sHJeC8S2aq_CQ1vscg0ieyaqAOL9i0vwKtBU6jHBanBCPfD93z33maTqR9KwRO0v-q0vmfS2Y9uIz0IzCVbIXsvfrlZ1cbDCoHyGmzdYVN9UQzb5WJUHWlIBlWanEZPqip8N2ziA6X-gNHJfvinWmljV8wGMwDAWhCZz1ip917ksl5NRhRdh6srHnvjRAnsK5vemhO1LrmLZTAntmiX0GMx5keKqFHJLjrBLh64mUBqT6hp0q1eVTK3NXyHH-QAKvHDsG9fplfrz3TSqm4UvRUceIMgN_QYXSRmr_9sfNejm_uFo4rueGClfyRI_p8x86hLm4wghOzp9WXoXgeeL36_bAUHIV9NPSaswJndhIvU69q0Dpnsk_xGyAfBi9H7r9ZAvAeMNhZy0?>
+    </g>
+</svg>

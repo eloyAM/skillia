@@ -1,0 +1,72 @@
+@startuml
+top to bottom direction
+'left to right direction
+
+entity "person" as person {
+  * username : varchar(40) <<PK>>
+  --
+  full_name : varchar(100)
+  email : varchar(254)
+  title : varchar(50)
+  department : varchar(50)
+}
+
+entity "department" as department {
+  * id : bigint <<PK>>
+  --
+  name : varchar(50) <<UQ>>
+}
+
+entity "skill_group" as skill_group {
+  * id : bigint <<PK>>
+  --
+  name : varchar(50) <<UQ>>
+  description : varchar(250)
+}
+
+entity "skill" as skill {
+  * id : bigint <<PK>>
+  --
+  name : varchar(70) <<UQ>>
+  description : varchar(250)
+}
+
+entity "skill_tag" as skill_tag {
+  * id : bigint <<PK>>
+  --
+  name : varchar(70) <<UQ>>
+}
+
+entity "person_skill" as person_skill {
+  * person_id : varchar(40) <<PK, FK>>
+  * skill_id : bigint <<PK, FK>>
+  --
+  level : integer
+  last_modified_date : timestamp
+}
+
+entity "skill_tagging" as skill_tagging {
+  * skill_id : bigint <<PK, FK>>
+  * tag_id : bigint <<PK, FK>>
+}
+
+entity "skill_group_skills" as skill_group_skills {
+  * group_id : bigint <<PK, FK>>
+  * skill_id : bigint <<PK, FK>>
+}
+
+entity "department_skill_groups" as department_skill_groups {
+  * department_id : bigint <<PK, FK>>
+  * group_id : bigint <<PK, FK>>
+}
+
+department ||--o{ department_skill_groups : has
+skill_group ||--o{ department_skill_groups : "is available in"
+skill_group ||--o{ skill_group_skills : contains
+skill ||--o{ person_skill : "is acquired by"
+person ||--o{ person_skill : has
+skill ||--o{ skill_group_skills : "is part of"
+skill ||--o{ skill_tagging : "is tagged with"
+skill_tag ||--o{ skill_tagging : tags
+
+@enduml

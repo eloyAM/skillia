@@ -1,4 +1,5 @@
 classDiagram
+%%    direction LR
     class Department {
         + id: Long
         + name: String
@@ -39,7 +40,7 @@ classDiagram
         + modifiedAt: Date
     }
 
-    Department "1" o--> "*" Person: people
+    Department "1" *--> "*" Person: people
     Department "*" o--> "*" SkillGroup: skillGroups
     SkillGroup "*" o--> "*" Skill: skills
     Person "1" *--> "*" AcquiredSkill: personSkills
