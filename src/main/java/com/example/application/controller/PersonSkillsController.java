@@ -2,6 +2,8 @@ package com.example.application.controller;
 
 import com.example.application.dto.*;
 import com.example.application.dto.skillperson.PersonWithLevelDto;
+import com.example.application.dto.stats.SkillStatValue;
+import com.example.application.dto.stats.StatValue;
 import com.example.application.service.PersonSkillService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.http.ResponseEntity.created;
@@ -133,6 +136,17 @@ public class PersonSkillsController {
     @GetMapping("/skill/{skillId}")
     public List<PersonWithLevelDto> findSkillAssignmentsBySkillId(@PathVariable Long skillId) {
         return personSkillService.findAllPersonWithLevelBySkillId(skillId);
+    }
+
+    @Operation(description = "Get rating stats for each skill, including the number of ratings and the minimum, average and max value.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ok")
+    })
+    @GetMapping("/stats")
+    public List<SkillStatValue> getAllStats() {
+        Map<Long, StatValue> statsMap = personSkillService.getAllStats();
+        return statsMap.keySet().stream().map(
+            skillId -> new SkillStatValue(skillId, statsMap.get(skillId))).toList();
     }
 
     /**
