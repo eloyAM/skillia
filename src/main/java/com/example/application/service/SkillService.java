@@ -1,8 +1,8 @@
 package com.example.application.service;
 
-import com.example.application.dto.SkillDto;
-import com.example.application.dto.SkillGroupDto;
-import com.example.application.dto.SkillTagDto;
+import com.example.application.dto.main.SkillDto;
+import com.example.application.dto.main.SkillGroupDto;
+import com.example.application.dto.main.SkillTagDto;
 import com.example.application.entity.Skill;
 import com.example.application.entity.SkillGroup;
 import com.example.application.entity.SkillTag;

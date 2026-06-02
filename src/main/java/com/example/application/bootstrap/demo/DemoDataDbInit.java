@@ -1,6 +1,6 @@
 package com.example.application.bootstrap.demo;
 
-import com.example.application.dto.*;
+import com.example.application.dto.main.*;
 import com.example.application.entity.PersonSkill;
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.DepartmentService;

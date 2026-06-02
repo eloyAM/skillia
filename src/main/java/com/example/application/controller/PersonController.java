@@ -1,6 +1,6 @@
 package com.example.application.controller;
 
-import com.example.application.dto.PersonDto;
+import com.example.application.dto.main.PersonDto;
 import com.example.application.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

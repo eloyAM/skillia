@@ -1,9 +1,9 @@
 package com.example.application.it.controller;
 
 import com.example.application.dto.AcquiredSkillDto;
-import com.example.application.dto.PersonWithLevelDto;
+import com.example.application.dto.skillperson.PersonWithLevelDto;
 import com.example.application.dto.PersonWithSkillsDto;
-import com.example.application.dto.SkillDto;
+import com.example.application.dto.main.SkillDto;
 import com.example.application.it.testutils.CleanDbExtension;
 import com.example.application.it.controller.testutils.ControllerTestUtils;
 import com.jayway.jsonpath.JsonPath;

@@ -1,5 +1,6 @@
 package com.example.application.dto;
 
+import com.example.application.dto.main.SkillDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

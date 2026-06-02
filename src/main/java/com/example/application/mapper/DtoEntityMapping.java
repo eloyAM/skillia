@@ -1,6 +1,9 @@
 package com.example.application.mapper;
 
 import com.example.application.dto.*;
+import com.example.application.dto.main.PersonDto;
+import com.example.application.dto.main.SkillDto;
+import com.example.application.dto.main.SkillTagDto;
 import com.example.application.entity.*;
 import jakarta.annotation.Nonnull;
 import lombok.experimental.UtilityClass;

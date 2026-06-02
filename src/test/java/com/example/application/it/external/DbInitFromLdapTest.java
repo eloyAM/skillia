@@ -1,6 +1,6 @@
 package com.example.application.it.external;
 
-import com.example.application.dto.PersonDto;
+import com.example.application.dto.main.PersonDto;
 import com.example.application.service.PersonService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("default")   // Be careful to don't runt it with the embedded postgres or LDAP to avoid conflicts
 @SpringBootTest
 @Testcontainers
-class DemoDataDbInitFromLdapTest {
+class DbInitFromLdapTest {
     private static final int LDAP_PORT = 1389;
     private static final String LDAP_BASE = "dc=example,dc=org";
     private static final String LDAP_ADMIN_SIMPLE_USERNAME = "admin-testcontainers";

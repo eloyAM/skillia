@@ -1,6 +1,10 @@
 package com.example.application.ut.mapping;
 
 import com.example.application.dto.*;
+import com.example.application.dto.main.DepartmentDto;
+import com.example.application.dto.main.SkillDto;
+import com.example.application.dto.main.SkillGroupDto;
+import com.example.application.dto.main.SkillTagDto;
 import com.example.application.entity.*;
 import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.ut.mapping.testutils.MappingAdapter;

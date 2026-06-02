@@ -1,7 +1,7 @@
 package com.example.application.it.service;
 
-import com.example.application.dto.SkillDto;
-import com.example.application.dto.SkillTagDto;
+import com.example.application.dto.main.SkillDto;
+import com.example.application.dto.main.SkillTagDto;
 import com.example.application.it.testutils.CleanDbExtension;
 import com.example.application.service.SkillService;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,10 @@
 package com.example.application.view.components.department.members;
 
 import com.example.application.dto.*;
+import com.example.application.dto.main.DepartmentDto;
+import com.example.application.dto.main.PersonDto;
+import com.example.application.dto.main.SkillDto;
+import com.example.application.dto.main.SkillGroupDto;
 import com.example.application.service.PersonSkillService;
 import com.example.application.view.components.profile.SkillLevelSelector;
 import com.vaadin.flow.component.Component;

@@ -1,8 +1,8 @@
 package com.example.application.view.page;
 
-import com.example.application.dto.PersonDto;
+import com.example.application.dto.main.PersonDto;
 import com.example.application.dto.PersonSkillBasicDto;
-import com.example.application.dto.SkillDto;
+import com.example.application.dto.main.SkillDto;
 import com.example.application.security.SecConstants;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;

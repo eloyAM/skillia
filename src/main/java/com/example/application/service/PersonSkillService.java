@@ -1,6 +1,9 @@
 package com.example.application.service;
 
 import com.example.application.dto.*;
+import com.example.application.dto.skillperson.PersonWithLevelDto;
+import com.example.application.dto.stats.SkillStatValue;
+import com.example.application.dto.stats.StatValue;
 import com.example.application.entity.PersonSkill;
 import com.example.application.entity.PersonSkillId;
 import com.example.application.mapper.DtoEntityMapping;
@@ -14,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonSkillService {
@@ -82,6 +87,13 @@ public class PersonSkillService {
                 .map(DtoEntityMapping::mapPersonSkillEntityToAcquiredSkillDto);
     }
 
+    // Stats data by skill id
+    public Map<Long, StatValue> getAllStats() {
+        var listStats = personSkillRepo.calculateAllStatValue();
+        return listStats.stream().collect(Collectors.toMap(
+            SkillStatValue::getSkillId, SkillStatValue::getStatValue)
+        );
+    }
 
     // Static utilities
 

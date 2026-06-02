@@ -1,7 +1,7 @@
 package com.example.application.view.components.profile;
 
 import com.example.application.dto.AcquiredSkillDto;
-import com.example.application.dto.StatValue;
+import com.example.application.dto.stats.StatValue;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;

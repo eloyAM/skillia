@@ -1,6 +1,7 @@
 package com.example.application.ut.mapping.testutils;
 
 import com.example.application.dto.*;
+import com.example.application.dto.main.*;
 import com.example.application.entity.*;
 import com.example.application.mapper.DtoEntityMapping;
 import com.example.application.mapper.IDtoEntityMapper;

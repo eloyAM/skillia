@@ -1,6 +1,6 @@
 package com.example.application.repo;
 
-import com.example.application.dto.PersonDto;
+import com.example.application.dto.main.PersonDto;
 import com.example.application.entity.Person;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,12 +12,12 @@ import java.util.Optional;
 
 @Repository
 public interface PersonRepo extends JpaRepository<Person, String> {
-    @Query("select new com.example.application.dto.PersonDto("
+    @Query("select new com.example.application.dto.main.PersonDto("
         + "p.username, p.fullName, p.email, p.title, p.department)"
         + " from Person p")
     List<PersonDto> findBy();
 
-    @Query("select new com.example.application.dto.PersonDto("
+    @Query("select new com.example.application.dto.main.PersonDto("
         + "p.username, p.fullName, p.email, p.title, p.department)"
         + " from Person p")
     List<PersonDto> findBy(Pageable pageable);
@@ -27,7 +27,7 @@ public interface PersonRepo extends JpaRepository<Person, String> {
 
     Optional<Person> findByUsername(String username);
 
-    @Query("select new com.example.application.dto.PersonDto("
+    @Query("select new com.example.application.dto.main.PersonDto("
         + "p.username, p.fullName, p.email, p.title, p.department)"
         + " from Person p where p.department = :departmentName")
     List<PersonDto> findAllByDepartment(String departmentName);

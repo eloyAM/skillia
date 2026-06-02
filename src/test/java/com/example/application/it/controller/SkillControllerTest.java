@@ -1,6 +1,6 @@
 package com.example.application.it.controller;
 
-import com.example.application.dto.SkillDto;
+import com.example.application.dto.main.SkillDto;
 import com.example.application.it.controller.testutils.ControllerTestUtils;
 import com.example.application.it.testutils.CleanDbExtension;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,5 +1,6 @@
-package com.example.application.dto;
+package com.example.application.dto.skillperson;
 
+import com.example.application.dto.main.PersonDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

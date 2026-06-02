@@ -1,6 +1,6 @@
 package com.example.application.controller;
 
-import com.example.application.dto.SkillDto;
+import com.example.application.dto.main.SkillDto;
 import com.example.application.service.SkillService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

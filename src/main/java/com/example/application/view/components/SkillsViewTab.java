@@ -1,7 +1,7 @@
 package com.example.application.view.components;
 
-import com.example.application.dto.SkillDto;
-import com.example.application.dto.SkillTagDto;
+import com.example.application.dto.main.SkillDto;
+import com.example.application.dto.main.SkillTagDto;
 import com.example.application.service.SkillService;
 import com.example.application.utils.ValidationConstraints;
 import com.example.application.utils.Validators;

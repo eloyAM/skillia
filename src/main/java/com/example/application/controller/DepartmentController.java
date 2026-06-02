@@ -1,6 +1,6 @@
 package com.example.application.controller;
 
-import com.example.application.dto.DepartmentDto;
+import com.example.application.dto.main.DepartmentDto;
 import com.example.application.service.DepartmentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;

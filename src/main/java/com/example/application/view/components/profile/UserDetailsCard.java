@@ -1,6 +1,6 @@
 package com.example.application.view.components.profile;
 
-import com.example.application.dto.PersonDto;
+import com.example.application.dto.main.PersonDto;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;

@@ -1,6 +1,10 @@
 package com.example.application.view.utils;
 
 import com.example.application.dto.*;
+import com.example.application.dto.main.SkillDto;
+import com.example.application.dto.main.SkillGroupDto;
+import com.example.application.dto.skillperson.PersonWithLevelDto;
+import com.example.application.dto.skillperson.SkillAndPeopleWithLevel;
 import com.example.application.utils.Validators;
 import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.*;

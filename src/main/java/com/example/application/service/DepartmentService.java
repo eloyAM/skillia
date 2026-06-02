@@ -1,6 +1,6 @@
 package com.example.application.service;
 
-import com.example.application.dto.DepartmentDto;
+import com.example.application.dto.main.DepartmentDto;
 import com.example.application.entity.Department;
 import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.repo.DepartmentRepository;

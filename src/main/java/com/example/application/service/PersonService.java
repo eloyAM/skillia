@@ -1,6 +1,6 @@
 package com.example.application.service;
 
-import com.example.application.dto.PersonDto;
+import com.example.application.dto.main.PersonDto;
 import com.example.application.entity.Person;
 import com.example.application.mapper.DtoEntityMapping;
 import com.example.application.mapper.IDtoEntityMapper;

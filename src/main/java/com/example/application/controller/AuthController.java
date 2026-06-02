@@ -1,6 +1,5 @@
 package com.example.application.controller;
 
-import com.example.application.dto.UsrPwdDto;
 import com.example.application.security.jwt.CustomJwtEncoder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -11,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,7 +52,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ObjectNode> login(@Valid @RequestBody UsrPwdDto body) {
         UsernamePasswordAuthenticationToken usrPwdtoken = new UsernamePasswordAuthenticationToken(
-            body.getUsername(), body.getPassword()
+            body.username(), body.password()
         );
         final Authentication authentication;
         try {
@@ -76,4 +76,11 @@ public class AuthController {
         );
     }
 
+    record UsrPwdDto(
+        @NotNull
+        String username,
+        @NotNull
+        String password
+    ) {
+    }
 }

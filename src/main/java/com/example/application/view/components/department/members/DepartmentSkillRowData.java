@@ -1,8 +1,8 @@
 package com.example.application.view.components.department.members;
 
-import com.example.application.dto.PersonDto;
-import com.example.application.dto.SkillDto;
-import com.example.application.dto.SkillGroupDto;
+import com.example.application.dto.main.PersonDto;
+import com.example.application.dto.main.SkillDto;
+import com.example.application.dto.main.SkillGroupDto;
 
 // Wrapper for the tree grid data
 // Flattened representation of a "Person" being related to multiple "SkillGroup", each one with multiple "Skill"

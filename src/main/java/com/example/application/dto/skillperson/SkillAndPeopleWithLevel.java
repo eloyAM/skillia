@@ -1,5 +1,6 @@
-package com.example.application.dto;
+package com.example.application.dto.skillperson;
 
+import com.example.application.dto.main.SkillDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

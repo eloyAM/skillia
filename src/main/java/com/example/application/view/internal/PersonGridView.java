@@ -1,6 +1,6 @@
 package com.example.application.view.internal;
 
-import com.example.application.dto.PersonDto;
+import com.example.application.dto.main.PersonDto;
 import com.example.application.service.PersonService;
 import com.example.application.view.utils.MainLayout;
 import com.vaadin.flow.component.grid.Grid;

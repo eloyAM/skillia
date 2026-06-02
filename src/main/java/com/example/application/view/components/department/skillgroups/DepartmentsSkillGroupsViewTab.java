@@ -1,7 +1,7 @@
 package com.example.application.view.components.department.skillgroups;
 
-import com.example.application.dto.DepartmentDto;
-import com.example.application.dto.SkillGroupDto;
+import com.example.application.dto.main.DepartmentDto;
+import com.example.application.dto.main.SkillGroupDto;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.SkillService;
 import com.example.application.utils.Validators;

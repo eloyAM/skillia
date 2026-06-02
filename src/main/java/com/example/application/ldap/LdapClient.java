@@ -1,6 +1,6 @@
 package com.example.application.ldap;
 
-import com.example.application.dto.PersonDto;
+import com.example.application.dto.main.PersonDto;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Component;

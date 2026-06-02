@@ -1,7 +1,7 @@
 package com.example.application.view.utils;
 
-import com.example.application.dto.PersonDto;
-import com.example.application.dto.SkillDto;
+import com.example.application.dto.main.PersonDto;
+import com.example.application.dto.main.SkillDto;
 import jakarta.annotation.Nullable;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;

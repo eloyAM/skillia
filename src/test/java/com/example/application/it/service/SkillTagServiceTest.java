@@ -1,6 +1,6 @@
 package com.example.application.it.service;
 
-import com.example.application.dto.SkillTagDto;
+import com.example.application.dto.main.SkillTagDto;
 import com.example.application.service.SkillService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

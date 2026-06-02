@@ -2,8 +2,8 @@ package com.example.application.repo;
 
 import com.example.application.dto.AcquiredSkillDto;
 import com.example.application.dto.PersonSkillBasicDto;
-import com.example.application.dto.PersonWithLevelDto;
-import com.example.application.dto.SkillStatValue;
+import com.example.application.dto.skillperson.PersonWithLevelDto;
+import com.example.application.dto.stats.SkillStatValue;
 import com.example.application.entity.PersonSkill;
 import com.example.application.entity.PersonSkillId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,7 +37,7 @@ public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillI
         + " from PersonSkill p where p.personSkillId.personId = :personId")
     List<AcquiredSkillDto> findAllAcquiredSkillByPersonId(String personId);
 
-    @Query("select new com.example.application.dto.PersonWithLevelDto(p.personSkillId.personId"
+    @Query("select new com.example.application.dto.skillperson.PersonWithLevelDto(p.personSkillId.personId"
         + ", p.person.fullName, p.person.email, p.person.title, p.person.department"
         + ", p.level)"
         + " from PersonSkill p where p.personSkillId.skillId = :skillId")
@@ -46,9 +46,9 @@ public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillI
     Optional<PersonSkill> findByPersonSkillId_PersonIdAndPersonSkillId_SkillId(String personId, Long skillId);
 
     @Query("""
-        select new com.example.application.dto.SkillStatValue(
+        select new com.example.application.dto.stats.SkillStatValue(
             p.personSkillId.skillId,
-            new com.example.application.dto.StatValue(count(*), min(p.level), max(p.level), avg(p.level))
+            new com.example.application.dto.stats.StatValue(count(*), min(p.level), max(p.level), avg(p.level))
         )
         from PersonSkill p group by p.personSkillId.skillId""")
     List<SkillStatValue> calculateAllStatValue();

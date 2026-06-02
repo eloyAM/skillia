@@ -1,6 +1,7 @@
 package com.example.application.controller;
 
 import com.example.application.dto.*;
+import com.example.application.dto.skillperson.PersonWithLevelDto;
 import com.example.application.service.PersonSkillService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -8,6 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -128,5 +133,13 @@ public class PersonSkillsController {
     @GetMapping("/skill/{skillId}")
     public List<PersonWithLevelDto> findSkillAssignmentsBySkillId(@PathVariable Long skillId) {
         return personSkillService.findAllPersonWithLevelBySkillId(skillId);
+    }
+
+    /**
+     * DTO for {@link com.example.application.entity.PersonSkill}.
+     */
+    record AssignSkillRequestDto(
+            @NonNull @NotNull @Min(1) @Max(5) Integer level
+    ) {
     }
 }
