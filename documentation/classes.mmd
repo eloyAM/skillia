@@ -1,9 +1,11 @@
+%%{init: {'theme':'neutral'}}%%
 classDiagram
 %%    direction LR
     class Department {
         + id: Long
         + name: String
         + people: Person[]
+        + skillGroups: SkillGroup[]
     }
 
     class SkillGroup {

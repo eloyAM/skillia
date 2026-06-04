@@ -1,0 +1,107 @@
+Table "person" {
+  "department" varchar(50)
+  "email" varchar(254)
+  "full_name" varchar(100)
+  "title" varchar(50)
+  "username" varchar(40) [not null]
+
+  Indexes {
+    username [pk]
+    department [name: "IDX__person_department"]
+  }
+}
+
+Table "person_skill" {
+  "level" integer [not null]
+  "skill_id" bigint [not null]
+  "person_id" varchar(40) [not null]
+  "last_modified_date" TIMESTAMP(6)
+
+  Indexes {
+    (skill_id, person_id) [pk]
+  }
+}
+
+Table "skill" {
+  "id" bigint [not null]
+  "name" varchar(70) [unique, not null]
+  "description" varchar(250)
+
+  Indexes {
+    id [pk]
+  }
+}
+
+Table "skill_tag" {
+  "id" bigint [not null]
+  "name" varchar(70) [unique, not null]
+
+  Indexes {
+    id [pk]
+  }
+}
+
+Table "skill_tagging" {
+  "skill_id" bigint [not null]
+  "tag_id" bigint [not null]
+
+  Indexes {
+    (skill_id, tag_id) [pk]
+    skill_id [name: "IDX__skill_tagging__skill_id"]
+  }
+}
+
+Table "department" {
+  "id" bigint [not null]
+  "name" varchar(50) [unique, not null]
+
+  Indexes {
+    id [pk]
+  }
+}
+
+Table "skill_group" {
+  "id" bigint [not null]
+  "name" varchar(50) [unique, not null]
+  "description" varchar(250)
+
+  Indexes {
+    id [pk]
+  }
+}
+
+Table "skill_group_skills" {
+  "skill_id" bigint [not null]
+  "group_id" bigint [not null]
+
+  Indexes {
+    (skill_id, group_id) [pk]
+    group_id [name: "IDX__skill_group_skills__group_id"]
+  }
+}
+
+Table "department_skill_groups" {
+  "group_id" bigint [not null]
+  "department_id" bigint [not null]
+
+  Indexes {
+    (department_id, group_id) [pk]
+    department_id [name: "IDX__department_skill_groups__department_id"]
+  }
+}
+
+Ref "FK__person_skill__person":"person"."username" < "person_skill"."person_id" [delete: cascade]
+
+Ref "FK__person_skill__skill":"skill"."id" < "person_skill"."skill_id" [delete: cascade]
+
+Ref "FK__skill_tagging__tag":"skill_tag"."id" < "skill_tagging"."tag_id"
+
+Ref "FK__skill_tagging__skill":"skill"."id" < "skill_tagging"."skill_id" [delete: cascade]
+
+Ref "FK__skill_group_skills__skill_id":"skill"."id" < "skill_group_skills"."skill_id" [delete: cascade]
+
+Ref "FK__skill_group_skills__group_id":"skill_group"."id" < "skill_group_skills"."group_id"
+
+Ref "FK__department_skill_groups__department_id":"department"."id" < "department_skill_groups"."department_id" [delete: cascade]
+
+Ref "FK__department_skill_groups__group_id":"skill_group"."id" < "department_skill_groups"."group_id"

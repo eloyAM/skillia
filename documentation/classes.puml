@@ -1,0 +1,53 @@
+@startuml
+' Classes
+class Department {
+  + id: Long
+  + name: String
+  + people: Person[]
+  + skillGroups: SkillGroup[]
+}
+
+class SkillGroup {
+  + id: Long
+  + name: String
+  + description: String
+  + skills: Skill[]
+}
+
+class Skill {
+  + id: Long
+  + name: String
+  + description: String
+  + tags: SkillTag[]
+}
+
+class SkillTag {
+  + id: Long
+  + name: String
+}
+
+class Person {
+  + username: String
+  + fullName: String
+  + email: String
+  + title: String
+  + department: String
+  + personSkills: AcquiredSkill[]
+}
+
+class AcquiredSkill {
+  + level: Integer
+  + skill: Skill
+  + modifiedAt: Date
+}
+
+' Relationships (multiplicities and aggregation/composition preserved)
+Department "1" *-- "*" Person : people
+Department "*" o-- "*" SkillGroup : skillGroups
+SkillGroup "*" o-- "*" Skill : skills
+Person "1" *-- "*" AcquiredSkill : personSkills
+AcquiredSkill "*" --> "1" Skill : skill
+Skill "*" o-- "*" SkillTag : tags
+
+' Note: the original Mermaid comment omitted the AcquiredSkill -> Person back-reference (it's intentionally not added here).
+@enduml
