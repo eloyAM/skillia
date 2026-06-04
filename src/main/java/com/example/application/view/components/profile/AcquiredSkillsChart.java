@@ -3,7 +3,6 @@ package com.example.application.view.components.profile;
 import com.example.application.dto.AcquiredSkillDto;
 import com.example.application.dto.stats.StatValue;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H5;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import elemental.json.Json;
 import elemental.json.JsonArray;
@@ -17,7 +16,7 @@ import static com.example.application.view.utils.JsonUtils.setJsonValue;
 public class AcquiredSkillsChart extends VerticalLayout {
 
     public AcquiredSkillsChart(
-        boolean useChartJs, boolean useEcharts, List<AcquiredSkillDto> acquiredSkills, Map<Long, StatValue> skillStats
+        List<AcquiredSkillDto> acquiredSkills, Map<Long, StatValue> skillStats
     ) {
         VerticalLayout wrapper = this;
         wrapper.addClassName("user-profile-charts-layout");
@@ -42,31 +41,6 @@ public class AcquiredSkillsChart extends VerticalLayout {
             setJsonValue(maxValuesJsonArray, i, statValueOpt.map(StatValue::getMax).orElse(null));
             setJsonValue(countValuesJsonArray, i, statValueOpt.map(StatValue::getCount).orElse(null));
             i++;
-        }
-
-
-        if (useChartJs) {
-            Div chartJsContainer = new Div();
-            chartJsContainer.setId("profile-chartjs");
-            chartJsContainer.setWidthFull();
-            chartJsContainer.setHeight("320px");
-            chartJsContainer.getElement().executeJs(
-                "globalThis.skillia.renderSkillsBarChartChartJs($0, $1, $2);",
-                "profile-chartjs", labelsJsonArray, valuesJsonArray
-            );
-            wrapper.add(new H5("Chart.js"), chartJsContainer);
-        }
-
-        if (useEcharts) {
-            Div echartsContainer = new Div();
-            echartsContainer.setId("profile-echarts");
-            echartsContainer.setWidthFull();
-            echartsContainer.setHeight("320px");
-            echartsContainer.getElement().executeJs(
-                "globalThis.skillia.renderSkillsBarChartEcharts($0, $1, $2);",
-                "profile-echarts", labelsJsonArray, valuesJsonArray
-            );
-            wrapper.add(new H5("Apache ECharts"), echartsContainer);
         }
 
         Div chartContainer = new Div();

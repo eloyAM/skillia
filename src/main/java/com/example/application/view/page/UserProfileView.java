@@ -36,8 +36,6 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
     private final DepartmentService departmentService;
 
     private String routeUsername;
-    private boolean useChartJs;
-    private boolean useEcharts;
 
     public UserProfileView(
         SecurityService securityService,
@@ -55,9 +53,6 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         this.routeUsername = event.getRouteParameters().get(USERNAME_PATH_PARAMETER).orElseThrow();
-        var params = event.getLocation().getQueryParameters().getParameters();
-        this.useChartJs = params.containsKey("useChartJs");
-        this.useEcharts = params.containsKey("useEcharts");
     }
 
     @Override
@@ -88,7 +83,7 @@ public class UserProfileView extends VerticalLayout implements BeforeEnterObserv
         add(
             ViewUtils.createAndInitialize(new Div(), d -> d.getStyle().setPaddingTop(LumoVars.LUMO_SPACE_L)),
             new H4("Stats"));
-        add(new AcquiredSkillsChart(this.useChartJs, this.useEcharts,
+        add(new AcquiredSkillsChart(
             acquiredSkills, personSkillService.getAllStats()));
     }
 
