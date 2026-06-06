@@ -5,6 +5,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.openqa.selenium.*;
@@ -52,8 +53,11 @@ class ViewsTest {
     @BeforeEach
     void setUp(
         @Value("${webdriver.headless}") String isHeadless,
-        @Value("${webdriver.chrome.binary}") String chromeBinary
+        @Value("${webdriver.chrome.binary}") String chromeBinary,
+        TestInfo testInfo
     ) {
+        logger.info("Running test: {}", testInfo.getDisplayName());
+
         ChromeOptions chromeOptions = new ChromeOptions();
         if (Boolean.parseBoolean(isHeadless)) {
             String headlessArg = "--headless=new";
@@ -66,6 +70,10 @@ class ViewsTest {
         }
         WebDriverManager.chromiumdriver().setup();
         driver = new ChromeDriver(chromeOptions);
+        driver.manage().timeouts()
+            .implicitlyWait(ofSeconds(5))
+            .pageLoadTimeout(ofSeconds(5))
+            .scriptTimeout(ofSeconds(5));
     }
 
     @AfterEach
@@ -288,10 +296,12 @@ class ViewsTest {
     // Helpers
 
     private void waitUntilTitleIs(String title) {
+        logger.info("Waiting until the page title is '{}'", title);
         new WebDriverWait(driver, ofSeconds(5), ofSeconds(1)).until(titleIs(title));
     }
 
     private void getAndWaitUntilTitleIs(String url, String title) {
+        logger.info("Accessing url '{}' to wait until the page title is '{}'", url, title);
         driver.get(url);
         waitUntilTitleIs(title);
     }

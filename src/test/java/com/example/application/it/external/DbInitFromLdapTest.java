@@ -54,7 +54,7 @@ class DbInitFromLdapTest {
         registry.add("spring.ldap.base", () -> LDAP_BASE);
         registry.add("spring.ldap.username", () -> LDAP_ADMIN_DN);
         registry.add("spring.ldap.password", () -> LDAP_ADMIN_PWD);
-        registry.add("initdbfromjava", () -> false);
+        registry.add("initialization.create-sample-data", () -> false);
     }
 
     static boolean isDockerAvailable() {

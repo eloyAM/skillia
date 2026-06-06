@@ -6,6 +6,8 @@ import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.SkillService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.SecureRandom;
 import java.util.*;
@@ -19,6 +21,7 @@ import java.util.stream.Stream;
  * This creates some demo data in addition to the initialization already done by the {@link com.example.application.bootstrap.ImportLdapUsersToDbAppRunner}
  */
 public class DemoDataDbInit {
+    private static final Logger log = LoggerFactory.getLogger(DemoDataDbInit.class);
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -39,7 +42,18 @@ public class DemoDataDbInit {
         this.departmentService = departmentService;
     }
 
+    private boolean isAlreadyInitialized() {
+        return !skillService.getAllSkill().isEmpty()
+            || !skillService.getAllSkillTag().isEmpty()
+            || !skillService.getAllGroups().isEmpty();
+    }
+
     public void run() {
+        if (isAlreadyInitialized()) {
+            log.info("Skipped demo data initialization, other data already exists in the database");
+            return;
+        }
+
         List<PersonDto> persons = createPersons();
         PersonDto firstPerson = persons.get(0);
         PersonDto secondPerson = persons.get(1);

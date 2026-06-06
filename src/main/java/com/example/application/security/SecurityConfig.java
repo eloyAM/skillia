@@ -58,7 +58,6 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
                 "springdoc.api-docs.path property required to allow anonymous access");
         http.authorizeHttpRequests(auth ->
             auth.requestMatchers(
-//                    PathRequest.toH2Console(),
                     PathRequest.toStaticResources().atCommonLocations(),
                     antMatcher("/api/auth/**"), // Allow login
                     antMatcher(HttpMethod.GET, apiDocsPath),    // api-docs (json)
@@ -69,7 +68,6 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
 
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers(
-                        PathRequest.toH2Console(),  // This allows the h2 console access (connect / test connection, etc)
                         antMatcher("/api/**"),
                         antMatcher("/swagger-ui/**")
                 )

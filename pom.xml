@@ -409,6 +409,26 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>${maven-dependency-plugin.version}</version>
             </plugin>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>10.0.0</version>
+                <executions>
+                    <execution>
+                        <id>get-git-info</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includeOnlyProperties>
+                        <property>git.commit.id</property>
+                    </includeOnlyProperties>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                </configuration>
+            </plugin>
             <!-- Flyway maven plugin used only to run migrations manually,
             the config here won't be used on the application -->
             <plugin>
@@ -513,7 +533,7 @@
                 </resources>
             </build>
             <properties>
-                <activeProfiles>prod</activeProfiles>
+                <activeProfiles>production</activeProfiles>
             </properties>
         </profile>
 

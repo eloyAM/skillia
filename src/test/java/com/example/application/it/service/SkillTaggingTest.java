@@ -8,14 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @ExtendWith(CleanDbExtension.class)
@@ -68,7 +66,8 @@ class SkillTaggingTest {
     }
 
     @Test
-    void assignTagToSkillDeleteTagThrowsReferentialIntegrityConstraintViolation() {
+    void assignTagToSkillDeleteTagOk() {
+        // Arrange -> 2 tags, only one assigned to a skill
         SkillTagDto savedTag01 = skillService
             .saveSkillTag(SkillTagDto.builder().name("Tag A").build())
             .orElseThrow();
@@ -81,14 +80,13 @@ class SkillTaggingTest {
         ).orElseThrow();
         assertThat(getSkillTaggingCount()).isEqualTo(1);
 
+        // Act
         Long savedTag01Id = savedTag01.getId();
-        assertThatThrownBy(
-            () -> skillService.deleteSkillTagById(savedTag01Id)
-        ).isInstanceOf(DataIntegrityViolationException.class)
-            .message().containsIgnoringCase("fk__skill_tagging__tag");
+        skillService.deleteSkillTagById(savedTag01Id);
 
-        assertThat(getSkillTaggingCount()).isEqualTo(1);    // Still the same, no deletion performed
-        assertThat(skillService.getAllSkillTag()).containsExactlyInAnyOrder(savedTag01, savedTag02);
+        // Assert
+        assertThat(getSkillTaggingCount()).isZero();    // Relation automatically removed
+        assertThat(skillService.getAllSkillTag()).containsExactlyInAnyOrder(savedTag02);    // Tag removed
     }
 
     // Helpers

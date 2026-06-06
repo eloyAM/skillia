@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 @Order(2)
 @Slf4j
 @Component
-@ConditionalOnProperty(name = "initdbfromjava", havingValue = "true")
+@ConditionalOnProperty(name = "initialization.create-sample-data", havingValue = "true")
 public class DemoDataDbInitAppRunner implements ApplicationRunner {
 
     private final DemoDataDbInit demoDataDbInitializer;
@@ -35,7 +35,7 @@ public class DemoDataDbInitAppRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        log.info("Running database initialization from Java");
+        log.info("Starting demo data initialization");
         demoDataDbInitializer.run();
     }
 }

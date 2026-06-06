@@ -39,7 +39,9 @@ public class LdapSynchronizationService {
     public void loadUsersAndDepartmentsWithLdap() {
         log.info("Loading users from LDAP");
         List<PersonDto> ldapUsers = ldapClient.findAllUsers();
-        log.info("Found {} users from LDAP, proceeding to save them on the users database", ldapUsers.size());
+        log.info("Found {} users from LDAP, proceeding to save them on the users database: {}",
+            ldapUsers.size(),
+            ldapUsers.stream().map(PersonDto::getUsername).toList());
         // Straightforward users save as we already have the username, which is the PK
         personService.savePerson(ldapUsers);
         log.info("The users database has been saved successfully initialized");
