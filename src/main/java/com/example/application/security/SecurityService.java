@@ -5,7 +5,6 @@ import com.nimbusds.jose.JOSEException;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,29 +17,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecurityService {
 
-    private final AuthenticationContext authenticationContext;
+    private final AuthenticationContext vaadinAuthenticationContext;
     private final AuthenticationManager authenticationManager;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
     private final CustomJwtEncoder customJwtEncoder;
 
     public SecurityService(
-        AuthenticationContext authenticationContext,
-        AuthenticationManagerBuilder authenticationManagerBuilder,
+        AuthenticationContext vaadinAuthenticationContext,
+        AuthenticationManager authenticationManager,
         JwtAuthenticationProvider jwtAuthenticationProvider,
         CustomJwtEncoder customJwtEncoder
     ) {
-        this.authenticationContext = authenticationContext;
-        this.authenticationManager = authenticationManagerBuilder.getOrBuild();
+        this.vaadinAuthenticationContext = vaadinAuthenticationContext;
+        this.authenticationManager = authenticationManager;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.customJwtEncoder = customJwtEncoder;
     }
 
     public UserDetails getUserDetails() {
-        return authenticationContext.getAuthenticatedUser(UserDetails.class).orElseThrow();
+        return vaadinAuthenticationContext.getAuthenticatedUser(UserDetails.class).orElseThrow();
     }
 
     public Jwt getJwt() {
-        return authenticationContext.getAuthenticatedUser(Jwt.class).orElseThrow();
+        return vaadinAuthenticationContext.getAuthenticatedUser(Jwt.class).orElseThrow();
     }
 
     public Authentication getAuthentication() {
@@ -50,7 +49,7 @@ public class SecurityService {
     }
 
     public void logout() {
-        authenticationContext.logout();
+        vaadinAuthenticationContext.logout();
     }
 
     //
@@ -65,6 +64,11 @@ public class SecurityService {
         return authenticate(usrPwdtoken);
     }
 
+    public String getBearerToken(String username, String password) throws JOSEException {
+        var authentication = authenticate(username, password);
+        return customJwtEncoder.encodeJwt(authentication);
+    }
+
     //
 
     public JwtAuthenticationToken authenticate(BearerTokenAuthenticationToken token) {
@@ -77,10 +81,4 @@ public class SecurityService {
         return authenticate(bearerTokenObj);
     }
 
-    //
-
-    public String getBearerToken(String username, String password) throws JOSEException {
-        var authentication = authenticate(username, password);
-        return customJwtEncoder.encodeJwt(authentication);
-    }
 }

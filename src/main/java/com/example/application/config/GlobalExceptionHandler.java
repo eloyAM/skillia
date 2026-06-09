@@ -1,6 +1,5 @@
 package com.example.application.config;
 
-import com.example.application.controller.AuthController;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -24,6 +23,7 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final String MESSAGE_FIELD = "message";
     private static final String VALIDATION_ERROR = "Validation error";
 
     private GlobalExceptionHandler() {
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
         var problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problem.setTitle(VALIDATION_ERROR);
         problem.setDetail(e.getLocalizedMessage());
-        problem.setProperty("message", e.getLocalizedMessage());
+        problem.setProperty(MESSAGE_FIELD, e.getLocalizedMessage());
         return ResponseEntity.badRequest().body(problem);
     }
 
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler {
             .map(entry -> entry.getKey() + ": " + entry.getValue())
             .orElse(VALIDATION_ERROR);
         problem.setTitle(VALIDATION_ERROR);
-        problem.setProperty(AuthController.MESSAGE_FIELD, briefMessage);
+        problem.setProperty(MESSAGE_FIELD, briefMessage);
         problem.setProperty("errors", List.of(errors));
         return problem;
     }
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
         var problem = ProblemDetail.forStatus(ex.getStatusCode());
         problem.setTitle("Error occurred");
         problem.setDetail(ex.getReason());
-        problem.setProperty("message", ex.getMessage());
+        problem.setProperty(MESSAGE_FIELD, ex.getMessage());
         return ResponseEntity.status(ex.getStatusCode()).body(problem);
     }
 
