@@ -11,6 +11,7 @@ import lombok.experimental.UtilityClass;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Deprecated(forRemoval = true, since = "Use IDtoEntityMapper instead")
 @UtilityClass
 public final class DtoEntityMapping {
     public static Person mapPersonDtoToPersonEntity(PersonDto personDto) {

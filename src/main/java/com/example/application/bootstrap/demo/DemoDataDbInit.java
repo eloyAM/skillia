@@ -257,11 +257,11 @@ public class DemoDataDbInit {
     }
 
     private void createPersonWithRandomDepartment() {
-        personService.savePerson(new PersonDto("person.randomdeparment")
+        personService.savePerson(List.of(new PersonDto("person.randomdeparment")
             .setEmail("person.randomdeparment@example.com")
             .setFullName("Some person")
             .setTitle("Employee")
-            .setDepartment("Random department " + java.time.Instant.now().getEpochSecond()));
+            .setDepartment("Random department " + java.time.Instant.now().getEpochSecond())));
     }
 
     // Constants

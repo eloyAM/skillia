@@ -1,6 +1,8 @@
 package com.example.application.ut.mapping;
 
-import com.example.application.dto.*;
+import com.example.application.dto.AcquiredSkillDto;
+import com.example.application.dto.PersonSkillBasicDto;
+import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.main.DepartmentDto;
 import com.example.application.dto.main.SkillDto;
 import com.example.application.dto.main.SkillGroupDto;
@@ -354,6 +356,43 @@ class IDtoEntityMapperTest {
                 tuple(skillGroupDto1.getId(), skillGroupDto1.getName()),
                 tuple(skillGroupDto2.getId(), skillGroupDto2.getName())
             );
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testPersonSkillBasicDtoToPersonSkill(IDtoEntityMapper mapper) {
+        String username = "person1";
+        long skillId = 1L;
+        int level = 3;
+        PersonSkillBasicDto personDto = new PersonSkillBasicDto(username, skillId, level);
+
+        PersonSkill ps = mapper.toPersonSkill(personDto);
+
+        assertThat(ps.getPersonSkillId()).satisfies(id -> {
+            assertThat(id.getPersonId()).isEqualTo(username);
+            assertThat(id.getSkillId()).isEqualTo(skillId);
+        });
+        assertThat(ps.getLevel()).isEqualTo(level);
+        assertThat(ps.getPerson().getUsername()).isEqualTo(username);
+        assertThat(ps.getSkill().getId()).isEqualTo(skillId);
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testPersonSkillToPersonSkillBasicDto(IDtoEntityMapper mapper) {
+        String username = "person1";
+        long skillId = 1L;
+        int level = 3;
+
+        PersonSkill source = new PersonSkill();
+        source.setPersonSkillId(new PersonSkillId(username, skillId));
+        source.setLevel(level);
+
+        PersonSkillBasicDto ps = mapper.toPersonSkillBasicDto(source);
+
+        assertThat(ps.getPersonId()).isEqualTo(username);
+        assertThat(ps.getSkillId()).isEqualTo(skillId);
+        assertThat(ps.getLevel()).isEqualTo(level);
     }
 
     //

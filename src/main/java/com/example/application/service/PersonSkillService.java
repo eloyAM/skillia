@@ -35,9 +35,9 @@ public class PersonSkillService {
     public PersonSkillBasicDto savePersonSkill(PersonSkillBasicDto dto) {
         try {
             return Optional.of(dto)
-                .map(DtoEntityMapping::mapPersonSkillDtoToPersonSkillEntity)
+                .map(dtoEntityMapper::toPersonSkill)
                 .map(personSkillRepo::save)
-                .map(DtoEntityMapping::mapPersonSkillEntityToPersonSkillDto)
+                .map(dtoEntityMapper::toPersonSkillBasicDto)
                 .orElse(null);
         } catch (DataAccessException e) {
             return null;
@@ -47,11 +47,11 @@ public class PersonSkillService {
     public List<PersonSkillBasicDto> savePersonSkill(Iterable<PersonSkillBasicDto> dtoIterable) {
         Iterable<PersonSkill> entitiesFromDtos = FunctionalUtils.streamToIterable(
             FunctionalUtils.iterableToStream(dtoIterable)
-                .map(DtoEntityMapping::mapPersonSkillDtoToPersonSkillEntity)
+                .map(dtoEntityMapper::toPersonSkill)
         );
         try {
             return personSkillRepo.saveAll(entitiesFromDtos).stream()
-                .map(DtoEntityMapping::mapPersonSkillEntityToPersonSkillDto)
+                .map(dtoEntityMapper::toPersonSkillBasicDto)
                 .toList();
         } catch (DataAccessException e) {
             return Collections.emptyList();

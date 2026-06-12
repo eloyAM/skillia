@@ -32,7 +32,7 @@ public class Skill {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @NonNull
+//    @NonNull
     @NotBlank
     @Column(name = "name", nullable = false, unique = true, length = 70)
     private String name;

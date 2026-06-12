@@ -2,7 +2,6 @@ package com.example.application.repo;
 
 import com.example.application.dto.main.PersonDto;
 import com.example.application.entity.Person;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,11 +15,6 @@ public interface PersonRepo extends JpaRepository<Person, String> {
         + "p.username, p.fullName, p.email, p.title, p.department)"
         + " from Person p")
     List<PersonDto> findBy();
-
-    @Query("select new com.example.application.dto.main.PersonDto("
-        + "p.username, p.fullName, p.email, p.title, p.department)"
-        + " from Person p")
-    List<PersonDto> findBy(Pageable pageable);
 
     @Query("select distinct p.department from Person p order by p.department asc")
     List<String> findDistinctDepartments();
