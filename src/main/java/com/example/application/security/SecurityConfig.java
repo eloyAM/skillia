@@ -33,10 +33,10 @@ import java.util.Objects;
 
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
-@EnableWebSecurity // <1>
+@EnableWebSecurity
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
-public class SecurityConfig extends VaadinWebSecurity { // <2>
+public class SecurityConfig extends VaadinWebSecurity {
     private final AuthenticationProvider jwtAuthenticationProvider;
     private final SecretKey secretKey;
     private final Environment env;
@@ -67,7 +67,13 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
                     antMatcher(HttpMethod.GET, apiDocsPath + ".yaml") // api-docs.yaml
             ).permitAll()   // permitAll() allows both anonymous and authenticated access
                            // anonymous() allows anonymous, but not authenticated access
-        );  // <3>
+            .requestMatchers(
+                antMatcher(HttpMethod.PATCH, "/api/**"),
+                antMatcher(HttpMethod.PUT, "/api/**"),
+                antMatcher(HttpMethod.POST, "/api/**"),
+                antMatcher(HttpMethod.DELETE, "/api/**")
+            ).hasRole("HR")
+        );
 
         http.csrf(csrf -> csrf
                 .ignoringRequestMatchers(
@@ -85,7 +91,7 @@ public class SecurityConfig extends VaadinWebSecurity { // <2>
         super.setStatelessAuthentication(http, secretKey, jwtProperties.issuer(), jwtProperties.expirationSeconds());
 
         super.configure(http);
-        setLoginView(http, LoginView.class); // <4>
+        setLoginView(http, LoginView.class);
     }
 
     @Bean

@@ -110,10 +110,10 @@ class ViewsTest {
 
         // Check some cookies
 
-        Cookie jwtHeaderAndPlayloadCookie = driver.manage()
+        Cookie jwtHeaderAndPayloadCookie = driver.manage()
             .getCookieNamed(LoginUtility.JWT_HEADER_AND_PAYLOAD_COOKIE_NAME);
-        assertThat(jwtHeaderAndPlayloadCookie.isHttpOnly()).isFalse();
-        assertThat(jwtHeaderAndPlayloadCookie.getValue()).matches("^[A-Za-z0-9_-]{2,}\\.[A-Za-z0-9_-]{2,}$");
+        assertThat(jwtHeaderAndPayloadCookie.isHttpOnly()).isFalse();
+        assertThat(jwtHeaderAndPayloadCookie.getValue()).matches("^[A-Za-z0-9_-]{2,}\\.[A-Za-z0-9_-]{2,}$");
 
         Cookie jwtSignatureCookie = driver.manage()
             .getCookieNamed(LoginUtility.JWT_SIGNATURE_COOKIE_NAME);

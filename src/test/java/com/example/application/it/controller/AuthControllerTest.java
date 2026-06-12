@@ -39,8 +39,8 @@ class AuthControllerTest {
                         .content("{\"username\": \"invented.user\", \"password\":  \"randomPassword\"}")
                 )
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Invalid credentials"))
+                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.detail").value("Invalid credentials"))
                 .andDo(MockMvcResultHandlers.print());
     }
 
