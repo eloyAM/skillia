@@ -1,4 +1,4 @@
-package com.example.application.config;
+package com.example.application.controller.config;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;
@@ -21,12 +21,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class RestGlobalExceptionHandler {
 
     private static final String MESSAGE_FIELD = "message";
     private static final String VALIDATION_ERROR = "Validation error";
 
-    private GlobalExceptionHandler() {
+    private RestGlobalExceptionHandler() {
     }
 
     // @Hidden -> avoid showing by default the handled @ResponseStatus on every OpenAPI doc endpoint

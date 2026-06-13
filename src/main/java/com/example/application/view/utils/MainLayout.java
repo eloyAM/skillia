@@ -2,13 +2,9 @@ package com.example.application.view.utils;
 
 import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
-import com.example.application.view.internal.PersonGridView;
-import com.example.application.view.internal.PersonSkillGridView;
-import com.example.application.view.internal.SkillGridView;
 import com.example.application.view.page.*;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
@@ -75,16 +71,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
 
     // only for dev purposes
     private static void _addUserInfo(HorizontalLayout header, SecurityService securityService1) {
-        //        UserDetails user = securityService.getAuthenticatedUser();
         Authentication authentication = securityService1.getAuthentication();
-        header.add(new Div(new Text("user: "
-//                + user.getUsername()
-            + authentication.getName()
-        )));
-        header.add(new Div(new Text("roles: "
-//                + user.getAuthorities().toString()
-            + authentication.getAuthorities().toString()
-        )));
+        header.add(new Div("user: " + authentication.getName()));
+        header.add(new Div("roles: " + authentication.getAuthorities().toString()));
     }
 
     private static Button createThemeSwitcher() {
@@ -154,9 +143,6 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         if (isDebugMode) {
-            addToDrawer(new VerticalLayout(new RouterLink("[DEBUG] Users list", PersonGridView.class)));
-            addToDrawer(new VerticalLayout(new RouterLink("[DEBUG] Person Skill Grid", PersonSkillGridView.class)));
-            addToDrawer(new VerticalLayout(new RouterLink("[DEBUG] Skill Grid", SkillGridView.class)));
             _addUserInfo(header, securityService);
         }
     }

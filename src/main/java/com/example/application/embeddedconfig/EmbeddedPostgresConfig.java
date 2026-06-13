@@ -1,4 +1,4 @@
-package com.example.application.config.embedded;
+package com.example.application.embeddedconfig;
 
 import io.zonky.test.db.postgres.embedded.EmbeddedPostgres;
 import jakarta.annotation.PreDestroy;

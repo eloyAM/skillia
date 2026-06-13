@@ -1,4 +1,4 @@
-package com.example.application.config.embedded;
+package com.example.application.embeddedconfig;
 
 import ch.vorburger.exec.ManagedProcessException;
 import ch.vorburger.mariadb4j.DB;
