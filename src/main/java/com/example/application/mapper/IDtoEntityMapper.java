@@ -5,10 +5,7 @@ import com.example.application.dto.main.*;
 import com.example.application.entity.*;
 import org.mapstruct.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Mapper(componentModel = "spring")
 public interface IDtoEntityMapper {
@@ -24,6 +21,10 @@ public interface IDtoEntityMapper {
     SkillDto toSkillDto(Skill skill);
 
     Skill toSkill(SkillDto skillDto);
+    @AfterMapping
+    default void toSkillAfterMapping(SkillDto skillDto, @MappingTarget Skill skill) {
+        Objects.requireNonNull(skill.getName());
+    }
 
     // PersonSkill
 

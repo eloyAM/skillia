@@ -6,7 +6,6 @@ import com.example.application.dto.main.SkillTagDto;
 import com.example.application.entity.Skill;
 import com.example.application.entity.SkillGroup;
 import com.example.application.entity.SkillTag;
-import com.example.application.mapper.DtoEntityMapping;
 import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.repo.SkillGroupRepository;
 import com.example.application.repo.SkillRepo;
@@ -41,10 +40,10 @@ public class SkillService {
     }
 
     public Optional<SkillDto> saveSkill(SkillDto skill) {
-        Skill skillEntity = DtoEntityMapping.mapSkillDtoToSkillEntity(skill);
+        Skill skillEntity = dtoEntityMapper.toSkill(skill);
         try {
             Skill savedSkill = skillRepo.save(skillEntity);
-            return Optional.ofNullable(DtoEntityMapping.mapSkillEntityToSkillDto(savedSkill));
+            return Optional.of(savedSkill).map(dtoEntityMapper::toSkillDto);
         } catch (DataIntegrityViolationException e) {
             return Optional.empty();
         }
@@ -53,7 +52,7 @@ public class SkillService {
     public List<SkillDto> saveSkill(Iterable<SkillDto> dtoS) {
         Iterable<Skill> entities = FunctionalUtils.streamToIterable(
             FunctionalUtils.iterableToStream(dtoS)
-                .map(DtoEntityMapping::mapSkillDtoToSkillEntity));
+                .map(dtoEntityMapper::toSkill));
         final List<Skill> savedEntities;
         try {
             savedEntities = skillRepo.saveAll(entities);
@@ -61,13 +60,13 @@ public class SkillService {
             return Collections.emptyList();
         }
         return savedEntities.stream()
-            .map(DtoEntityMapping::mapSkillEntityToSkillDto)
+            .map(dtoEntityMapper::toSkillDto)
             .toList();
     }
 
     public List<SkillDto> getAllSkill() {
         return skillRepo.findAll().stream()
-            .map(DtoEntityMapping::mapSkillEntityToSkillDto)
+            .map(dtoEntityMapper::toSkillDto)
             .toList();
     }
 
@@ -92,14 +91,14 @@ public class SkillService {
 
     public Optional<SkillDto> getSkillById(Long id) {
         return skillRepo.findById(id)
-            .map(DtoEntityMapping::mapSkillEntityToSkillDto);
+            .map(dtoEntityMapper::toSkillDto);
     }
 
     public Optional<SkillGroupDto> saveGroup(SkillGroupDto group) {
         SkillGroup entity = dtoEntityMapper.toEntity(group);
         try {
             var saved = skillGroupRepository.save(entity);
-            return Optional.ofNullable(dtoEntityMapper.toDto(saved));
+            return Optional.of(saved).map(dtoEntityMapper::toDto);
         } catch (DataIntegrityViolationException e) {
             return Optional.empty();
         }
@@ -119,10 +118,10 @@ public class SkillService {
     }
 
     public Optional<SkillTagDto> saveSkillTag(SkillTagDto dto) {
-        SkillTag entity = DtoEntityMapping.mapSkillTagDtoToSkillTagEntity(dto);
+        SkillTag entity = dtoEntityMapper.toSkillTag(dto);
         try {
             SkillTag savedEntity = skillTagRepo.save(entity);
-            return Optional.of(DtoEntityMapping.mapSkillTagEntityToSkillTagDto(savedEntity));
+            return Optional.of(savedEntity).map(dtoEntityMapper::toSkillTagDto);
         } catch (DataIntegrityViolationException e) {
             return Optional.empty();
         }
@@ -131,14 +130,14 @@ public class SkillService {
     public List<SkillTagDto> getAllSkillTag() {
         return skillTagRepo.findAll()
             .stream()
-            .map(DtoEntityMapping::mapSkillTagEntityToSkillTagDto)
+            .map(dtoEntityMapper::toSkillTagDto)
             .toList();
     }
 
     public List<SkillTagDto> getAllSkillTagInUse() {
         return skillTagRepo.findAllUsedOnSkillTagging()
             .stream()
-            .map(DtoEntityMapping::mapSkillTagEntityToSkillTagDto)
+            .map(dtoEntityMapper::toSkillTagDto)
             .toList();
     }
 

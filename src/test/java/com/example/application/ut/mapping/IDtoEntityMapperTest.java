@@ -44,7 +44,10 @@ class IDtoEntityMapperTest {
     // Tests
     //
 
-    // Test SkillTag to SkillTagDto mapping
+    //
+    // toSkillTagDto
+    //
+
     @Test
     void testSkillTag_NoFields_Builder() {
         // Given
@@ -70,7 +73,7 @@ class IDtoEntityMapperTest {
 
     @ParameterizedTest
     @MethodSource("mappers")
-    void testSkillTagToSkillTagDto_OnlyRequiredFields(IDtoEntityMapper mapper) {
+    void testSkillTagToSkillTagDto_OnlyName(IDtoEntityMapper mapper) {
         // Given
         SkillTag skillTag = new SkillTag();
         skillTag.setName("Java");
@@ -96,10 +99,36 @@ class IDtoEntityMapperTest {
         assertEquals(1L, skillTagDto.getId());
     }
 
-    // Test SkillTagDto to SkillTag mapping
+    //
+    // toSkillTag
+    //
+
     @ParameterizedTest
     @MethodSource("mappers")
-    void testSkillTagDtoToSkillTag_OnlyRequiredFields(IDtoEntityMapper mapper) {
+    void testSkillTagDtoToSkillTag_Empty(IDtoEntityMapper mapper) {
+        // Given
+        SkillTagDto skillTagDto = new SkillTagDto();
+        // When
+        assertThatThrownBy(() -> mapper.toSkillTag(skillTagDto))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage(nullFieldMessage("name"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillTagDtoToSkillTag_OnlyId(IDtoEntityMapper mapper) {
+        // Given
+        SkillTagDto skillTagDto = new SkillTagDto();
+        skillTagDto.setId(1L);
+        // When
+        assertThatThrownBy(() -> mapper.toSkillTag(skillTagDto))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage(nullFieldMessage("name"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillTagDtoToSkillTag_OnlyName(IDtoEntityMapper mapper) {
         // Given
         SkillTagDto skillTagDto = new SkillTagDto();
         skillTagDto.setName("Java");
@@ -124,6 +153,10 @@ class IDtoEntityMapperTest {
         assertEquals("Java", skillTag.getName());
         assertEquals(1L, skillTag.getId());
     }
+
+    //
+    // toListPersonWithSkillsDto
+    //
 
     @ParameterizedTest
     @MethodSource("mappers")
@@ -393,6 +426,144 @@ class IDtoEntityMapperTest {
         assertThat(ps.getPersonId()).isEqualTo(username);
         assertThat(ps.getSkillId()).isEqualTo(skillId);
         assertThat(ps.getLevel()).isEqualTo(level);
+    }
+
+    //
+    // toSkillDto
+    //
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillToSkillDto_Empty(IDtoEntityMapper mapper) {
+        // Given
+        Skill skill = new Skill();
+        // When - Then
+        assertThatThrownBy(() -> mapper.toSkillDto(skill))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage(nullFieldMessage("name"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillToSkillDto_OnlyId(IDtoEntityMapper mapper) {
+        // Given
+        Skill skill = new Skill();
+        skill.setId(1L);
+        // When - Then
+        assertThatThrownBy(() -> mapper.toSkillDto(skill))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage(nullFieldMessage("name"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillToSkillDto_OnlyName(IDtoEntityMapper mapper) {
+        // Given
+        Skill skill = new Skill();
+        skill.setName("Java");
+
+        // When
+        SkillDto skillDto = mapper.toSkillDto(skill);
+
+        // Then
+        assertThat(skillDto).extracting(SkillDto::getName).isEqualTo("Java");
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillToSkillDto_AllFields(IDtoEntityMapper mapper) {
+        // Given
+        Skill skill = new Skill();
+        skill.setId(1L);
+        skill.setName("Some name");
+        skill.setDescription("Some desc");
+        skill.setTags(Set.of(
+            SkillTag.builder().id(1L).name("Some tag").build(),
+            SkillTag.builder().id(2L).name("Some tag 2").build()
+        ));
+
+        // When
+        SkillDto skillDto = mapper.toSkillDto(skill);
+
+        // Then
+        assertThat(skillDto).isNotNull();
+        assertThat(skillDto.getId()).isEqualTo(1L);
+        assertThat(skillDto.getName()).isEqualTo("Some name");
+        assertThat(skillDto.getDescription()).isEqualTo("Some desc");
+        assertThat(skillDto.getTags()).hasSize(2)
+            .extracting(SkillTagDto::getId, SkillTagDto::getName)
+            .containsExactlyInAnyOrder(
+                tuple(1L, "Some tag"),
+                tuple(2L, "Some tag 2")
+            );
+    }
+
+    //
+    // toSkill
+    //
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillDtoToSkill_Empty(IDtoEntityMapper mapper) {
+        // Given
+        SkillDto skillDto = new SkillDto();
+        // When - Then
+        assertThatThrownBy(() -> mapper.toSkill(skillDto))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillDtoToSkill_OnlyId(IDtoEntityMapper mapper) {
+        // Given
+        SkillDto skillDto = new SkillDto();
+        skillDto.setId(1L);
+        // When - Then
+        assertThatThrownBy(() -> mapper.toSkill(skillDto))
+            .isInstanceOf(NullPointerException.class);
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillDtoToSkill_OnlyName(IDtoEntityMapper mapper) {
+        // Given
+        SkillDto skillDto = new SkillDto();
+        skillDto.setName("Python");
+
+        // When
+        Skill skill = mapper.toSkill(skillDto);
+
+        // Then
+        assertThat(skill).extracting(Skill::getName).isEqualTo("Python");
+    }
+
+    @ParameterizedTest
+    @MethodSource("mappers")
+    void testSkillDtoToSkill_AllFields(IDtoEntityMapper mapper) {
+        // Given
+        SkillDto skillDto = new SkillDto();
+        skillDto.setId(2L);
+        skillDto.setName("JavaScript");
+        skillDto.setDescription("JavaScript Programming Language");
+        skillDto.setTags(Set.of(
+            new SkillTagDto(1L, "Frontend"),
+            new SkillTagDto(2L, "Web")
+        ));
+
+        // When
+        Skill skill = mapper.toSkill(skillDto);
+
+        // Then
+        assertThat(skill).isNotNull();
+        assertThat(skill.getId()).isEqualTo(2L);
+        assertThat(skill.getName()).isEqualTo("JavaScript");
+        assertThat(skill.getDescription()).isEqualTo("JavaScript Programming Language");
+        assertThat(skill.getTags()).hasSize(2)
+            .extracting(SkillTag::getId, SkillTag::getName)
+            .containsExactlyInAnyOrder(
+                tuple(1L, "Frontend"),
+                tuple(2L, "Web")
+            );
     }
 
     //
