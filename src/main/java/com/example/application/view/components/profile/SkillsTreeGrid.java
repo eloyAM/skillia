@@ -1,6 +1,5 @@
 package com.example.application.view.components.profile;
 
-import com.example.application.dto.AcquiredSkillDto;
 import com.example.application.dto.main.*;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonSkillService;

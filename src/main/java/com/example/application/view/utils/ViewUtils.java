@@ -1,7 +1,7 @@
 package com.example.application.view.utils;
 
-import com.example.application.dto.AcquiredSkillDto;
-import com.example.application.dto.PersonWithSkillsDto;
+import com.example.application.dto.main.AcquiredSkillDto;
+import com.example.application.dto.main.PersonWithSkillsDto;
 import com.example.application.dto.main.SkillDto;
 import com.example.application.dto.main.SkillGroupDto;
 import com.example.application.dto.skillperson.PersonWithLevelDto;

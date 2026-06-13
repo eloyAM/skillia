@@ -1,7 +1,7 @@
 package com.example.application.repo;
 
-import com.example.application.dto.AcquiredSkillDto;
 import com.example.application.dto.PersonSkillBasicDto;
+import com.example.application.dto.main.AcquiredSkillDto;
 import com.example.application.dto.skillperson.PersonWithLevelDto;
 import com.example.application.dto.stats.SkillStatValue;
 import com.example.application.entity.PersonSkill;

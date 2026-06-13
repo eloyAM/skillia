@@ -2,7 +2,7 @@ package com.example.application.view.components.department.members;
 
 import com.example.application.dto.main.DepartmentDto;
 import com.example.application.dto.main.PersonDto;
-import com.example.application.dto.PersonWithSkillsDto;
+import com.example.application.dto.main.PersonWithSkillsDto;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.PersonSkillService;

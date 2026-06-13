@@ -1,6 +1,6 @@
 package com.example.application.view.page;
 
-import com.example.application.dto.AcquiredSkillDto;
+import com.example.application.dto.main.AcquiredSkillDto;
 import com.example.application.dto.main.PersonDto;
 import com.example.application.security.SecurityService;
 import com.example.application.service.DepartmentService;

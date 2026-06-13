@@ -1,8 +1,8 @@
 package com.example.application.view.components;
 
-import com.example.application.dto.AcquiredSkillDto;
+import com.example.application.dto.main.AcquiredSkillDto;
 import com.example.application.dto.main.PersonDto;
-import com.example.application.dto.PersonWithSkillsDto;
+import com.example.application.dto.main.PersonWithSkillsDto;
 import com.example.application.service.PersonSkillService;
 import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.grid.Grid;
