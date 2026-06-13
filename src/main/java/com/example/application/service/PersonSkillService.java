@@ -6,7 +6,6 @@ import com.example.application.dto.stats.SkillStatValue;
 import com.example.application.dto.stats.StatValue;
 import com.example.application.entity.PersonSkill;
 import com.example.application.entity.PersonSkillId;
-import com.example.application.mapper.DtoEntityMapping;
 import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.utils.FunctionalUtils;
@@ -64,12 +63,12 @@ public class PersonSkillService {
 
     public List<PersonWithSkillsDto> getAllPersonSkill() {
         List<PersonSkill> personSkillOriginal = personSkillRepo.findAll();
-        return DtoEntityMapping.mapPersonSkillEntityToPersonWithSkillsDto(personSkillOriginal);
+        return dtoEntityMapper.toListPersonWithSkillsDto(personSkillOriginal);
     }
 
     public List<PersonWithSkillsDto> getAllPersonSkillForDepartment(String departmentName) {
         List<PersonSkill> personSkillOriginal = personSkillRepo.findPersonWithSkillsByDepartment(departmentName);
-        return DtoEntityMapping.mapPersonSkillEntityToPersonWithSkillsDto(personSkillOriginal);
+        return dtoEntityMapper.toListPersonWithSkillsDto(personSkillOriginal);
     }
 
     public List<PersonWithLevelDto> findAllPersonWithLevelBySkillId(Long skillId) {
@@ -84,7 +83,7 @@ public class PersonSkillService {
         return personSkillRepo.findByPersonSkillId_PersonIdAndPersonSkillId_SkillId(
                         personSkillIdD.getPersonId(), personSkillIdD.getSkillId()
                 )
-                .map(DtoEntityMapping::mapPersonSkillEntityToAcquiredSkillDto);
+                .map(dtoEntityMapper::toAcquiredSkillDto);
     }
 
     // Stats data by skill id
