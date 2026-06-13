@@ -9,36 +9,21 @@ import com.example.application.dto.main.SkillGroupDto;
 import com.example.application.dto.main.SkillTagDto;
 import com.example.application.entity.*;
 import com.example.application.mapper.IDtoEntityMapper;
-import com.example.application.ut.mapping.testutils.MappingAdapter;
+import com.example.application.mapper.IDtoEntityMapperImpl;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.mapstruct.factory.Mappers;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class IDtoEntityMapperTest {
 
-    private static final IDtoEntityMapper mapstructMapper = Mappers.getMapper(IDtoEntityMapper.class);
-
-    static Stream<IDtoEntityMapper> mappers() {
-        return Stream.of(
-            mapstructMapper,
-            MappingAdapter.getInstance()
-        );
-    }
-
-    static Stream<IDtoEntityMapper> mapstructMapper() {
-        return Stream.of(mapstructMapper);
-    }
+    private static final IDtoEntityMapper mapper = new IDtoEntityMapperImpl();
 
     //
     // Tests
@@ -60,9 +45,8 @@ class IDtoEntityMapperTest {
             .hasMessage(nullFieldMessage("name"));
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillTagToSkillTagDto_NoFields_Constructor(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillTagToSkillTagDto_NoFields_Constructor() {
         // Given
         SkillTag skillTag = new SkillTag();
         // When
@@ -71,9 +55,8 @@ class IDtoEntityMapperTest {
         assertNotNull(skillTagDto);
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillTagToSkillTagDto_OnlyName(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillTagToSkillTagDto_OnlyName() {
         // Given
         SkillTag skillTag = new SkillTag();
         skillTag.setName("Java");
@@ -84,9 +67,8 @@ class IDtoEntityMapperTest {
         assertEquals("Java", skillTagDto.getName());
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillTagToSkillTagDto_AllFields(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillTagToSkillTagDto_AllFields() {
         // Given
         SkillTag skillTag = new SkillTag();
         skillTag.setName("Java");
@@ -103,9 +85,8 @@ class IDtoEntityMapperTest {
     // toSkillTag
     //
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillTagDtoToSkillTag_Empty(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillTagDtoToSkillTag_Empty() {
         // Given
         SkillTagDto skillTagDto = new SkillTagDto();
         // When
@@ -114,9 +95,8 @@ class IDtoEntityMapperTest {
             .hasMessage(nullFieldMessage("name"));
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillTagDtoToSkillTag_OnlyId(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillTagDtoToSkillTag_OnlyId() {
         // Given
         SkillTagDto skillTagDto = new SkillTagDto();
         skillTagDto.setId(1L);
@@ -126,9 +106,8 @@ class IDtoEntityMapperTest {
             .hasMessage(nullFieldMessage("name"));
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillTagDtoToSkillTag_OnlyName(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillTagDtoToSkillTag_OnlyName() {
         // Given
         SkillTagDto skillTagDto = new SkillTagDto();
         skillTagDto.setName("Java");
@@ -139,9 +118,8 @@ class IDtoEntityMapperTest {
         assertEquals(skillTagDto.getName(), skillTag.getName());
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillTagDtoToSkillTag_AllFields(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillTagDtoToSkillTag_AllFields() {
         // Given
         SkillTagDto skillTagDto = new SkillTagDto();
         skillTagDto.setName("Java");
@@ -158,9 +136,8 @@ class IDtoEntityMapperTest {
     // toListPersonWithSkillsDto
     //
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void toListPersonWithSkillsDto_shouldMapListOfPersonSkillsToListOfPersonWithSkillsDto(IDtoEntityMapper mapper) {
+    @Test
+    void toListPersonWithSkillsDto_shouldMapListOfPersonSkillsToListOfPersonWithSkillsDto() {
         // Given
         List<PersonSkill> personSkills = new ArrayList<>(2);
         {
@@ -235,9 +212,8 @@ class IDtoEntityMapperTest {
         assertEquals(4, resultThird.getSkills().get(1).getLevel());
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void toListPersonWithSkillsDto_shouldReturnEmptyListWhenInputIsEmpty(IDtoEntityMapper mapper) {
+    @Test
+    void toListPersonWithSkillsDto_shouldReturnEmptyListWhenInputIsEmpty() {
         // Given
         List<PersonSkill> input = Collections.emptyList();
         // When
@@ -247,9 +223,8 @@ class IDtoEntityMapperTest {
         assertTrue(result.isEmpty());
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void toListPersonWithSkillsDto_shouldReturnNullWhenInputIsNull(IDtoEntityMapper mapper) {
+    @Test
+    void toListPersonWithSkillsDto_shouldReturnNullWhenInputIsNull() {
         // Given
         List<PersonSkill> input = null;
         // When
@@ -258,9 +233,8 @@ class IDtoEntityMapperTest {
         assertNull(result);
     }
 
-    @ParameterizedTest
-    @MethodSource("mapstructMapper")
-    void testSkillGroupEntityToDto(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillGroupEntityToDto() {
         // Arrange
         Skill skill1 = new Skill();
         skill1.setId(1L);
@@ -291,9 +265,8 @@ class IDtoEntityMapperTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("mapstructMapper")
-    void testSkillGroupDtoToEntity(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillGroupDtoToEntity() {
         // Arrange
         SkillDto skillDto1 = new SkillDto();
         skillDto1.setId(1L);
@@ -324,9 +297,8 @@ class IDtoEntityMapperTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("mapstructMapper")
-    void testDepartmentEntityToDto(IDtoEntityMapper mapper) {
+    @Test
+    void testDepartmentEntityToDto() {
         // Arrange
         SkillGroup skillGroup1 = new SkillGroup();
         skillGroup1.setId(1L);
@@ -358,9 +330,8 @@ class IDtoEntityMapperTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("mapstructMapper")
-    void testDepartmentDtoToEntity(IDtoEntityMapper mapper) {
+    @Test
+    void testDepartmentDtoToEntity() {
         // Arrange
         SkillGroupDto skillGroupDto1 = new SkillGroupDto();
         skillGroupDto1.setId(1L);
@@ -391,9 +362,8 @@ class IDtoEntityMapperTest {
             );
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testPersonSkillBasicDtoToPersonSkill(IDtoEntityMapper mapper) {
+    @Test
+    void testPersonSkillBasicDtoToPersonSkill() {
         String username = "person1";
         long skillId = 1L;
         int level = 3;
@@ -410,9 +380,8 @@ class IDtoEntityMapperTest {
         assertThat(ps.getSkill().getId()).isEqualTo(skillId);
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testPersonSkillToPersonSkillBasicDto(IDtoEntityMapper mapper) {
+    @Test
+    void testPersonSkillToPersonSkillBasicDto() {
         String username = "person1";
         long skillId = 1L;
         int level = 3;
@@ -432,9 +401,8 @@ class IDtoEntityMapperTest {
     // toSkillDto
     //
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillToSkillDto_Empty(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillToSkillDto_Empty() {
         // Given
         Skill skill = new Skill();
         // When - Then
@@ -443,9 +411,8 @@ class IDtoEntityMapperTest {
             .hasMessage(nullFieldMessage("name"));
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillToSkillDto_OnlyId(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillToSkillDto_OnlyId() {
         // Given
         Skill skill = new Skill();
         skill.setId(1L);
@@ -455,9 +422,8 @@ class IDtoEntityMapperTest {
             .hasMessage(nullFieldMessage("name"));
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillToSkillDto_OnlyName(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillToSkillDto_OnlyName() {
         // Given
         Skill skill = new Skill();
         skill.setName("Java");
@@ -469,9 +435,8 @@ class IDtoEntityMapperTest {
         assertThat(skillDto).extracting(SkillDto::getName).isEqualTo("Java");
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillToSkillDto_AllFields(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillToSkillDto_AllFields() {
         // Given
         Skill skill = new Skill();
         skill.setId(1L);
@@ -502,9 +467,8 @@ class IDtoEntityMapperTest {
     // toSkill
     //
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillDtoToSkill_Empty(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillDtoToSkill_Empty() {
         // Given
         SkillDto skillDto = new SkillDto();
         // When - Then
@@ -512,9 +476,8 @@ class IDtoEntityMapperTest {
             .isInstanceOf(NullPointerException.class);
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillDtoToSkill_OnlyId(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillDtoToSkill_OnlyId() {
         // Given
         SkillDto skillDto = new SkillDto();
         skillDto.setId(1L);
@@ -523,9 +486,8 @@ class IDtoEntityMapperTest {
             .isInstanceOf(NullPointerException.class);
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillDtoToSkill_OnlyName(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillDtoToSkill_OnlyName() {
         // Given
         SkillDto skillDto = new SkillDto();
         skillDto.setName("Python");
@@ -537,9 +499,8 @@ class IDtoEntityMapperTest {
         assertThat(skill).extracting(Skill::getName).isEqualTo("Python");
     }
 
-    @ParameterizedTest
-    @MethodSource("mappers")
-    void testSkillDtoToSkill_AllFields(IDtoEntityMapper mapper) {
+    @Test
+    void testSkillDtoToSkill_AllFields() {
         // Given
         SkillDto skillDto = new SkillDto();
         skillDto.setId(2L);
