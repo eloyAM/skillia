@@ -2,10 +2,7 @@ package com.example.application.it.view;
 
 import com.example.application.it.view.testutils.LoginUtility;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.openqa.selenium.*;
@@ -35,28 +32,21 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.titleIs;
 class ViewsTest {
     private static final Logger logger = LoggerFactory.getLogger(ViewsTest.class);
     private static final String MAIN_USERNAME = "hugo.reyes";
-    private WebDriver driver;
+    private final WebDriver driver;
     private final String loginUrl;
     private final String homeUrl;
 
     @Autowired
     public ViewsTest(
-        @Value("${local.server.port}") int localServerPort
+        @Value("${local.server.port}") int localServerPort,
+        @Value("${webdriver.headless}") String isHeadless,
+        @Value("${webdriver.chrome.binary}") String chromeBinary
     ) {
         assertThat(localServerPort).isNotZero();
         String baseUrl = "http://localhost:" + localServerPort;
         this.loginUrl = baseUrl + "/login";
         this.homeUrl = baseUrl + "/";
         logger.info("Using baseUrl '{}'", baseUrl);
-    }
-
-    @BeforeEach
-    void setUp(
-        @Value("${webdriver.headless}") String isHeadless,
-        @Value("${webdriver.chrome.binary}") String chromeBinary,
-        TestInfo testInfo
-    ) {
-        logger.info("Running test: {}", testInfo.getDisplayName());
 
         ChromeOptions chromeOptions = new ChromeOptions();
         if (Boolean.parseBoolean(isHeadless)) {
@@ -76,9 +66,15 @@ class ViewsTest {
             .scriptTimeout(ofSeconds(5));
     }
 
+    @BeforeEach
+    void setUp(TestInfo testInfo) {
+        logger.info("Running test: {}", testInfo.getDisplayName());
+    }
+
     @AfterEach
     void tearDown() {
-        driver.quit();
+        if (driver != null)
+            driver.close();
     }
 
     @Test

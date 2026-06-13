@@ -1,6 +1,8 @@
 package com.example.application.it.external;
 
+import com.example.application.dto.main.DepartmentDto;
 import com.example.application.dto.main.PersonDto;
+import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import org.testcontainers.utility.MountableFile;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Slf4j
 @EnabledIf("isDockerAvailable")
@@ -34,8 +37,6 @@ class DbInitFromLdapTest {
     private static final String LDAP_ADMIN_DN = "cn=" + LDAP_ADMIN_SIMPLE_USERNAME + ",dc=example,dc=org";
     private static final String LDAP_ADMIN_PWD = "adminpassword";
 
-    @Autowired
-    private PersonService personService;
     @Container
     @ServiceConnection
     private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:16.1-alpine3.18");
@@ -47,6 +48,11 @@ class DbInitFromLdapTest {
             .withEnv("LDAP_ADMIN_PASSWORD", LDAP_ADMIN_PWD)
             .withEnv("LDAP_ROOT", LDAP_BASE)
             .withEnv("LDAP_ADMIN_DN", LDAP_ADMIN_DN);
+
+    @Autowired
+    private PersonService personService;
+    @Autowired
+    private DepartmentService departmentService;
 
     @DynamicPropertySource
     private static void initProperties(DynamicPropertyRegistry registry) {
@@ -67,12 +73,20 @@ class DbInitFromLdapTest {
     @Test
     void dbIsInitializedFromLdap() {
         final List<PersonDto> expectedPersonList = getExpectedPersonList();
-        assertThat(personService.findAllPerson())
+        assertAll(
+            () -> assertThat(personService.findAllPerson())
                 .containsAll(expectedPersonList)
-                .containsExactlyInAnyOrderElementsOf(expectedPersonList);
+                .containsExactlyInAnyOrderElementsOf(expectedPersonList),
+            () -> assertThat(departmentService.findAllDepartment())
+                .extracting(DepartmentDto::getName)
+                .containsExactlyInAnyOrder(
+                    "Human Resources",
+                    "Innovation"
+                )
+        );
     }
 
-    List<PersonDto> getExpectedPersonList() {
+    static List<PersonDto> getExpectedPersonList() {
         return List.of(
                 PersonDto.builder()
                         .username("hugo.reyes")
