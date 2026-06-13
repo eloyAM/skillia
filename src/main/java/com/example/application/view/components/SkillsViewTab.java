@@ -3,9 +3,8 @@ package com.example.application.view.components;
 import com.example.application.dto.main.SkillDto;
 import com.example.application.dto.main.SkillTagDto;
 import com.example.application.service.SkillService;
-import com.example.application.utils.ValidationConstraints;
-import com.example.application.utils.Validators;
 import com.example.application.view.utils.LumoVars;
+import com.example.application.view.utils.ValidationConstraints;
 import com.example.application.view.utils.ViewUtils;
 import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.Component;
@@ -37,6 +36,7 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.provider.*;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -353,7 +353,7 @@ public class SkillsViewTab extends VerticalLayout {
         }
 
         private static boolean matches(String value, String searchTerm) {
-            return Validators.isNullOrEmpty(searchTerm)
+            return StringUtils.isBlank(searchTerm)
                 || (value != null && value.toLowerCase().contains(searchTerm.toLowerCase()));
         }
     }

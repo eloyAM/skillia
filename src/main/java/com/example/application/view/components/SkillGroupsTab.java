@@ -3,8 +3,7 @@ package com.example.application.view.components;
 import com.example.application.dto.main.SkillDto;
 import com.example.application.dto.main.SkillGroupDto;
 import com.example.application.service.SkillService;
-import com.example.application.utils.ValidationConstraints;
-import com.example.application.utils.Validators;
+import com.example.application.view.utils.ValidationConstraints;
 import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -28,6 +27,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.*;
@@ -271,12 +271,12 @@ public class SkillGroupsTab extends VerticalLayout {
         }
 
         private boolean matchesGroupSkills(SkillGroupDto group) {
-            return Validators.isNullOrEmpty(skillName)
+            return StringUtils.isBlank(skillName)
                 || group.getSkills().stream().anyMatch(skill -> matches(skill.getName(), skillName));
         }
 
         private static boolean matches(String value, String searchTerm) {
-            return Validators.isNullOrEmpty(searchTerm)
+            return StringUtils.isBlank(searchTerm)
                 || (value != null && value.toLowerCase().contains(searchTerm.toLowerCase()));
         }
 

@@ -1,11 +1,11 @@
 package com.example.application.view.utils;
 
-import com.example.application.dto.*;
+import com.example.application.dto.AcquiredSkillDto;
+import com.example.application.dto.PersonWithSkillsDto;
 import com.example.application.dto.main.SkillDto;
 import com.example.application.dto.main.SkillGroupDto;
 import com.example.application.dto.skillperson.PersonWithLevelDto;
 import com.example.application.dto.skillperson.SkillAndPeopleWithLevel;
-import com.example.application.utils.Validators;
 import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
@@ -28,6 +28,7 @@ import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Location;
 import com.vaadin.flow.router.QueryParameters;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.LinkedHashMap;
@@ -163,7 +164,7 @@ public final class ViewUtils {
                 items,
                 personAndLevel -> {
                     var person = personAndLevel.getPerson();
-                    return Validators.isNullOrEmpty(person.getFullName())
+                    return StringUtils.isBlank(person.getFullName())
                         ? person.getUsername() : person.getFullName();
                 },
                 PersonWithLevelDto::getLevel

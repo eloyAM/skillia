@@ -1,4 +1,4 @@
-package com.example.application.utils;
+package com.example.application.view.utils;
 
 public class ValidationConstraints {
     private ValidationConstraints() {

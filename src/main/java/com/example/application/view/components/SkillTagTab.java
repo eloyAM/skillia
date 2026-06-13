@@ -2,7 +2,7 @@ package com.example.application.view.components;
 
 import com.example.application.dto.main.SkillTagDto;
 import com.example.application.service.SkillService;
-import com.example.application.utils.ValidationConstraints;
+import com.example.application.view.utils.ValidationConstraints;
 import com.example.application.view.utils.ViewUtils;
 import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.Component;

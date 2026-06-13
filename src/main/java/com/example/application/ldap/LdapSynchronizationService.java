@@ -5,8 +5,8 @@ import com.example.application.dto.main.PersonDto;
 import com.example.application.repo.PersonRepo;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
-import com.example.application.utils.Validators;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public class LdapSynchronizationService {
             joinStrings(departmentNames.stream()));
         // Save non existing departments
         List<DepartmentDto> savedDepartments = departmentNames.stream()
-            .filter(Predicate.not(Validators::isNullOrEmpty))
+            .filter(Predicate.not(StringUtils::isBlank))
             .map(departmentService::saveByNameIfDoesntExist)
             .filter(Objects::nonNull)
             .toList();

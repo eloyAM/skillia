@@ -4,7 +4,6 @@ import com.example.application.dto.main.DepartmentDto;
 import com.example.application.dto.main.SkillGroupDto;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.SkillService;
-import com.example.application.utils.Validators;
 import com.example.application.view.utils.ViewUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -24,6 +23,7 @@ import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -186,13 +186,13 @@ public class DepartmentsSkillGroupsViewTab extends Grid<DepartmentDto> {
         }
 
         private boolean matchesSkillGroupName(DepartmentDto department) {
-            return Validators.isNullOrEmpty(this.skillGroupName)
+            return StringUtils.isBlank(this.skillGroupName)
                 || department.getSkillGroups().stream()
                 .anyMatch(e -> matches(e.getName(), this.skillGroupName));
         }
 
         private static boolean matches(String value, String searchTerm) {
-            return Validators.isNullOrEmpty(searchTerm)
+            return StringUtils.isBlank(searchTerm)
                 || (value != null && value.toLowerCase().contains(searchTerm.toLowerCase()));
         }
     }
