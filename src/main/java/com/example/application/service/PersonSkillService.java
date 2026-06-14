@@ -38,7 +38,8 @@ public class PersonSkillService {
         try {
             return Optional.of(dto)
                 .map(dtoEntityMapper::toPersonSkill)
-                .map(personSkillRepo::save)
+                // NOTE: not using method reference to avoid ArchUnit misunderstanding
+                .map(e -> personSkillRepo.save(e))
                 .map(dtoEntityMapper::toPersonSkillBasicDto)
                 .orElse(null);
         } catch (DataAccessException e) {
@@ -58,10 +59,6 @@ public class PersonSkillService {
         } catch (DataAccessException e) {
             return Collections.emptyList();
         }
-    }
-
-    public List<PersonSkillBasicDto> getAllPersonSkillBasic() {
-        return personSkillRepo.findAllBy();
     }
 
     public List<PersonWithSkillsDto> getAllPersonSkill() {

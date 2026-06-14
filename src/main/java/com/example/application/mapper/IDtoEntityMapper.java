@@ -1,13 +1,14 @@
 package com.example.application.mapper;
 
-import com.example.application.dto.*;
+import com.example.application.dto.PersonSkillBasicDto;
+import com.example.application.dto.PersonSkillIdDto;
 import com.example.application.dto.main.*;
 import com.example.application.entity.*;
 import org.mapstruct.*;
 
 import java.util.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface IDtoEntityMapper {
     // Person
 

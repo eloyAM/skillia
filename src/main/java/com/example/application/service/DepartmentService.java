@@ -42,9 +42,10 @@ public class DepartmentService {
     public DepartmentDto saveByNameIfDoesntExist(String name) {
         if (name == null || departmentRepository.existsByName(name))
             return null;
-        var entity = new Department();
-        entity.setName(name);
-        var saved = departmentRepository.save(entity);
+        DepartmentDto dto = new DepartmentDto();
+        dto.setName(name);
+        Department toSave = dtoEntityMapper.toEntity(dto);
+        Department saved = departmentRepository.save(toSave);
         return dtoEntityMapper.toDto(saved);
     }
 

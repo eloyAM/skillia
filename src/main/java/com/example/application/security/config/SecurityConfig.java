@@ -1,8 +1,9 @@
-package com.example.application.security;
+package com.example.application.security.config;
 
-import com.example.application.ldap.LdapProperties;
+import com.example.application.ldap.properties.LdapProperties;
+import com.example.application.security.SecConstants;
 import com.example.application.security.jwt.JwtProperties;
-import com.example.application.view.page.LoginView;
+import com.example.application.view.page.login.LoginView;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +73,7 @@ public class SecurityConfig extends VaadinWebSecurity {
                 antMatcher(HttpMethod.PUT, "/api/**"),
                 antMatcher(HttpMethod.POST, "/api/**"),
                 antMatcher(HttpMethod.DELETE, "/api/**")
-            ).hasRole("HR")
+            ).hasRole(SecConstants.HR)
         );
 
         http.csrf(csrf -> csrf

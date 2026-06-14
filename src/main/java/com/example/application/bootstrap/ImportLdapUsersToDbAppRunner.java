@@ -15,15 +15,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class ImportLdapUsersToDbAppRunner implements ApplicationRunner {
 
-    private final LdapSynchronizationService ldapDbService;
+    private final LdapSynchronizationService ldapService;
 
-    public ImportLdapUsersToDbAppRunner(LdapSynchronizationService ldapDbService) {
-        this.ldapDbService = ldapDbService;
+    public ImportLdapUsersToDbAppRunner(LdapSynchronizationService ldapService) {
+        this.ldapService = ldapService;
     }
 
     @Override
     public void run(ApplicationArguments args) {
         log.info("Running database initialization from LDAP");
-        ldapDbService.loadUsersAndDepartmentsWithLdap();
+        ldapService.loadUsersAndDepartmentsWithLdap();
     }
 }

@@ -9,7 +9,6 @@ import lombok.experimental.Accessors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-import org.hibernate.validator.constraints.Range;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -60,7 +59,8 @@ public class PersonSkill {
     private Skill skill;
 
     @NonNull
-    @Range(min = 1, max = 5)
+    @Min(1)
+    @Max(5)
     @NotNull
     @Column(name = "level", nullable = false)
     private Integer level;

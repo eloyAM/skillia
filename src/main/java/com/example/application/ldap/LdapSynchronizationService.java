@@ -2,7 +2,7 @@ package com.example.application.ldap;
 
 import com.example.application.dto.main.DepartmentDto;
 import com.example.application.dto.main.PersonDto;
-import com.example.application.repo.PersonRepo;
+import com.example.application.ldap.client.LdapClient;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,18 +21,15 @@ public class LdapSynchronizationService {
 
     private final LdapClient ldapClient;
     private final PersonService personService;
-    private final PersonRepo personRepo;
     private final DepartmentService departmentService;
 
     public LdapSynchronizationService(
         LdapClient ldapClient,
         PersonService personService,
-        PersonRepo personRepo,
         DepartmentService departmentService
     ) {
         this.ldapClient = ldapClient;
         this.personService = personService;
-        this.personRepo = personRepo;
         this.departmentService = departmentService;
     }
 
@@ -47,7 +44,7 @@ public class LdapSynchronizationService {
         log.info("The users database has been saved successfully initialized");
 
         log.info("Loading departments from the users database");
-        List<String> departmentNames = personRepo.findDistinctDepartments();
+        List<String> departmentNames = personService.findDistinctDepartments();
         log.info("Found a total of {} departments: {}", departmentNames.size(),
             joinStrings(departmentNames.stream()));
         // Save non existing departments

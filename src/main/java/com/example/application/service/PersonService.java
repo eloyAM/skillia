@@ -42,4 +42,8 @@ public class PersonService {
     public List<PersonDto> findPeopleByDepartment(String departmentName) {
         return personRepo.findAllByDepartment(departmentName);
     }
+
+    public List<String> findDistinctDepartments() {
+        return personRepo.findDistinctDepartments();
+    }
 }

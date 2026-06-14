@@ -14,6 +14,7 @@ import java.io.Serializable;
 
 /**
  * DTO for {@link com.example.application.entity.PersonSkill}.
+ * Minimal representation
  */
 @Data
 @AllArgsConstructor

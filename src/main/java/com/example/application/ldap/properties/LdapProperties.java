@@ -1,4 +1,4 @@
-package com.example.application.ldap;
+package com.example.application.ldap.properties;
 
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
