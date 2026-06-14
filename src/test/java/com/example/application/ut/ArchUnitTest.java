@@ -5,17 +5,67 @@ import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
+import com.tngtech.archunit.lang.syntax.elements.ClassesShouldConjunction;
+import com.tngtech.archunit.library.Architectures;
+import com.tngtech.archunit.library.plantuml.rules.PlantUmlArchCondition;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.net.URL;
 import java.util.stream.Stream;
 
+import static com.tngtech.archunit.library.plantuml.rules.PlantUmlArchCondition.adhereToPlantUmlDiagram;
 
 class ArchUnitTest {
-    private final JavaClasses applicationClasses = new ClassFileImporter()
+    private static final JavaClasses APPLICATION_CLASSES = new ClassFileImporter()
         .importPackages("com.example.application");
+
+    private static final Architectures.LayeredArchitecture LAYERED_ARCHITECTURE = Architectures
+        .layeredArchitecture()
+        .consideringOnlyDependenciesInLayers()
+        .layer("Security").definedBy("com.example.application.security..")
+        .layer("View").definedBy("com.example.application.view..")
+        .layer("Controller").definedBy("com.example.application.controller..")
+        .layer("Bootstrap").definedBy("com.example.application.bootstrap")
+        .layer("Ldap").definedBy("com.example.application.ldap..")
+        .layer("Service").definedBy("com.example.application.service..")
+        .layer("Repo").definedBy("com.example.application.repo..")
+        .layer("Mapper").definedBy("com.example.application.mapper..")
+        .layer("Dto").definedBy("com.example.application.dto..")
+        .layer("Entity").definedBy("com.example.application.entity..");
+
+    @Test
+    void layeredArchitectureShouldBeRespected() {
+        ArchRule rule = LAYERED_ARCHITECTURE
+            // Allowed dependencies
+            .whereLayer("Security").mayOnlyAccessLayers("Service", "Dto", "View", "Ldap")
+            .whereLayer("View").mayOnlyAccessLayers("Service", "Dto", "Security")
+            .whereLayer("Controller").mayOnlyAccessLayers("Service", "Dto", "Security")
+            .whereLayer("Bootstrap").mayOnlyAccessLayers("Ldap")
+            .whereLayer("Ldap").mayOnlyAccessLayers("Dto", "Service")
+            .whereLayer("Service").mayOnlyAccessLayers("Repo", "Mapper", "Dto", "Security")
+            .whereLayer("Repo").mayOnlyAccessLayers("Entity", "Dto")
+            .whereLayer("Mapper").mayOnlyAccessLayers("Dto", "Entity")
+            .whereLayer("Dto").mayNotAccessAnyLayer()
+            .whereLayer("Entity").mayNotAccessAnyLayer();
+        rule.check(APPLICATION_CLASSES);
+    }
+
+    @Test
+    void plantUmlExample() {
+        URL diagram = getClass().getResource("/archunit/app-components-example.puml");
+
+        ClassesShouldConjunction rule = ArchRuleDefinition.classes().should(adhereToPlantUmlDiagram(
+                diagram,
+                PlantUmlArchCondition.Configuration.consideringOnlyDependenciesInDiagram()
+            )
+        );
+        rule.check(new ClassFileImporter().importPackages(
+            "com.example.application.dto..", "com.example.application.mapper..", "com.example.application.entity.."
+        ));
+    }
 
     @Nested
     class View {
@@ -44,7 +94,7 @@ class ArchUnitTest {
                 .resideInAPackage(ownPackage)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-            rule.check(applicationClasses);
+            rule.check(APPLICATION_CLASSES);
         }
     }
 
@@ -75,7 +125,7 @@ class ArchUnitTest {
                 .resideInAPackage(ownPackage)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-            rule.check(applicationClasses);
+            rule.check(APPLICATION_CLASSES);
         }
     }
 
@@ -96,7 +146,7 @@ class ArchUnitTest {
                 .resideInAPackage(ownPackage)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-            rule.check(applicationClasses);
+            rule.check(APPLICATION_CLASSES);
         }
 
         @Test
@@ -121,7 +171,7 @@ class ArchUnitTest {
                 .resideInAPackage(ownPackage)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-            rule.check(applicationClasses);
+            rule.check(APPLICATION_CLASSES);
         }
 
         @Test
@@ -140,7 +190,7 @@ class ArchUnitTest {
                 .resideInAPackage(ownPackage)
                 .should().onlyDependOnClassesThat()
                 .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-            rule.check(applicationClasses);
+            rule.check(APPLICATION_CLASSES);
         }
     }
 
@@ -166,7 +216,7 @@ class ArchUnitTest {
             .resideInAPackage(ownPackage)
             .should().onlyDependOnClassesThat()
             .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-        rule.check(applicationClasses);
+        rule.check(APPLICATION_CLASSES);
     }
 
     @Test
@@ -187,7 +237,7 @@ class ArchUnitTest {
             .resideInAPackage(ownPackage)
             .should().onlyDependOnClassesThat()
             .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-        rule.check(applicationClasses);
+        rule.check(APPLICATION_CLASSES);
     }
 
     @Test
@@ -223,7 +273,7 @@ class ArchUnitTest {
             .resideInAPackage(ownPackage)
             .should().onlyDependOnClassesThat()
             .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-        rule.check(applicationClasses);
+        rule.check(APPLICATION_CLASSES);
     }
 
     @Test
@@ -250,7 +300,7 @@ class ArchUnitTest {
             .resideInAPackage(ownPackage)
             .should().onlyDependOnClassesThat()
             .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-        rule.check(applicationClasses);
+        rule.check(APPLICATION_CLASSES);
     }
 
     @Test
@@ -268,6 +318,6 @@ class ArchUnitTest {
         ArchRule rule = ArchRuleDefinition.theClass(ImportLdapUsersToDbAppRunner.class)
             .should().onlyDependOnClassesThat()
             .resideInAnyPackage(allowedPackages.toArray(String[]::new));
-        rule.check(applicationClasses);
+        rule.check(APPLICATION_CLASSES);
     }
 }

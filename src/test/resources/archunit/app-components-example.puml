@@ -1,0 +1,11 @@
+@startuml
+[Mapper] <<com.example.application.mapper>>
+[DTO] <<com.example.application.dto..>>
+[Entity] <<com.example.application.entity>>
+[Repository] <<com.example.application.repo>>
+
+[Mapper] --> [DTO]
+[Mapper] --> [Entity]
+[Repository] -> [DTO]
+[Repository] -> [Entity]
+@endum
