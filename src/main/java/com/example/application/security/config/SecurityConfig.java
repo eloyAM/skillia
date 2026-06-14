@@ -3,7 +3,7 @@ package com.example.application.security.config;
 import com.example.application.ldap.properties.LdapProperties;
 import com.example.application.security.SecConstants;
 import com.example.application.security.jwt.JwtProperties;
-import com.example.application.view.page.login.LoginView;
+import com.example.application.security.view.LoginComponentProvider;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +42,20 @@ public class SecurityConfig extends VaadinWebSecurity {
     private final SecretKey secretKey;
     private final Environment env;
     private final JwtProperties jwtProperties;
+    private final LoginComponentProvider loginComponentProvider;
 
     public SecurityConfig(
         SecretKey secretKey,
         JwtAuthenticationProvider jwtAuthenticationProvider,
         Environment env,
-        JwtProperties jwtProperties
+        JwtProperties jwtProperties,
+        LoginComponentProvider loginComponentProvider
     ) {
         this.secretKey = secretKey;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.env = env;
         this.jwtProperties = jwtProperties;
+        this.loginComponentProvider = loginComponentProvider;
     }
 
     @Override
@@ -92,7 +95,7 @@ public class SecurityConfig extends VaadinWebSecurity {
         super.setStatelessAuthentication(http, secretKey, jwtProperties.issuer(), jwtProperties.expirationSeconds());
 
         super.configure(http);
-        setLoginView(http, LoginView.class);
+        setLoginView(http, loginComponentProvider.getLoginComponentClass());
     }
 
     @Bean

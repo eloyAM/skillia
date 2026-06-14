@@ -11,7 +11,7 @@ import com.example.application.entity.PersonSkill;
 import com.example.application.entity.PersonSkillId;
 import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.repo.PersonSkillRepo;
-import com.example.application.utils.FunctionalUtils;
+import com.example.application.service.utils.FunctionalUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.dao.DataAccessException;

@@ -10,7 +10,7 @@ import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.repo.SkillGroupRepository;
 import com.example.application.repo.SkillRepo;
 import com.example.application.repo.SkillTagRepository;
-import com.example.application.utils.FunctionalUtils;
+import com.example.application.service.utils.FunctionalUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;

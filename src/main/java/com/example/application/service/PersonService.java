@@ -4,7 +4,7 @@ import com.example.application.dto.main.PersonDto;
 import com.example.application.entity.Person;
 import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.repo.PersonRepo;
-import com.example.application.utils.FunctionalUtils;
+import com.example.application.service.utils.FunctionalUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

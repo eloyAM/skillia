@@ -1,4 +1,4 @@
-package com.example.application.utils;
+package com.example.application.service.utils;
 
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;

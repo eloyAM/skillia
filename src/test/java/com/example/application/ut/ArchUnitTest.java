@@ -24,12 +24,12 @@ class ArchUnitTest {
 
     private static final Architectures.LayeredArchitecture LAYERED_ARCHITECTURE = Architectures
         .layeredArchitecture()
-        .consideringOnlyDependenciesInLayers()
+        .consideringOnlyDependenciesInAnyPackage("com.example.application..")
         .layer("Security").definedBy("com.example.application.security..")
         .layer("View").definedBy("com.example.application.view..")
         .layer("Controller").definedBy("com.example.application.controller..")
         .layer("Bootstrap").definedBy("com.example.application.bootstrap")
-        .layer("Ldap").definedBy("com.example.application.ldap..")
+        .layer("LdapClientAndProperties").definedBy("com.example.application.ldap..")
         .layer("Service").definedBy("com.example.application.service..")
         .layer("Repo").definedBy("com.example.application.repo..")
         .layer("Mapper").definedBy("com.example.application.mapper..")
@@ -40,16 +40,47 @@ class ArchUnitTest {
     void layeredArchitectureShouldBeRespected() {
         ArchRule rule = LAYERED_ARCHITECTURE
             // Allowed dependencies
-            .whereLayer("Security").mayOnlyAccessLayers("Service", "Dto", "View", "Ldap")
+            .whereLayer("Security").mayOnlyAccessLayers("Service", "Dto", "View", "LdapClientAndProperties")
             .whereLayer("View").mayOnlyAccessLayers("Service", "Dto", "Security")
             .whereLayer("Controller").mayOnlyAccessLayers("Service", "Dto", "Security")
-            .whereLayer("Bootstrap").mayOnlyAccessLayers("Ldap")
-            .whereLayer("Ldap").mayOnlyAccessLayers("Dto", "Service")
-            .whereLayer("Service").mayOnlyAccessLayers("Repo", "Mapper", "Dto", "Security")
+            .whereLayer("Bootstrap").mayOnlyAccessLayers("Service")
+            .whereLayer("LdapClientAndProperties").mayOnlyAccessLayers("Dto")
+            .whereLayer("Service").mayOnlyAccessLayers("Repo", "Mapper", "Dto", "Security", "LdapClientAndProperties")
             .whereLayer("Repo").mayOnlyAccessLayers("Entity", "Dto")
             .whereLayer("Mapper").mayOnlyAccessLayers("Dto", "Entity")
             .whereLayer("Dto").mayNotAccessAnyLayer()
             .whereLayer("Entity").mayNotAccessAnyLayer();
+        rule.check(APPLICATION_CLASSES);
+    }
+
+    @Test
+    void layeredArchitectureSimplifiedShouldBeRespected() {
+        Architectures.LayeredArchitecture layeredArchitecture = Architectures
+            .layeredArchitecture()
+            .consideringOnlyDependenciesInAnyPackage("com.example.application..")
+            // Architecture definition
+            .layer("Model").definedBy("com.example.application.dto..")
+            .layer("Presentation").definedBy(
+                "com.example.application.view..",
+                "com.example.application.controller.."
+            )
+            .layer("Business").definedBy(
+                "com.example.application.service..",
+                "com.example.application.security..",
+                "com.example.application.mapper..",
+                "com.example.application.bootstrap"
+            )
+            .layer("DataAccess").definedBy(
+                "com.example.application.ldap..",
+                "com.example.application.repo..",
+                "com.example.application.entity.."
+            );
+        // Architecture rules
+        ArchRule rule = layeredArchitecture
+            .whereLayer("Model").mayNotAccessAnyLayer()
+            .whereLayer("Presentation").mayOnlyAccessLayers("Business", "Model")
+            .whereLayer("Business").mayOnlyAccessLayers("DataAccess", "Model")
+            .whereLayer("DataAccess").mayOnlyAccessLayers("Model");
         rule.check(APPLICATION_CLASSES);
     }
 
@@ -81,12 +112,14 @@ class ArchUnitTest {
                 "com.vaadin.componentfactory..",
                 // spring
                 "org.springframework.beans.factory.annotation",
+                "org.springframework.context.annotation",
                 "org.springframework.security..",
                 "org.springframework.web..",
                 // application
                 "com.example.application.dto..",
                 "com.example.application.service..",
-                "com.example.application.security"
+                "com.example.application.security",
+                "com.example.application.security.view"
             );
             String ownPackage = "com.example.application.view..";
             Stream<String> allowedPackages = Stream.concat(initialPackages, Stream.of(ownPackage));
@@ -199,16 +232,18 @@ class ArchUnitTest {
         var initialPackages = Stream.of(
             "java..",
             "jakarta..",
+            "org.slf4j..",
+            "org.apache.commons.lang3..",
             // spring
             "org.springframework.security..",
             "org.springframework.stereotype..",
             "org.springframework.web..",
             // application
             "com.example.application.dto..",
-            "com.example.application.utils..",
             "com.example.application.mapper..",
             "com.example.application.repo..",
-            "com.example.application.security"
+            "com.example.application.security",
+            "com.example.application.ldap.client"
         );
         String ownPackage = "com.example.application.service..";
         Stream<String> allowedPackages = Stream.concat(initialPackages, Stream.of(ownPackage));
@@ -249,6 +284,9 @@ class ArchUnitTest {
             "jakarta.servlet.http..",
             "com.nimbusds.jose..",
             "com.nimbusds.jwt..",
+            // vaadin
+            "com.vaadin.flow.spring.security..",
+            "com.vaadin.flow.component",    // Login component
             // spring
             "org.springframework.beans.factory.annotation",
             "org.springframework.core.env..",
@@ -260,7 +298,6 @@ class ArchUnitTest {
             "org.springframework.boot.context.properties..",
             "org.springframework.ldap.core.support..",
             "org.springframework.security..",
-            "com.vaadin.flow.spring.security..",
             // application
             "com.example.application.view.page.login",
             "com.example.application.dto..",
@@ -313,7 +350,7 @@ class ArchUnitTest {
             "org.springframework.core.annotation",
             "org.springframework.stereotype",
             // application
-            "com.example.application.ldap"
+            "com.example.application.service"   // (LDAP srvice)
         );
         ArchRule rule = ArchRuleDefinition.theClass(ImportLdapUsersToDbAppRunner.class)
             .should().onlyDependOnClassesThat()

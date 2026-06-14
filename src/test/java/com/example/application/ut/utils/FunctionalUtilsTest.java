@@ -1,6 +1,6 @@
 package com.example.application.ut.utils;
 
-import com.example.application.utils.FunctionalUtils;
+import com.example.application.service.utils.FunctionalUtils;
 import org.junit.jupiter.api.Test;
 
 import java.util.stream.Stream;
