@@ -1,6 +1,6 @@
 package com.example.application.bootstrap;
 
-import com.example.application.service.LdapSynchronizationService;
+import com.example.application.service.ldap.LdapSynchronizationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

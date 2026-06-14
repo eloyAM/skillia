@@ -29,8 +29,8 @@ class ArchUnitTest {
         .layer("View").definedBy("com.example.application.view..")
         .layer("Controller").definedBy("com.example.application.controller..")
         .layer("Bootstrap").definedBy("com.example.application.bootstrap")
-        .layer("LdapClientAndProperties").definedBy("com.example.application.ldap..")
-        .layer("Service").definedBy("com.example.application.service..")
+        .layer("Ldap").definedBy("com.example.application.ldap..", "com.example.application.service.ldap")
+        .layer("Service").definedBy("com.example.application.service", "com.example.application.service.utils")
         .layer("Repo").definedBy("com.example.application.repo..")
         .layer("Mapper").definedBy("com.example.application.mapper..")
         .layer("Dto").definedBy("com.example.application.dto..")
@@ -40,12 +40,12 @@ class ArchUnitTest {
     void layeredArchitectureShouldBeRespected() {
         ArchRule rule = LAYERED_ARCHITECTURE
             // Allowed dependencies
-            .whereLayer("Security").mayOnlyAccessLayers("Service", "Dto", "View", "LdapClientAndProperties")
+            .whereLayer("Security").mayOnlyAccessLayers("Service", "Dto", "View", "Ldap")
             .whereLayer("View").mayOnlyAccessLayers("Service", "Dto", "Security")
             .whereLayer("Controller").mayOnlyAccessLayers("Service", "Dto", "Security")
-            .whereLayer("Bootstrap").mayOnlyAccessLayers("Service")
-            .whereLayer("LdapClientAndProperties").mayOnlyAccessLayers("Dto")
-            .whereLayer("Service").mayOnlyAccessLayers("Repo", "Mapper", "Dto", "Security", "LdapClientAndProperties")
+            .whereLayer("Bootstrap").mayOnlyAccessLayers("Ldap")
+            .whereLayer("Ldap").mayOnlyAccessLayers("Dto", "Service")
+            .whereLayer("Service").mayOnlyAccessLayers("Repo", "Mapper", "Dto", "Security")
             .whereLayer("Repo").mayOnlyAccessLayers("Entity", "Dto")
             .whereLayer("Mapper").mayOnlyAccessLayers("Dto", "Entity")
             .whereLayer("Dto").mayNotAccessAnyLayer()
@@ -350,7 +350,7 @@ class ArchUnitTest {
             "org.springframework.core.annotation",
             "org.springframework.stereotype",
             // application
-            "com.example.application.service"   // (LDAP srvice)
+            "com.example.application.service.ldap"
         );
         ArchRule rule = ArchRuleDefinition.theClass(ImportLdapUsersToDbAppRunner.class)
             .should().onlyDependOnClassesThat()
