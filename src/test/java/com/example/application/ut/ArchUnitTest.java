@@ -27,7 +27,7 @@ class ArchUnitTest {
         .consideringOnlyDependenciesInAnyPackage("com.example.application..")
         .layer("Security").definedBy("com.example.application.security..")
         .layer("View").definedBy("com.example.application.view..")
-        .layer("Controller").definedBy("com.example.application.controller..")
+        .layer("RestAPI").definedBy("com.example.application.restcontroller..")
         .layer("Bootstrap").definedBy("com.example.application.bootstrap")
         .layer("Ldap").definedBy("com.example.application.ldap..", "com.example.application.service.ldap")
         .layer("Service").definedBy("com.example.application.service", "com.example.application.service.utils")
@@ -42,7 +42,7 @@ class ArchUnitTest {
             // Allowed dependencies
             .whereLayer("Security").mayOnlyAccessLayers("Service", "Dto", "View", "Ldap")
             .whereLayer("View").mayOnlyAccessLayers("Service", "Dto", "Security")
-            .whereLayer("Controller").mayOnlyAccessLayers("Service", "Dto", "Security")
+            .whereLayer("RestAPI").mayOnlyAccessLayers("Service", "Dto", "Security")
             .whereLayer("Bootstrap").mayOnlyAccessLayers("Ldap")
             .whereLayer("Ldap").mayOnlyAccessLayers("Dto", "Service")
             .whereLayer("Service").mayOnlyAccessLayers("Repo", "Mapper", "Dto", "Security")
@@ -62,7 +62,7 @@ class ArchUnitTest {
             .layer("Model").definedBy("com.example.application.dto..")
             .layer("Presentation").definedBy(
                 "com.example.application.view..",
-                "com.example.application.controller.."
+                "com.example.application.restcontroller.."
             )
             .layer("Business").definedBy(
                 "com.example.application.service..",
@@ -135,8 +135,8 @@ class ArchUnitTest {
     class RestController {
         @ParameterizedTest
         @ValueSource(strings = {
-            "com.example.application.controller",
-            "com.example.application.controller.config",
+            "com.example.application.restcontroller",
+            "com.example.application.restcontroller.config",
         })
         void restControllerPackagesShouldOnlyDependOnClassesThatResideInGivenPackages(String ownPackage) {
             var initialPackages = Stream.of(

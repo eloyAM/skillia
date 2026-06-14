@@ -1,4 +1,4 @@
-package com.example.application.controller.config;
+package com.example.application.restcontroller.config;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.ConstraintViolationException;

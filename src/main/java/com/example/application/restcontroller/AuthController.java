@@ -1,4 +1,4 @@
-package com.example.application.controller;
+package com.example.application.restcontroller;
 
 import com.example.application.security.SecurityService;
 import com.nimbusds.jose.JOSEException;
