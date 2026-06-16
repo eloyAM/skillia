@@ -6,6 +6,7 @@ import com.vaadin.flow.spring.security.AuthenticationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -81,4 +82,23 @@ public class SecurityService {
         return authenticate(bearerTokenObj);
     }
 
+    public static boolean hasHrlRole(Authentication authentication) {
+        var userAuthorities = authentication.getAuthorities();
+        SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
+        return userAuthorities.contains(rhAuthority);
+    }
+
+    public static class ProfilePermissionsHelper {
+        private final boolean isTheSameUserOrHasHrRole;
+
+        public ProfilePermissionsHelper(Authentication authentication, String requestedUsername) {
+            this.isTheSameUserOrHasHrRole = authentication.getName().equals(requestedUsername)
+                || SecurityService.hasHrlRole(authentication);
+        }
+
+
+        public boolean isTheSameUserOrHasHrRole() {
+            return isTheSameUserOrHasHrRole;
+        }
+    }
 }

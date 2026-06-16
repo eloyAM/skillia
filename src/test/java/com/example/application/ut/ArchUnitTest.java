@@ -40,7 +40,7 @@ class ArchUnitTest {
     void layeredArchitectureShouldBeRespected() {
         ArchRule rule = LAYERED_ARCHITECTURE
             // Allowed dependencies
-            .whereLayer("Security").mayOnlyAccessLayers("Service", "Dto", "View", "Ldap")
+            .whereLayer("Security").mayOnlyAccessLayers("Dto", "View", "Ldap")
             .whereLayer("View").mayOnlyAccessLayers("Service", "Dto", "Security")
             .whereLayer("RestAPI").mayOnlyAccessLayers("Service", "Dto", "Security")
             .whereLayer("Bootstrap").mayOnlyAccessLayers("Ldap")

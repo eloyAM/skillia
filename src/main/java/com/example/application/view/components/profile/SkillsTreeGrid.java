@@ -1,6 +1,7 @@
 package com.example.application.view.components.profile;
 
 import com.example.application.dto.main.*;
+import com.example.application.security.SecurityService;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonSkillService;
 import com.vaadin.flow.component.details.Details;
@@ -61,8 +62,8 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
             .setHeader("Skill")
             .setFlexGrow(1);
 
-        boolean isMyProfileOrPermittedRole = new ProfilePermissionsHelper(authentication, username)
-            .isMyProfileOrPermittedRole();
+        boolean isMyProfileOrPermittedRole = new SecurityService.ProfilePermissionsHelper(authentication, username)
+            .isTheSameUserOrHasHrRole();
         tree.addComponentColumn(v -> {
                 if (v.getLevel() == -1) {
                     return new Span();   // Special case for the grouping element

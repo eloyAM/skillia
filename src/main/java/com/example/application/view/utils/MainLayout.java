@@ -1,6 +1,5 @@
 package com.example.application.view.utils;
 
-import com.example.application.security.SecConstants;
 import com.example.application.security.SecurityService;
 import com.example.application.view.page.*;
 import com.vaadin.flow.component.AttachEvent;
@@ -25,12 +24,11 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import static com.example.application.view.utils.ViewUtils.createIconItem;
 
+// Layout present on any view
 @CssImport("./styles/shared-styles.css")
 @JsModule("./js/light-dark-theme-chooser.js")
 public class MainLayout extends AppLayout implements BeforeEnterObserver {
@@ -40,7 +38,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     private boolean isDebugMode = false;
     private final Authentication authentication;
 
-    public MainLayout(@Autowired SecurityService securityService) {
+    public MainLayout(SecurityService securityService) {
         this.securityService = securityService;
         this.authentication = securityService.getAuthentication();
         // Create UI
@@ -70,8 +68,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     }
 
     // only for dev purposes
-    private static void _addUserInfo(HorizontalLayout header, SecurityService securityService1) {
-        Authentication authentication = securityService1.getAuthentication();
+    private static void _addUserInfo(HorizontalLayout header, Authentication authentication) {
         header.add(new Div("user: " + authentication.getName()));
         header.add(new Div("roles: " + authentication.getAuthorities().toString()));
     }
@@ -97,9 +94,9 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
         addToDrawer(new VerticalLayout(createMenuLink(SkillsMatrixView.class, "Skills Matrix",
             VaadinIcon.TABLE.create(), "skills-matrix")));
 
-        var userAuthorities = authentication.getAuthorities();
-        SimpleGrantedAuthority rhAuthority = new SimpleGrantedAuthority(SecConstants.ROLE_HR);
-        if (userAuthorities.contains(rhAuthority)) {
+        // Display only the allowed items
+        boolean hasHrlRole = SecurityService.hasHrlRole(authentication);
+        if (hasHrlRole) {
             addToDrawer(new VerticalLayout(createMenuLink(DepartmentsView.class, "Departments",
                 VaadinIcon.WORKPLACE.create(), "departments")));
             addToDrawer(new VerticalLayout(createMenuLink(SkillsAssignmentView.class, "Skills Assignment",
@@ -143,7 +140,7 @@ public class MainLayout extends AppLayout implements BeforeEnterObserver {
     @Override
     protected void onAttach(AttachEvent attachEvent) {
         if (isDebugMode) {
-            _addUserInfo(header, securityService);
+            _addUserInfo(header, authentication);
         }
     }
 
