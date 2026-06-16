@@ -92,8 +92,6 @@ class SkillTaggingTest {
     // Helpers
 
     private int getSkillTaggingCount() {
-//        return jdbcTemplate.queryForObject("select count(*) from skill_tagging", Integer.class);
-//        jdbcClient.sql("SELECT COUNT(*) FROM skill_tagging").query(Integer.class).single();
         return JdbcTestUtils.countRowsInTable(jdbcClient, "skill_tagging");
     }
 }

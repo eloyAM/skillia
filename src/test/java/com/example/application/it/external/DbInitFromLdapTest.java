@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Slf4j
 @EnabledIf("isDockerAvailable")
-@ActiveProfiles("default")   // Be careful to don't runt it with the embedded postgres or LDAP to avoid conflicts
+@ActiveProfiles("default")   // Be careful to don't run it with the embedded postgres or LDAP to avoid conflicts
 @SpringBootTest
 @Testcontainers
 class DbInitFromLdapTest {
@@ -43,7 +43,7 @@ class DbInitFromLdapTest {
     @Container
     private static final GenericContainer<?> openLdapContainer = new GenericContainer<>("bitnami/openldap:2.6.6-debian-11-r59")
             .withExposedPorts(LDAP_PORT)
-            .withCopyFileToContainer(MountableFile.forHostPath("./src/test/resources/ldif/test-01.ldif"), "/ldifs/test-01.ldif")
+            .withCopyFileToContainer(MountableFile.forClasspathResource("/ldif/test-01.ldif"), "/ldifs/test-01.ldif")
             .withEnv("LDAP_ADMIN_USERNAME", LDAP_ADMIN_SIMPLE_USERNAME)
             .withEnv("LDAP_ADMIN_PASSWORD", LDAP_ADMIN_PWD)
             .withEnv("LDAP_ROOT", LDAP_BASE)
@@ -56,7 +56,9 @@ class DbInitFromLdapTest {
 
     @DynamicPropertySource
     private static void initProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.ldap.urls", () -> "ldap://localhost:" + openLdapContainer.getMappedPort(LDAP_PORT));
+        String ldapConnectionString = "ldap://" + openLdapContainer.getHost() + ":" + openLdapContainer.getMappedPort(LDAP_PORT);
+        log.info("Using LDAP connection: {}", ldapConnectionString);
+        registry.add("spring.ldap.urls", () -> ldapConnectionString);
         registry.add("spring.ldap.base", () -> LDAP_BASE);
         registry.add("spring.ldap.username", () -> LDAP_ADMIN_DN);
         registry.add("spring.ldap.password", () -> LDAP_ADMIN_PWD);
@@ -75,7 +77,6 @@ class DbInitFromLdapTest {
         final List<PersonDto> expectedPersonList = getExpectedPersonList();
         assertAll(
             () -> assertThat(personService.findAllPerson())
-                .containsAll(expectedPersonList)
                 .containsExactlyInAnyOrderElementsOf(expectedPersonList),
             () -> assertThat(departmentService.findAllDepartment())
                 .extracting(DepartmentDto::getName)

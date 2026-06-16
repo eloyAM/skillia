@@ -70,7 +70,7 @@ public class SkillService {
             .toList();
     }
 
-    public Optional<SkillDto> updateSkill(Long id, String skillName) {  // TODO rename to express that this only updates the name, or modify to update tags as well
+    public Optional<SkillDto> updateSkillName(Long id, String skillName) {
         try {
             int rowsUpdated = skillRepo.updateNameById(id, skillName);
             if (rowsUpdated == 0) {

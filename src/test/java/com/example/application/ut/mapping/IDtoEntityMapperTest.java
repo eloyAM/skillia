@@ -134,7 +134,7 @@ class IDtoEntityMapperTest {
     @Test
     void toListPersonWithSkillsDto_shouldMapListOfPersonSkillsToListOfPersonWithSkillsDto() {
         // Given
-        List<PersonSkill> personSkills = new ArrayList<>(2);
+        List<PersonSkill> personSkills = new ArrayList<>(4);
         {
             Person person1 = new Person();
             person1.setUsername("person1");

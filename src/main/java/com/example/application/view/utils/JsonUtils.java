@@ -9,16 +9,6 @@ public class JsonUtils {
         // Static methods only
     }
 
-    public static JsonArray toJsonArray(Iterable<?> list) {
-        JsonArray arr = Json.createArray();
-        int i = 0;
-        for (var o : list) {
-            JsonValue v = getJsonValue(o);
-            arr.set(i++, v);
-        }
-        return arr;
-    }
-
     public static JsonValue getJsonValue(Object o) {
         JsonValue v;
         if (o == null) {

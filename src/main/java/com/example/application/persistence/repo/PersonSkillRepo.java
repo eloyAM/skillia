@@ -1,6 +1,5 @@
 package com.example.application.persistence.repo;
 
-import com.example.application.dto.PersonSkillBasicDto;
 import com.example.application.dto.main.AcquiredSkillDto;
 import com.example.application.dto.skillperson.PersonWithLevelDto;
 import com.example.application.dto.stats.SkillStatValue;
@@ -13,25 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillId> {
-    /*
-    // SKILL and PERSON can be related by PERSON_SKILL this way:
-    SELECT
-       s.name,
-       ps.skill_id,
-       ps.person_id,
-       ps.level,
-    FROM PERSON_SKILL ps
-    LEFT JOIN SKILL s ON s.id=ps.skill_id
-    WHERE ps.person_id = 'gilberto.jimenezm'
-     */
-    // This fills the person and the skill objects
-    List<PersonSkill> findPersonSkillByPersonSkillIdPersonId(String personSkillId);
-
-    @Query("select new com.example.application.dto.PersonSkillBasicDto("
-        + "p.personSkillId.personId, p.personSkillId.skillId, p.level)"
-        + " from PersonSkill p")
-    List<PersonSkillBasicDto> findAllBy();
-
     @Query("select new com.example.application.dto.main.AcquiredSkillDto("
         + "p.personSkillId.skillId, p.skill.name, p.level)"
         + " from PersonSkill p where p.personSkillId.personId = :personId")

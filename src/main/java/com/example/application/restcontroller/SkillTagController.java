@@ -108,7 +108,7 @@ public class SkillTagController {
         return ResponseEntity.noContent().build();
     }
 
-    record SkillTagBody(
+    public record SkillTagBody(
         @NotBlank String name
     ) {
     }

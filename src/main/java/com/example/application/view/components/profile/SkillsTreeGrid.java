@@ -37,26 +37,10 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
         tree.addComponentHierarchyColumn(sk -> {
                 var skill = sk.getSkill();
                 String skillDescriptionStr = skill.getDescription();
-
                 if (sk.getLevel() == -1L) {
-                    // Group -> display with description below
-                    var container = new VerticalLayout(new Span(skill.getName()));
-                    container.addClassName("vaadin-grid-tree-toggle-skill-group-cell-slot");
-
-                    if (skillDescriptionStr != null && !skillDescriptionStr.isBlank()) {
-                        var description = new Span(skillDescriptionStr);
-                        description.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-                        container.add(description);
-                    }
-                    return container;
+                    return getSkillGroupCell(skill, skillDescriptionStr);
                 } else {
-                    // Skill -> display using a details component
-                    String descText = Optional.ofNullable(skillDescriptionStr).filter(s -> !s.isBlank()).orElse("No description available");
-                    Span name = new Span(skill.getName());
-                    name.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.BODY);
-                    var description = new Span(descText);
-                    description.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
-                    return new Details(name, description);
+                    return getSkillCell(skillDescriptionStr, skill);
                 }
             })
             .setHeader("Skill")
@@ -120,5 +104,28 @@ public class SkillsTreeGrid extends TreeGrid<AcquiredSkillDto> {
             return List.of();
         });
         tree.expand(rootItems);
+    }
+
+    private static VerticalLayout getSkillGroupCell(SkillDto skill, String skillDescriptionStr) {
+        // Group -> display with description below
+        var container = new VerticalLayout(new Span(skill.getName()));
+        container.addClassName("vaadin-grid-tree-toggle-skill-group-cell-slot");
+
+        if (skillDescriptionStr != null && !skillDescriptionStr.isBlank()) {
+            var description = new Span(skillDescriptionStr);
+            description.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+            container.add(description);
+        }
+        return container;
+    }
+
+    private static Details getSkillCell(String skillDescriptionStr, SkillDto skill) {
+        // Skill -> display using a details component
+        String descText = Optional.ofNullable(skillDescriptionStr).filter(s -> !s.isBlank()).orElse("No description available");
+        Span name = new Span(skill.getName());
+        name.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.TextColor.BODY);
+        var description = new Span(descText);
+        description.addClassNames(LumoUtility.FontSize.SMALL, LumoUtility.TextColor.SECONDARY);
+        return new Details(name, description);
     }
 }

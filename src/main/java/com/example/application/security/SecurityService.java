@@ -8,8 +8,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -33,14 +31,6 @@ public class SecurityService {
         this.authenticationManager = authenticationManager;
         this.jwtAuthenticationProvider = jwtAuthenticationProvider;
         this.customJwtEncoder = customJwtEncoder;
-    }
-
-    public UserDetails getUserDetails() {
-        return vaadinAuthenticationContext.getAuthenticatedUser(UserDetails.class).orElseThrow();
-    }
-
-    public Jwt getJwt() {
-        return vaadinAuthenticationContext.getAuthenticatedUser(Jwt.class).orElseThrow();
     }
 
     public Authentication getAuthentication() {

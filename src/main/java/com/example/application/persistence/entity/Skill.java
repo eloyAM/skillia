@@ -32,7 +32,7 @@ public class Skill {
     @Column(name = "id", nullable = false)
     private Long id;
 
-//    @NonNull
+    //    @NonNull
     @NotBlank
     @Column(name = "name", nullable = false, unique = true, length = 70)
     private String name;
@@ -56,10 +56,5 @@ public class Skill {
 
     public Skill(@NonNull Long id) {
         this.id = Objects.requireNonNull(id);
-    }
-
-    public Skill(Long id, @NonNull String name) {
-        this.id = id;
-        this.name = Objects.requireNonNull(name);
     }
 }

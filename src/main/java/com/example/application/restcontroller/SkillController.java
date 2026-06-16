@@ -82,8 +82,8 @@ public class SkillController {
                     description = "No skill matching the id or there is already a skill with the same name")
     })
     @PatchMapping("/{id}")
-    public SkillDto updateSkill(@PathVariable Long id, @RequestBody SkillBody body) { // TODO rename to express that this only updates the name, or modify to update tags as well
-        return skillService.updateSkill(id, body.name)
+    public SkillDto updateSkillName(@PathVariable Long id, @RequestBody SkillBody body) {
+        return skillService.updateSkillName(id, body.name)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "No skill found to update with the given id " + id));
     }
@@ -98,7 +98,7 @@ public class SkillController {
         return ResponseEntity.noContent().build();
     }
 
-    private record SkillBody(
+    public record SkillBody(
         @NotBlank String name
     ) {
     }

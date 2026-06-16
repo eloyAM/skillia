@@ -22,6 +22,7 @@ public interface IDtoEntityMapper {
     SkillDto toSkillDto(Skill skill);
 
     Skill toSkill(SkillDto skillDto);
+
     @AfterMapping
     default void toSkillAfterMapping(SkillDto skillDto, @MappingTarget Skill skill) {
         Objects.requireNonNull(skill.getName());
@@ -41,21 +42,7 @@ public interface IDtoEntityMapper {
 
     AcquiredSkillDto toAcquiredSkillDto(PersonSkill personSkill);
 
-    default List<AcquiredSkillDto> toListAcquiredSkillDto(PersonSkill personSkill) {
-        if (personSkill == null) {
-            return null;
-        }
-        List<AcquiredSkillDto> list = new ArrayList<>(1);
-        list.add(toAcquiredSkillDto(personSkill));
-        return list;
-    }
-
     List<AcquiredSkillDto> toListAcquiredSkillDto(List<PersonSkill> personSkills);
-
-    // Was implemented on the manual mapping, but never used
-    // // @Mapping(target = "skills", expression = "java(java.util.Collections.singletonList(toAcquiredSkillDto(personSkill)))")
-    @Mapping(target = "skills", source = "personSkill")
-    PersonWithSkillsDto toPersonWithSkillsDto(PersonSkill personSkill);
 
     @Mapping(target = "skills", source = "personSkillList")
     PersonWithSkillsDto toPersonWithSkillsDto(Person person, List<PersonSkill> personSkillList);
@@ -95,18 +82,9 @@ public interface IDtoEntityMapper {
 
     DepartmentDto toDto(Department department);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Department partialUpdate(DepartmentDto departmentDto, @MappingTarget Department department);
-
     // SkillGroup
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Skill partialUpdate(SkillDto skillDto, @MappingTarget Skill skill);
 
     SkillGroup toEntity(SkillGroupDto skillGroupDto);
 
     SkillGroupDto toDto(SkillGroup skillGroup);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    SkillGroup partialUpdate(SkillGroupDto skillGroupDto, @MappingTarget SkillGroup skillGroup);
 }

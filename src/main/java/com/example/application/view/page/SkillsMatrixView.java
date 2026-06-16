@@ -278,7 +278,7 @@ public class SkillsMatrixView extends VerticalLayout {
                         || StringUtils.containsIgnoreCase(person.getUsername(), filterValue)
                         || StringUtils.containsIgnoreCase(person.getEmail(), filterValue);
                 };
-            static BiPredicate<PersonWithSkillsDto, String> departmentListPredicate =
+            static final BiPredicate<PersonWithSkillsDto, String> departmentListPredicate =
                 (personWithSkillsDto, filterValue) -> {
                     if (filterValue == null || filterValue.isEmpty()) {
                         return true;
@@ -287,7 +287,7 @@ public class SkillsMatrixView extends VerticalLayout {
                     return StringUtils.containsIgnoreCase(filterValue,
                         personWithSkillsDto.getPerson().getDepartment());
                 };
-            static BiPredicate<PersonWithSkillsDto, String> jobTitleListPredicate =
+            static final BiPredicate<PersonWithSkillsDto, String> jobTitleListPredicate =
                 (personWithSkillsDto, filterValue) -> {
                     if (filterValue == null || filterValue.isEmpty()) {
                         return true;
