@@ -1,6 +1,5 @@
 package com.example.application.dto;
 
-import com.example.application.entity.PersonSkillId;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +13,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.Serializable;
 
 /**
- * DTO for {@link PersonSkillId}
+ * DTO for {@link  com.example.application.persistence.entity.PersonSkillId}
  */
 @Data
 @AllArgsConstructor

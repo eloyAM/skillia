@@ -1,7 +1,7 @@
-package com.example.application.repo;
+package com.example.application.persistence.repo;
 
 import com.example.application.dto.main.PersonDto;
-import com.example.application.entity.Person;
+import com.example.application.persistence.entity.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

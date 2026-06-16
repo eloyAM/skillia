@@ -1,6 +1,6 @@
-package com.example.application.repo;
+package com.example.application.persistence.repo;
 
-import com.example.application.entity.Skill;
+import com.example.application.persistence.entity.Skill;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

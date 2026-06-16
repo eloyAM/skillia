@@ -13,7 +13,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.example.application.entity.PersonSkill}.
+ * DTO for {@link com.example.application.persistence.entity.PersonSkill}.
  */
 @Data
 @AllArgsConstructor

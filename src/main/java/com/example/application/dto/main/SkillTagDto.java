@@ -1,6 +1,5 @@
 package com.example.application.dto.main;
 
-import com.example.application.entity.SkillTag;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -14,7 +13,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 
 /**
- * DTO for {@link SkillTag}
+ * DTO for {@link com.example.application.persistence.entity.SkillTag}
  */
 @Data
 @AllArgsConstructor

@@ -1,12 +1,12 @@
 package com.example.application.it.repo;
 
-import com.example.application.entity.Department;
-import com.example.application.entity.Skill;
-import com.example.application.entity.SkillGroup;
+import com.example.application.persistence.entity.Department;
+import com.example.application.persistence.entity.Skill;
+import com.example.application.persistence.entity.SkillGroup;
 import com.example.application.it.testutils.CleanDbExtension;
-import com.example.application.repo.DepartmentRepository;
-import com.example.application.repo.SkillGroupRepository;
-import com.example.application.repo.SkillRepo;
+import com.example.application.persistence.repo.DepartmentRepository;
+import com.example.application.persistence.repo.SkillGroupRepository;
+import com.example.application.persistence.repo.SkillRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

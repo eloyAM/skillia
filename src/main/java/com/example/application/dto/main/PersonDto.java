@@ -10,7 +10,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.example.application.entity.Person}.
+ * DTO for {@link com.example.application.persistence.entity.Person}.
  */
 @Data
 @AllArgsConstructor

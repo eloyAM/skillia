@@ -153,7 +153,7 @@ public class PersonSkillsController {
     }
 
     /**
-     * DTO for {@link com.example.application.entity.PersonSkill}.
+     * DTO for {@link com.example.application.persistence.entity.PersonSkill}.
      */
     record AssignSkillRequestDto(
             @NonNull @NotNull @Min(1) @Max(5) Integer level

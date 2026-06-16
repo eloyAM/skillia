@@ -14,7 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * DTO for {@link com.example.application.entity.Skill}.
+ * DTO for {@link com.example.application.persistence.entity.Skill}.
  */
 @Data
 @AllArgsConstructor

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DTO for {@link com.example.application.entity.Department}
+ * DTO for {@link com.example.application.persistence.entity.Department}
  */
 @Data
 public class DepartmentDto implements Serializable {

@@ -2,9 +2,9 @@ package com.example.application.ut.mapping;
 
 import com.example.application.dto.PersonSkillBasicDto;
 import com.example.application.dto.main.*;
-import com.example.application.entity.*;
 import com.example.application.mapper.IDtoEntityMapper;
 import com.example.application.mapper.IDtoEntityMapperImpl;
+import com.example.application.persistence.entity.*;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 

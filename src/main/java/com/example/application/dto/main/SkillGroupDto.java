@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 /**
- * DTO for {@link com.example.application.entity.SkillGroup}
+ * DTO for {@link com.example.application.persistence.entity.SkillGroup}
  */
 @Data
 @Builder

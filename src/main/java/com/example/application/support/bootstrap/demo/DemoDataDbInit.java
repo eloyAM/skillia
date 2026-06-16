@@ -1,8 +1,8 @@
 package com.example.application.support.bootstrap.demo;
 
 import com.example.application.dto.main.*;
-import com.example.application.entity.PersonSkill;
-import com.example.application.repo.PersonSkillRepo;
+import com.example.application.persistence.entity.PersonSkill;
+import com.example.application.persistence.repo.PersonSkillRepo;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.SkillService;

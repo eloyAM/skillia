@@ -31,10 +31,10 @@ class ArchUnitTest {
         .layer("Bootstrap").definedBy("com.example.application.support.bootstrap")
         .layer("Ldap").definedBy("com.example.application.ldap..", "com.example.application.service.ldap")
         .layer("Service").definedBy("com.example.application.service", "com.example.application.service.utils")
-        .layer("Repo").definedBy("com.example.application.repo..")
+        .layer("Repo").definedBy("com.example.application.persistence.repo..")
         .layer("Mapper").definedBy("com.example.application.mapper..")
         .layer("Dto").definedBy("com.example.application.dto..")
-        .layer("Entity").definedBy("com.example.application.entity..");
+        .layer("Entity").definedBy("com.example.application.persistence.entity..");
 
     @Test
     void layeredArchitectureShouldBeRespected() {
@@ -72,8 +72,8 @@ class ArchUnitTest {
             )
             .layer("DataAccess").definedBy(
                 "com.example.application.ldap..",
-                "com.example.application.repo..",
-                "com.example.application.entity.."
+                "com.example.application.persistence.repo..",
+                "com.example.application.persistence.entity.."
             );
         // Architecture rules
         ArchRule rule = layeredArchitecture
@@ -94,7 +94,7 @@ class ArchUnitTest {
             )
         );
         rule.check(new ClassFileImporter().importPackages(
-            "com.example.application.dto..", "com.example.application.mapper..", "com.example.application.entity.."
+            "com.example.application.dto..", "com.example.application.mapper..", "com.example.application.persistence.entity.."
         ));
     }
 
@@ -198,7 +198,7 @@ class ArchUnitTest {
                 "org.springframework.data.annotation.."
                 // no application dependencies
             );
-            String ownPackage = "com.example.application.entity..";
+            String ownPackage = "com.example.application.persistence.entity..";
             Stream<String> allowedPackages = Stream.concat(initialPackages, Stream.of(ownPackage));
             ArchRule rule = ArchRuleDefinition.classes().that()
                 .resideInAPackage(ownPackage)
@@ -215,7 +215,7 @@ class ArchUnitTest {
                 "org.springframework.stereotype..",
                 // application
                 "com.example.application.dto..",
-                "com.example.application.entity.."
+                "com.example.application.persistence.entity.."
             );
             String ownPackage = "com.example.application.mapper..";
             Stream<String> allowedPackages = Stream.concat(initialPackages, Stream.of(ownPackage));
@@ -241,7 +241,7 @@ class ArchUnitTest {
             // application
             "com.example.application.dto..",
             "com.example.application.mapper..",
-            "com.example.application.repo..",
+            "com.example.application.persistence.repo..",
             "com.example.application.security",
             "com.example.application.ldap.client"
         );
@@ -264,9 +264,9 @@ class ArchUnitTest {
             "org.springframework.transaction.annotation..",
             // application
             "com.example.application.dto..",
-            "com.example.application.entity.."
+            "com.example.application.persistence.entity.."
         );
-        String ownPackage = "com.example.application.repo..";
+        String ownPackage = "com.example.application.persistence.repo..";
         Stream<String> allowedPackages = Stream.concat(initialPackages, Stream.of(ownPackage));
         ArchRule rule = ArchRuleDefinition.classes().that()
             .resideInAPackage(ownPackage)

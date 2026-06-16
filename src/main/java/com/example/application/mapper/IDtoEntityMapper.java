@@ -3,7 +3,7 @@ package com.example.application.mapper;
 import com.example.application.dto.PersonSkillBasicDto;
 import com.example.application.dto.PersonSkillIdDto;
 import com.example.application.dto.main.*;
-import com.example.application.entity.*;
+import com.example.application.persistence.entity.*;
 import org.mapstruct.*;
 
 import java.util.*;

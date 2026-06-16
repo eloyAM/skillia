@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DTO for {@link com.example.application.entity.PersonSkill}.
+ * DTO for {@link com.example.application.persistence.entity.PersonSkill}.
  */
 @Data
 @AllArgsConstructor

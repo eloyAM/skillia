@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 import java.io.Serializable;
 
 /**
- * DTO for {@link com.example.application.entity.PersonSkill}.
+ * DTO for {@link com.example.application.persistence.entity.PersonSkill}.
  * Minimal representation
  */
 @Data

@@ -1,11 +1,11 @@
-package com.example.application.repo;
+package com.example.application.persistence.repo;
 
 import com.example.application.dto.PersonSkillBasicDto;
 import com.example.application.dto.main.AcquiredSkillDto;
 import com.example.application.dto.skillperson.PersonWithLevelDto;
 import com.example.application.dto.stats.SkillStatValue;
-import com.example.application.entity.PersonSkill;
-import com.example.application.entity.PersonSkillId;
+import com.example.application.persistence.entity.PersonSkill;
+import com.example.application.persistence.entity.PersonSkillId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
