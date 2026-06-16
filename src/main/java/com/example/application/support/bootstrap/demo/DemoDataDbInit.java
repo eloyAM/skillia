@@ -1,4 +1,4 @@
-package com.example.application.bootstrap.demo;
+package com.example.application.support.bootstrap.demo;
 
 import com.example.application.dto.main.*;
 import com.example.application.entity.PersonSkill;
@@ -6,6 +6,7 @@ import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.SkillService;
+import com.example.application.support.bootstrap.ImportLdapUsersToDbAppRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
 
 /**
  * Note:
- * This creates some demo data in addition to the initialization already done by the {@link com.example.application.bootstrap.ImportLdapUsersToDbAppRunner}
+ * This creates some demo data in addition to the initialization already done by the {@link ImportLdapUsersToDbAppRunner}
  */
 public class DemoDataDbInit {
     private static final Logger log = LoggerFactory.getLogger(DemoDataDbInit.class);

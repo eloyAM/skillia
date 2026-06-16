@@ -1,6 +1,6 @@
 package com.example.application.ut;
 
-import com.example.application.bootstrap.ImportLdapUsersToDbAppRunner;
+import com.example.application.support.bootstrap.ImportLdapUsersToDbAppRunner;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchRule;
@@ -28,7 +28,7 @@ class ArchUnitTest {
         .layer("Security").definedBy("com.example.application.security..")
         .layer("View").definedBy("com.example.application.view..")
         .layer("RestAPI").definedBy("com.example.application.restcontroller..")
-        .layer("Bootstrap").definedBy("com.example.application.bootstrap")
+        .layer("Bootstrap").definedBy("com.example.application.support.bootstrap")
         .layer("Ldap").definedBy("com.example.application.ldap..", "com.example.application.service.ldap")
         .layer("Service").definedBy("com.example.application.service", "com.example.application.service.utils")
         .layer("Repo").definedBy("com.example.application.repo..")
@@ -68,7 +68,7 @@ class ArchUnitTest {
                 "com.example.application.service..",
                 "com.example.application.security..",
                 "com.example.application.mapper..",
-                "com.example.application.bootstrap"
+                "com.example.application.support.bootstrap"
             )
             .layer("DataAccess").definedBy(
                 "com.example.application.ldap..",

@@ -1,9 +1,10 @@
-package com.example.application.bootstrap.demo;
+package com.example.application.support.bootstrap.demo;
 
 import com.example.application.repo.PersonSkillRepo;
 import com.example.application.service.DepartmentService;
 import com.example.application.service.PersonService;
 import com.example.application.service.SkillService;
+import com.example.application.support.bootstrap.ImportLdapUsersToDbAppRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -12,7 +13,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * Meant to be executed after the {@link com.example.application.bootstrap.ImportLdapUsersToDbAppRunner}
+ * Meant to be executed after the {@link ImportLdapUsersToDbAppRunner}
  */
 @Order(2)
 @Slf4j
