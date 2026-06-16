@@ -1,8 +1,8 @@
 @startuml
-[Mapper] <<com.example.application.mapper>>
-[DTO] <<com.example.application.dto..>>
-[Entity] <<com.example.application.persistence.entity>>
-[Repository] <<com.example.application.persistence.repo>>
+[Mapper] <<io.skillia.mapper>>
+[DTO] <<io.skillia.dto..>>
+[Entity] <<io.skillia.persistence.entity>>
+[Repository] <<io.skillia.persistence.repo>>
 
 [Mapper] --> [DTO]
 [Mapper] --> [Entity]

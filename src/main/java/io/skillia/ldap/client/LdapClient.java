@@ -1,0 +1,44 @@
+package io.skillia.ldap.client;
+
+import io.skillia.dto.main.PersonDto;
+import io.skillia.ldap.properties.LdapProperties;
+import org.springframework.ldap.core.AttributesMapper;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.stereotype.Component;
+
+import javax.naming.NamingException;
+import javax.naming.directory.Attributes;
+import java.util.List;
+
+@Component
+public class LdapClient {
+    private final LdapTemplate ldapTemplate;
+    private final LdapProperties ldapProperties;
+
+    public LdapClient(LdapTemplate ldapTemplate, LdapProperties ldapProperties) {
+        this.ldapTemplate = ldapTemplate;
+        this.ldapProperties = ldapProperties;
+    }
+
+
+    public List<PersonDto> findAllUsers() {
+        AttributesMapper<PersonDto> attributesMapper = attrs -> PersonDto.builder()
+                .username(getAttrAsStr(attrs, ldapProperties.getUsernameAttribute()))
+                .fullName(getAttrAsStr(attrs, ldapProperties.getFullNameAttribute()))
+                .email(getAttrAsStr(attrs, "mail"))
+                .title(getAttrAsStr(attrs, "title"))
+                .department(getAttrAsStr(attrs, ldapProperties.getDepartmentAttribute()))
+                .build();
+        String base = ldapProperties.getUserSearchBase();
+        String filter = "(objectClass=" + ldapProperties.getUserObjectClass() + ")";
+        return ldapTemplate.search(base, filter, attributesMapper);
+    }
+
+    private static String getAttrAsStr(Attributes attrs, String attrName) throws NamingException {
+        var attr = attrs.get(attrName);
+        if (attr == null) return null;
+        Object attrValue = attr.get();    // Can throw NamingException
+        return attrValue.toString();
+    }
+}
+

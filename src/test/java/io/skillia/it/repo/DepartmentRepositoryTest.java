@@ -1,0 +1,100 @@
+package io.skillia.it.repo;
+
+import io.skillia.it.testutils.CleanDbExtension;
+import io.skillia.persistence.entity.Department;
+import io.skillia.persistence.entity.Skill;
+import io.skillia.persistence.entity.SkillGroup;
+import io.skillia.persistence.repo.DepartmentRepository;
+import io.skillia.persistence.repo.SkillGroupRepository;
+import io.skillia.persistence.repo.SkillRepo;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(CleanDbExtension.class)
+@SpringBootTest
+class DepartmentRepositoryTest {
+    @Autowired
+    private DepartmentRepository departmentRepository;
+    @Autowired
+    private SkillRepo skillRepo;
+    @Autowired
+    private SkillGroupRepository skillGroupRepo;
+
+    @Test
+    void findAll() {
+        List<Department> all = departmentRepository.findAll();
+        assertThat(all).isNotNull().isEmpty();
+    }
+
+    @Test
+    void save() {
+        // Arrange
+        Department department = new Department();
+        department.setName("Some department");
+
+        // Act
+        departmentRepository.save(department);
+
+        // Assert
+        List<Department> all = departmentRepository.findAll();
+        assertThat(all).isNotNull().hasSize(1);
+        assertThat(all.get(0).getName()).isEqualTo("Some department");
+    }
+
+    @Test
+    void saveWithSkillGroups() {
+        // Arrange
+        Skill skill = new Skill();
+        skill.setName("Some skill");
+        skillRepo.save(skill);
+
+        SkillGroup skillGroup = new SkillGroup();
+        skillGroup.setName("Some group");
+        skillGroup.setDescription("Some description");
+        skillGroup.setSkills(Set.of(skill));
+        skillGroupRepo.save(skillGroup);
+
+        Department department = new Department();
+        department.setName("Some department");
+        department.setSkillGroups(List.of(skillGroup));
+
+        // Act
+        departmentRepository.save(department);
+
+        // Assert
+        List<Department> all = departmentRepository.findAll();
+        assertThat(all).isNotNull().hasSize(1);
+        assertThat(all.get(0).getName()).isEqualTo("Some department");
+        assertThat(all.get(0).getSkillGroups()).hasSize(1);
+        assertThat(all.get(0).getSkillGroups().get(0).getName()).isEqualTo("Some group");
+        assertThat(all.get(0).getSkillGroups().get(0).getSkills()).hasSize(1);
+        assertThat(all.get(0).getSkillGroups().get(0).getSkills().iterator().next().getName()).isEqualTo("Some skill");
+    }
+
+    @Test
+    void findByName() {
+        String departmentName = "Some department";
+
+        // Assumptions
+        assertThat(departmentRepository.findByName(departmentName)).isNull();
+
+        // Arrange
+        Department department = new Department();
+        department.setName(departmentName);
+        departmentRepository.save(department);
+
+        // Act
+        Department found = departmentRepository.findByName(departmentName);
+
+        // Assert
+        assertThat(found).isNotNull();
+        assertThat(department.getName()).isEqualTo(departmentName);
+    }
+}
