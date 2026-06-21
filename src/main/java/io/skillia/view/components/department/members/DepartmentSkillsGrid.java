@@ -14,7 +14,7 @@ import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import io.skillia.dto.main.*;
 import io.skillia.service.PersonSkillService;
-import io.skillia.view.components.profile.SkillLevelSelector;
+import io.skillia.view.components.SkillLevelSelector;
 
 import java.util.List;
 import java.util.Map;

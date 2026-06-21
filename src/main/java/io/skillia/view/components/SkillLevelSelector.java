@@ -1,4 +1,4 @@
-package io.skillia.view.components.profile;
+package io.skillia.view.components;
 
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.menubar.MenuBar;

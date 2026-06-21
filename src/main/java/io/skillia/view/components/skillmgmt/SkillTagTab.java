@@ -1,4 +1,4 @@
-package io.skillia.view.components;
+package io.skillia.view.components.skillmgmt;
 
 import com.vaadin.componentfactory.Popup;
 import com.vaadin.flow.component.Component;

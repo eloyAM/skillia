@@ -1,4 +1,4 @@
-package io.skillia.view.components;
+package io.skillia.view.components.skillassing;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;

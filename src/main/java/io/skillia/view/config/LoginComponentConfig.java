@@ -1,6 +1,7 @@
-package io.skillia.view.page.login;
+package io.skillia.view.config;
 
 import io.skillia.security.view.LoginComponentProvider;
+import io.skillia.view.page.LoginView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

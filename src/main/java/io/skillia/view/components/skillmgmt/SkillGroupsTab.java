@@ -1,4 +1,4 @@
-package io.skillia.view.components;
+package io.skillia.view.components.skillmgmt;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;

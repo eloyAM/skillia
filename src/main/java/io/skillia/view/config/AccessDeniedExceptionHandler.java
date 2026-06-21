@@ -1,4 +1,4 @@
-package io.skillia.view.error;
+package io.skillia.view.config;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;

@@ -10,6 +10,7 @@ import io.skillia.dto.main.*;
 import io.skillia.security.SecurityService;
 import io.skillia.service.DepartmentService;
 import io.skillia.service.PersonSkillService;
+import io.skillia.view.components.SkillLevelSelector;
 import org.springframework.security.core.Authentication;
 
 import java.util.*;

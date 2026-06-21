@@ -1,4 +1,4 @@
-package io.skillia.view.page.login;
+package io.skillia.view.page;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
