@@ -1,0 +1,135 @@
+@startuml
+left to right direction
+top to bottom direction
+'!theme silver
+
+title General Architecture: Spring Boot 3 + Vaadin 24 Application
+
+' Define actors/users
+actor "UI User" as UIUser
+actor "REST API User" as APIUser
+
+' Component definitions, grouped by logic
+package "External Systems" {
+    database "Relational Database" as DB
+    component [LDAP Server] as LDAP
+}
+
+package "Spring Boot Application" {
+    component [Vaadin Flow UI] as VaadinUI
+    component [REST API Controllers] as RestControllers
+    component [Business Logic\n(Services)] as Services
+    component [Database Access\n(Repositories)] as Repos
+    component [LDAP client] as LdapClient
+
+    ' Vertical/Intermediary Security block
+    node "Spring Security" as Security
+}
+
+' Security interacts vertically, between users and application entry points
+UIUser --> Security : Accesses
+APIUser --> Security : Accesses
+
+' Spring Security controls access to the entry points
+Security -down-> VaadinUI
+Security -down-> RestControllers
+
+' Data Flow: Both entry blocks use Business Logic
+VaadinUI -down-> Services
+RestControllers -down-> Services
+
+' Data Flow: Business logic uses repositories
+Services -down-> Repos
+Repos -down-> DB
+
+' Authentication and Authorization checks are made against LDAP by the services layer
+Services -right-> LdapClient
+LdapClient -down-> LDAP
+
+Security -right-> LDAP : Login
+
+' Adding some positioning hints for cleaner diagram
+UIUser -[hidden]- APIUser
+VaadinUI -[hidden]right- RestControllers
+
+@enduml
+
+
+
+
+@startuml
+left to right direction
+'skinparam componentStyle uml2
+'!theme silver
+
+
+actor "UI User" as user
+actor "REST API\nconsumer" as api_user
+
+node "Skillia Java application\n(Spring Boot 3, Vaadin 24)" {
+    component "SPRING SECURITY" as security
+    component "REST\ncontrollers" as controllers
+    component "Vaadin\nUI" as ui
+    component "Business\nlogic\n(services)" as services
+    component "Persistence\nlayer\n(repositories)" as repo
+
+    note right of security
+      Authentication &
+      authorization
+    end note
+}
+
+database "DB\nPostgres" as db
+
+user --> security
+api_user --> security
+
+security --> controllers
+security --> ui
+
+controllers --> services
+ui --> services
+
+services --> repo
+repo --> db
+
+@enduml
+
+
+@startuml
+skinparam componentStyle uml2
+left to right direction
+
+
+actor "UI User" as user
+actor "REST API\nconsumer" as api_user
+
+node "Skillia Java application (Spring Boot 3, Vaadin 24)" {
+    component "SPRING SECURITY" as security
+    component "REST\ncontrollers" as controllers
+    component "Vaadin\nUI" as ui
+    component "Business\nlogic\n(services)" as services
+    component "Persistence\nlayer\n(repositories)" as repo
+
+    note right of security
+      Authentication &
+      authorization
+    end note
+}
+
+database "DB\nPostgres" as db
+
+' Routing paths through security
+user --> security
+security --> ui
+
+api_user --> security
+security --> controllers
+
+' Standard flow
+controllers --> services
+ui --> services
+services --> repo
+repo --> db
+
+@enduml

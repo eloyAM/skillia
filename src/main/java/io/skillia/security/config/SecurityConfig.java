@@ -22,9 +22,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.crypto.keygen.BytesKeyGenerator;
-import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -92,6 +90,7 @@ public class SecurityConfig extends VaadinWebSecurity {
         AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver = request -> authenticationManagerBuilder.getOrBuild();
         BearerTokenAuthenticationFilter bearerTokenAuthenticationFilter = new BearerTokenAuthenticationFilter(authenticationManagerResolver);
         http.addFilterBefore(bearerTokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new MyBearerSecFilter(), BearerTokenAuthenticationFilter.class);
         super.setStatelessAuthentication(http, secretKey, jwtProperties.issuer(), jwtProperties.expirationSeconds());
 
         super.configure(http);
@@ -114,12 +113,6 @@ public class SecurityConfig extends VaadinWebSecurity {
             AuthenticationManagerBuilder auth, LdapContextSource contextSource, LdapProperties ldapProperties
     ) throws Exception {
         //@formatter:off
-        // Encoder valid for {SHA} or plain text passwords
-        PasswordEncoder passwordEncoder = new LdapShaPasswordEncoder(new BytesKeyGenerator() {
-            @Override public int getKeyLength() { return 0; }
-            @Override public byte[] generateKey() { return null; }
-        });
-
         auth
                 .ldapAuthentication()
                 .userDnPatterns(ldapProperties.getUserDnPatterns())
@@ -132,7 +125,7 @@ public class SecurityConfig extends VaadinWebSecurity {
                 .contextSource(contextSource)
                 .passwordCompare()
                 .passwordAttribute(ldapProperties.getPasswordAttribute())
-                .passwordEncoder(passwordEncoder)
+                .passwordEncoder(NoOpPasswordEncoder.getInstance())
         ;
         //@formatter:on
     }

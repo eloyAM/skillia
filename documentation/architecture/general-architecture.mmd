@@ -1,0 +1,61 @@
+graph TD
+    %% Define main user groups
+    subgraph Users
+        UIUser[fa:fa-user UI User]
+        APIUser[fa:fa-hard-drive REST API User]
+    end
+
+
+
+    %% Application Core
+    subgraph SpringBoot_App ["Spring Boot Application (SPBoot v3, Vaadin v24)"]
+        UIBlock[Vaadin Flow UI]
+        RESTBlock[REST API Controllers]
+        BizBlock[Business Logic - Services]
+        RepoBlock[Database Access - Repositories]
+        LdapClient[LDAP client]
+        %% Security is an intermediary and vertical block
+        subgraph Security_Layer ["Security Layer"]
+            SecurityVertical["Spring Security"]
+        end
+    end
+
+    %% External Systems
+    subgraph External_Systems["External Systems"]
+        Database(Relational Database)
+        LDAP[LDAP Server]
+    end
+
+    %% Connections - Defining the Flow
+    UIUser -.-> SecurityVertical
+    APIUser -.-> SecurityVertical
+
+    %% Path from UI User, through security, to UI layer
+    SecurityVertical -.-> UIBlock
+    %% Path from REST User, through security, to REST layer
+    SecurityVertical -.-> RESTBlock
+
+    %% Both layers use the Business Logic
+    UIBlock --> BizBlock
+    RESTBlock --> BizBlock
+
+    %% Business Logic accesses data and authenticates
+    BizBlock --> RepoBlock
+    RepoBlock --> Database
+    BizBlock --> LdapClient
+    LdapClient --Import data--> LDAP
+
+    SecurityVertical --Login--> LDAP
+
+    %% Styling for better visualization
+    classDef user fill:#e1f5fe,stroke:#0277bd,stroke-width:2px;
+    classDef security fill:#ffebee,stroke:#c62828,stroke-width:2px,color:black,rx:5,ry:5;
+    classDef appBlock fill:#e8f5e9,stroke:#2e7d32,stroke-width:1px;
+    classDef db fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+    classDef ldap fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
+
+    class UIUser,APIUser user;
+    class SecurityVertical security;
+    class UIBlock,RESTBlock,BizBlock,RepoBlock appBlock;
+    class Database db;
+    class LDAP ldap;

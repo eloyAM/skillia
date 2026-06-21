@@ -23,15 +23,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableJpaAuditing
 @Theme("skillia")
 @PWA(
-        name = "Skillia",
-        shortName = "Skillia",
-        offlinePath = "offline.html",
-        offlineResources = {"images/offline.png"}
+    name = "Skillia skills tracker",
+    shortName = "Skillia",
+    description = "Application to track the employees skills levels",
+    offlinePath = "offline.html",
+    offlineResources = {"images/offline.png"}
 )
 public class Application implements AppShellConfigurator {
-
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
 }

@@ -1,0 +1,127 @@
+/'
+'Diagrama de más alto nivel
+'/
+@startuml
+left to right direction
+
+actor "Personal\nde RRHH" as HR
+actor "Usuario común" as Emp
+
+rectangle "Aplicación" as Skillia {
+}
+
+database "Base de datos" as DB
+cloud "Servidor LDAP" as LDAP
+
+HR --> Skillia
+Emp --> Skillia : Utilizan la interfaz web\no API REST
+
+Skillia --> LDAP : Gestiona inicio de sesión.\nProvee datos de usuarios, replicados en la BD
+Skillia --> DB : Gestiona datos de usuarios,\nhabilidades, departamentos, etc
+@enduml
+
+
+/'
+'Diagrama más detallado
+'/
+@startuml
+skinparam componentStyle uml2
+left to right direction
+'top to bottom direction
+
+
+actor "Usuario\ninterfaz\nweb" as user
+actor/ "Cliente\nAPI\nREST" as api_user
+
+node "Aplicación Skillia" {
+    component "Spring\nSecurity" as security
+    component "Controladores\nREST" as controllers
+    component "IU Vaadin" as ui
+    component "Capa de\nnegocio" as services
+    component "Capa de\nacceso a\ndatos" as repo
+
+    note top of security
+      **Analizar petición:**
+      ¿Autenticado?
+      ¿Permisos nece-
+      sarios? (rol u
+      otras políticas)
+    end note
+
+    note top of ui
+      **Páginas y com-**
+      **ponentes web:**
+      Construir HTML,
+      manejar eventos
+    end note
+
+    note top of services
+        **Servicios:**
+        Lógica de negocio
+        (implementación
+        de las operacio-
+        nes, validaciones,
+        mapeo dto-entidad,
+        etc)
+    end note
+
+    note top of repo
+        **Repositorios:**
+        Interacción con
+        la base de datos
+        (consultas,
+        transacciones,
+        ORM, etc)
+    end note
+}
+
+database "Base\nde datos" as db
+
+note bottom of db
+PostgreSQL
+end note
+
+' Routing paths through security
+user --> security: accede e\ninteractua con\n/vistaX
+api_user --> security: invoca\n/api/*
+security --> ui: IU
+security --> controllers: REST
+
+' Standard flow
+controllers --> services: dto
+ui --> services: dto
+services --> repo: entidad
+repo --> db: JPA
+@enduml
+
+/'
+'Diagrama de secuencia de una petición típica
+'/
+@startuml
+autonumber
+
+actor "Usuario" as user
+
+participant "Spring Security" as security
+participant "Capa de presentación" as presentation
+participant "Capa de negocio" as services
+participant "Capa de acceso a datos" as repo
+database "Base de datos" as db
+
+user -> security: Realiza petición
+security -> security: Verificar autenticación\ny permisos
+security -> presentation: Permitir acceso
+
+presentation -> presentation: Procesar petición
+presentation -> services: Invocar operaciones\ncon DTOs
+services -> services: Lógica de negocio,\nmapeo a entidad
+services -> repo: Guardar o consultar entidad
+repo -> db: Operación JPA
+db --> repo: Resultado
+repo --> services: Entidad procesada,\nmapeo DTO
+services --> presentation: DTO
+presentation -> presentation: Construir respuesta
+presentation --> user: Respuesta final
+
+
+@enduml

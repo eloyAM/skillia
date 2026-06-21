@@ -30,7 +30,7 @@ Default user data mapping from LDAP (given an `inetOrgPerson` object class):
 | Department | `departmentNumber` |
 
 A REST API is exposed following the `/api` path.
-The OpenAPI documentation is automatically generated and retrievable at `/api/openapi/v3/api-docs`
+The OpenAPI documentation is automatically generated and retrievable at `/openapi/v3/api-docs`
 and the Swagger UI can be accessed through `/swagger-ui/index.html`
 
 ## Try it
