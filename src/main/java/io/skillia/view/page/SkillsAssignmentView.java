@@ -25,10 +25,10 @@ import io.skillia.security.SecConstants;
 import io.skillia.service.PersonService;
 import io.skillia.service.PersonSkillService;
 import io.skillia.service.SkillService;
+import io.skillia.view.components.MainLayout;
 import io.skillia.view.components.skillassing.PersonAndSkillsGrid;
 import io.skillia.view.components.skillassing.SkillAndPeopleWithLevelGrid;
 import io.skillia.view.utils.Comparators;
-import io.skillia.view.utils.MainLayout;
 import io.skillia.view.utils.ViewUtils;
 import jakarta.annotation.security.RolesAllowed;
 

@@ -19,7 +19,7 @@ import io.skillia.dto.main.PersonWithSkillsDto;
 import io.skillia.dto.main.SkillTagDto;
 import io.skillia.service.PersonSkillService;
 import io.skillia.service.SkillService;
-import io.skillia.view.utils.MainLayout;
+import io.skillia.view.components.MainLayout;
 import io.skillia.view.utils.ViewUtils;
 import jakarta.annotation.security.PermitAll;
 import org.apache.commons.lang3.StringUtils;

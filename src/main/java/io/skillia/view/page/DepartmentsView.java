@@ -7,9 +7,9 @@ import io.skillia.service.DepartmentService;
 import io.skillia.service.PersonService;
 import io.skillia.service.PersonSkillService;
 import io.skillia.service.SkillService;
+import io.skillia.view.components.MainLayout;
 import io.skillia.view.components.department.members.DepartmentMembersRatingTab;
 import io.skillia.view.components.department.skillgroups.DepartmentsSkillGroupsViewTab;
-import io.skillia.view.utils.MainLayout;
 import io.skillia.view.utils.ViewUtils;
 import jakarta.annotation.security.RolesAllowed;
 

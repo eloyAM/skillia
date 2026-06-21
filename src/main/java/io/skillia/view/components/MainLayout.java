@@ -1,4 +1,4 @@
-package io.skillia.view.utils;
+package io.skillia.view.components;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;

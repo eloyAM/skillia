@@ -5,7 +5,7 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import io.skillia.view.utils.MainLayout;
+import io.skillia.view.components.MainLayout;
 import jakarta.annotation.security.PermitAll;
 
 @PermitAll

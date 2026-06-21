@@ -8,10 +8,10 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import io.skillia.security.SecConstants;
 import io.skillia.service.SkillService;
+import io.skillia.view.components.MainLayout;
 import io.skillia.view.components.skillmgmt.SkillGroupsTab;
 import io.skillia.view.components.skillmgmt.SkillTagTab;
 import io.skillia.view.components.skillmgmt.SkillsViewTab;
-import io.skillia.view.utils.MainLayout;
 import io.skillia.view.utils.ViewUtils;
 import jakarta.annotation.security.RolesAllowed;
 
