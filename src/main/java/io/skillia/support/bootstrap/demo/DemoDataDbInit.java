@@ -182,18 +182,18 @@ public class DemoDataDbInit {
 
     private List<SkillGroupDto> createSkillGroups(List<SkillDto> skills) {
         return Stream.of(
-                SkillGroupDto.builder().name("Some group empty group without a description").build(),
-                SkillGroupDto.builder().name("Another empty group a description indeed")
+                SkillGroupDto.builder().name("Some empty group without a description").build(),
+                SkillGroupDto.builder().name("Empty group with description")
                     .description("This is some useful description which will help you know what is this for")
                     .build(),
                 SkillGroupDto.builder().name("Group number 1 22 333")
                     .description("Lorem ipsum dolor sit amet ")
                     .skills(getShuffleCopy(skills).stream().limit(5).collect(Collectors.toSet()))
                     .build(),
-                SkillGroupDto.builder().name("Group eternal duck green")
+                SkillGroupDto.builder().name("Group B")
                     .skills(getShuffleCopy(skills).stream().limit(5).collect(Collectors.toSet()))
                     .build(),
-                SkillGroupDto.builder().name("Group abcdefg hijklmn")
+                SkillGroupDto.builder().name("Group C")
                     .skills(getShuffleCopy(skills).stream().limit(10).collect(Collectors.toSet()))
                     .build()
             )

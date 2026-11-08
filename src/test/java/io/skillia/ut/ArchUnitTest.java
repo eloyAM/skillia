@@ -281,7 +281,7 @@ class ArchUnitTest {
             "java..",
             "javax.crypto..",
             "jakarta.validation.constraints..",
-            "jakarta.servlet.http..",
+            "jakarta.servlet..",
             "com.nimbusds.jose..",
             "com.nimbusds.jwt..",
             // vaadin
@@ -298,6 +298,7 @@ class ArchUnitTest {
             "org.springframework.boot.context.properties..",
             "org.springframework.ldap.core.support..",
             "org.springframework.security..",
+            "org.springframework.web.filter..",
             // application
             "io.skillia.view.page.login",
             "io.skillia.dto..",
