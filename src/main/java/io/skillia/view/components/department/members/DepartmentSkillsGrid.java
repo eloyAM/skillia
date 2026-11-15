@@ -41,17 +41,28 @@ public class DepartmentSkillsGrid extends TreeGrid<DepartmentSkillRowData> {
         setMinHeight("400px");
 
         addComponentHierarchyColumn(row -> {
-            Span name = new Span(row.getDisplayName());
-            Div result = new Div(name);
+            String displayName = row.getDisplayName();
+            Span nameSpan = new Span(displayName);
+            Div result = new Div(nameSpan);
             switch (row.getKind()) {
                 case PERSON -> {
-                    name.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
+                    nameSpan.addClassNames(LumoUtility.FontWeight.SEMIBOLD);
+                    String desc = row.person().getTitle();
+                    nameSpan.setTitle(desc == null ? displayName : (displayName + " - " + desc));
                     Div personInfo = new Div(row.person().getTitle());
                     personInfo.getStyle().setFontSize("var(--lumo-font-size-s)");
                     result.add(personInfo);
                 }
-                case SKILL_GROUP -> name.addClassNames(LumoUtility.TextColor.SECONDARY);
-                case SKILL -> name.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontWeight.SEMIBOLD);
+                case SKILL_GROUP -> {
+                    nameSpan.addClassNames(LumoUtility.TextColor.SECONDARY);
+                    String desc = row.skillGroup().getDescription();
+                    nameSpan.setTitle(desc == null ? displayName : (displayName + " - " + desc));
+                }
+                case SKILL -> {
+                    nameSpan.addClassNames(LumoUtility.TextColor.PRIMARY, LumoUtility.FontWeight.SEMIBOLD);
+                    String desc = row.skill().getDescription();
+                    nameSpan.setTitle(desc == null ? displayName : (displayName + " - " + desc));
+                }
                 default -> {    // No action
                 }
             }
@@ -94,10 +105,12 @@ public class DepartmentSkillsGrid extends TreeGrid<DepartmentSkillRowData> {
 
     public HorizontalLayout createExpandCollapseButtons() {
         Button expandButton = new Button(
-            "Expand all", VaadinIcon.ANGLE_DOUBLE_DOWN.create(), e -> expandAll());
+            VaadinIcon.ANGLE_DOUBLE_DOWN.create(), e -> expandAll());
+        expandButton.setTooltipText("Expand all");
         expandButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
         Button collapseButton = new Button(
-            "Collapse all", VaadinIcon.ANGLE_DOUBLE_UP.create(), e1 -> collapseAll());
+            VaadinIcon.ANGLE_DOUBLE_UP.create(), e1 -> collapseAll());
+        collapseButton.setTooltipText("Collapse all");
         collapseButton.addThemeVariants(ButtonVariant.LUMO_SMALL);
         return new HorizontalLayout(expandButton, collapseButton);
     }

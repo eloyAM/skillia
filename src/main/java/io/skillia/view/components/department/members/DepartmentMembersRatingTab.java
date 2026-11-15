@@ -88,7 +88,11 @@ public class DepartmentMembersRatingTab extends VerticalLayout {
             nameTextFieldFilter = createGridFilter();
             membersGrid = new DepartmentSkillsGrid(department, personSkillService, personWithSkillsDtos);
             expandCollapseButtons = membersGrid.createExpandCollapseButtons();
-            add(nameTextFieldFilter, expandCollapseButtons, membersGrid);
+            // searchFieldAndCollapseButtons -> search field and buttons in the same row taking the field the most part of the space
+            HorizontalLayout searchFieldAndCollapseButtons = new HorizontalLayout(nameTextFieldFilter, expandCollapseButtons);
+            searchFieldAndCollapseButtons.setWidthFull();
+            searchFieldAndCollapseButtons.setFlexGrow(1, nameTextFieldFilter);
+            add(searchFieldAndCollapseButtons, membersGrid);
         } else {
             membersGrid.setDepartment(department, personWithSkillsDtos);
             if (nameTextFieldFilter.getValue() != null) {
