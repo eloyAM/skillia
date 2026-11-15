@@ -99,7 +99,7 @@ public class SkillsAssignmentView extends TabSheet implements BeforeEnterObserve
 
     private VerticalLayout assignByPersonTab() {
         ComboBox<PersonDto> personComboBox = createPersonComboBox();
-        ComboBox<SkillDto> skillsComboBox = createSkillsComboBox();
+        MultiSelectComboBox<SkillDto> skillsComboBox = createSkillsMultiSelectComboBox();
         RadioButtonGroup<Integer> skillLevelSelector = skillSelectorRadioButtonGroup();
 
         PersonAndSkillsGrid personAndSkillsGrid = new PersonAndSkillsGrid(personSkillService);
@@ -160,7 +160,7 @@ public class SkillsAssignmentView extends TabSheet implements BeforeEnterObserve
 
     private Button createAssignByPersonTabSaveButton(
         ComboBox<PersonDto> personComboBox,
-        ComboBox<SkillDto> skillsComboBox,
+        MultiSelectComboBox<SkillDto> skillsComboBox,
         RadioButtonGroup<Integer> skillLevelSelector,
         PersonAndSkillsGrid personAndSkillsGrid
     ) {
@@ -172,22 +172,24 @@ public class SkillsAssignmentView extends TabSheet implements BeforeEnterObserve
             }
             // Input data
             PersonDto person = personComboBox.getValue();
-            SkillDto skill = skillsComboBox.getValue();
+            Collection<SkillDto> selectedSkills = skillsComboBox.getValue();
             int skillLevel = skillLevelSelector.getValue();
 
-            PersonSkillBasicDto personSkill = PersonSkillBasicDto.builder()
-                .personId(person.getUsername())
-                .skillId(skill.getId())
-                .level(skillLevel).build();
-            PersonSkillBasicDto savedPersonSkill = personSkillService.savePersonSkill(personSkill);
+            List<PersonSkillBasicDto> personSkills = selectedSkills.stream()
+                .map(skill -> PersonSkillBasicDto.builder()
+                    .personId(person.getUsername())
+                    .skillId(skill.getId())
+                    .level(skillLevel).build())
+                .toList();
+            List<PersonSkillBasicDto> savedPersonSkills = personSkillService.savePersonSkill(personSkills);
             // Error case: skill/person deleted during the process
-            boolean savedPersonSkillIsNull = savedPersonSkill == null;
-            if (savedPersonSkillIsNull) {
+            boolean savedPersonSkillsIsEmpty = savedPersonSkills == null || savedPersonSkills.isEmpty();
+            if (savedPersonSkillsIsEmpty) {
                 notificationTopCenter("Some error occurred while saving", false).open();
             } else {
                 notificationTopCenter("Saved successfully", true).open();
             }
-            if (!savedPersonSkillIsNull) {
+            if (!savedPersonSkillsIsEmpty) {
                 // Clean the data (not the person, as you might want to add more skills
                 // to the same person)
                 skillsComboBox.clear();
@@ -197,13 +199,34 @@ public class SkillsAssignmentView extends TabSheet implements BeforeEnterObserve
         });
     }
 
+    private MultiSelectComboBox<SkillDto> createSkillsMultiSelectComboBox() {
+        MultiSelectComboBox<SkillDto> skillComboBox = new MultiSelectComboBox<>("Skills");
+        skillComboBox.setRequired(true);
+        skillComboBox.setWidthFull();
+        skillComboBox.setItemLabelGenerator(SkillDto::getName);
+        skillComboBox.setPlaceholder("Select skills");
+        skillComboBox.setSelectedItemsOnTop(true);
+        skillComboBox.setAutoExpand(MultiSelectComboBox.AutoExpandMode.BOTH);
+        skillComboBox.setRenderer(createSkillComboBoxRenderer());
+        List<SkillDto> allSkill = skillService.getAllSkill();
+        skillComboBox.setItems(Comparators::skillDtoAttributesContains, allSkill);
+        return skillComboBox;
+    }
+
     private ComboBox<SkillDto> createSkillsComboBox() {
         ComboBox<SkillDto> skillComboBox = new ComboBox<>("Skill");
         skillComboBox.setRequired(true);
         skillComboBox.setWidthFull();
         skillComboBox.setItemLabelGenerator(SkillDto::getName);
         skillComboBox.setPlaceholder("Select a skill");
-        skillComboBox.setRenderer(new ComponentRenderer<>(skill -> {
+        skillComboBox.setRenderer(createSkillComboBoxRenderer());
+        List<SkillDto> allSkill = skillService.getAllSkill();
+        skillComboBox.setItems(Comparators::skillDtoAttributesContains, allSkill);
+        return skillComboBox;
+    }
+
+    private static ComponentRenderer<VerticalLayout, SkillDto> createSkillComboBoxRenderer() {
+        return new ComponentRenderer<>(skill -> {
             Span name = new Span(skill.getName());
 
             VerticalLayout result = new VerticalLayout(name);
@@ -236,10 +259,7 @@ public class SkillsAssignmentView extends TabSheet implements BeforeEnterObserve
             }
 
             return result;
-        }));
-        List<SkillDto> allSkill = skillService.getAllSkill();
-        skillComboBox.setItems(Comparators::skillDtoAttributesContains, allSkill);
-        return skillComboBox;
+        });
     }
 
     private MultiSelectComboBox<PersonDto> createPersonMultiSelectComboBox() {
