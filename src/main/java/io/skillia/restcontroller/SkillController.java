@@ -3,12 +3,17 @@ package io.skillia.restcontroller;
 import io.skillia.dto.main.SkillDto;
 import io.skillia.service.SkillService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,6 +23,7 @@ import java.util.List;
 import static org.springframework.http.ResponseEntity.created;
 
 @Tag(name = "Skill")
+@Validated
 @RestController
 @RequestMapping("/api/skill")
 public class SkillController {
@@ -78,12 +84,23 @@ public class SkillController {
     @Operation(description = "Update a skill (name) by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Skill updated"),
-            @ApiResponse(responseCode = "400",
-                    description = "No skill matching the id or there is already a skill with the same name")
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(
+                schema = @Schema(implementation = ProblemDetail.class),
+                mediaType = "application/problem+json"
+            )),
+            @ApiResponse(responseCode = "404", ref = "NotFoundProblem"),    // description no overridable
+            @ApiResponse(responseCode = "409",  description = "There is already a skill with the same name", content = @Content(
+                schema = @Schema(implementation = ProblemDetail.class),
+                mediaType = "application/problem+json"
+            ))
     })
     @PatchMapping("/{id}")
-    public SkillDto updateSkillName(@PathVariable Long id, @RequestBody SkillBody body) {
-        return skillService.updateSkillName(id, body.name)
+    public SkillDto updateSkillName(@PathVariable Long id, @Valid @RequestBody SkillBody body) {
+        var updatedSkill = skillService.updateSkillName(id, body.name);
+        if (updatedSkill == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "There is already a skill with the same name");
+        }
+        return updatedSkill
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "No skill found to update with the given id " + id));
     }

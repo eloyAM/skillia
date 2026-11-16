@@ -37,7 +37,7 @@ public class SkillGroupController {
     @Operation(description = "Retrieve a skill group by ID")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved the skill group"),
-        @ApiResponse(responseCode = "404", description = "Skill group not found")
+        @ApiResponse(responseCode = "404", ref = "NotFoundProblem")
     })
     @GetMapping("/{id}")
     public ResponseEntity<SkillGroupDto> getSkillGroupById(@PathVariable Long id) {

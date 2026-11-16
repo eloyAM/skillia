@@ -78,7 +78,7 @@ public class SkillService {
             }
             return getSkillById(id);
         } catch (DataIntegrityViolationException e) {
-            return Optional.empty();
+            return null;
         }
     }
 

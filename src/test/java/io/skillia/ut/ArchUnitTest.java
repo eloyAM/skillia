@@ -148,6 +148,7 @@ class ArchUnitTest {
                 "org.springframework.security..",
                 "org.springframework.validation..",
                 "org.springframework.web..",
+                "org.springframework.context.annotation..",
                 // application
                 "io.skillia.dto..",
                 "io.skillia.service..",
