@@ -86,6 +86,11 @@ public class PersonSkillService {
                 .map(dtoEntityMapper::toAcquiredSkillDto);
     }
 
+    public void deletePersonSkillById(PersonSkillIdDto idDto) {
+        PersonSkillId entityId = dtoEntityMapper.toPersonSkillId(idDto);
+        personSkillRepo.deleteById(entityId);
+    }
+
     // Stats data by skill id
     public Map<Long, StatValue> getAllStats() {
         var listStats = personSkillRepo.calculateAllStatValue();
@@ -114,10 +119,5 @@ public class PersonSkillService {
     @NonNull
     public static List<Integer> getLevels() {
         return List.of(1, 2, 3, 4, 5);
-    }
-
-    public void deletePersonSkillById(PersonSkillIdDto idDto) {
-        PersonSkillId entityId = dtoEntityMapper.toPersonSkillId(idDto);
-        personSkillRepo.deleteById(entityId);
     }
 }

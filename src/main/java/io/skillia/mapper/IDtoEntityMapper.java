@@ -7,17 +7,18 @@ import io.skillia.persistence.entity.*;
 import org.mapstruct.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface IDtoEntityMapper {
-    // Person
+    // Person <-> PersonDto
 
     @Mapping(target = "personSkills", ignore = true)
     Person toPerson(PersonDto personDto);
 
     PersonDto toPersonDto(Person person);
 
-    // Skill
+    // Skill <-> SkillDto
 
     SkillDto toSkillDto(Skill skill);
 
@@ -28,7 +29,10 @@ public interface IDtoEntityMapper {
         Objects.requireNonNull(skill.getName());
     }
 
-    // PersonSkill
+    // PersonSkill <-> PersonSkillBasicDto
+    // AcquiredSkillDto <- PersonSkill
+    // PersonWithSkillsDto <- Person + List<PersonSkill> // List<PersonWithSkillsDto> <- List<PersonSkill>
+    // PersonSkillId <- PersonSkillIdDto
 
     @Mapping(target = "personSkillId.personId", source = "personId")
     @Mapping(target = "personSkillId.skillId", source = "skillId")
@@ -48,41 +52,34 @@ public interface IDtoEntityMapper {
     PersonWithSkillsDto toPersonWithSkillsDto(Person person, List<PersonSkill> personSkillList);
 
     default List<PersonWithSkillsDto> toListPersonWithSkillsDto(List<PersonSkill> personSkillList) {
-        if (personSkillList == null) {
+        if (personSkillList == null)
             return null;
-        }
-
-        Map<Person, List<PersonSkill>> skillsByPerson = new LinkedHashMap<>();
-        for (PersonSkill personSkillItem : personSkillList) {
-            Person person = personSkillItem.getPerson();
-            skillsByPerson.computeIfAbsent(person, k -> new ArrayList<>());
-            skillsByPerson.get(person).add(personSkillItem);
-        }
-
-        List<PersonWithSkillsDto> list = new ArrayList<>(skillsByPerson.size());
-        for (Map.Entry<Person, List<PersonSkill>> entry : skillsByPerson.entrySet()) {
-            PersonWithSkillsDto personWithSkillsDto = toPersonWithSkillsDto(entry.getKey(), entry.getValue());
-            list.add(personWithSkillsDto);
-        }
-
-        return list;
+        // Group by Person
+        Map<Person, List<PersonSkill>> skillsByPerson = personSkillList.stream()
+            .collect(Collectors.groupingBy(
+                PersonSkill::getPerson, LinkedHashMap::new, Collectors.toList()
+            ));
+        // Map to List<PersonWithSkillsDto>
+        return skillsByPerson.entrySet().stream()
+            .map(entry -> toPersonWithSkillsDto(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
     }
 
     PersonSkillId toPersonSkillId(PersonSkillIdDto personSkillIdDto);
 
-    // SkillTag
+    // SkillTag <-> SkillTagDto
 
     SkillTagDto toSkillTagDto(SkillTag skillTag);
 
     SkillTag toSkillTag(SkillTagDto skillTagDto);
 
-    // Department
+    // Department <-> DepartmentDto
 
     Department toEntity(DepartmentDto departmentDto);
 
     DepartmentDto toDto(Department department);
 
-    // SkillGroup
+    // SkillGroup <-> SkillGroupDto
 
     SkillGroup toEntity(SkillGroupDto skillGroupDto);
 

@@ -14,7 +14,7 @@ public interface PersonRepo extends JpaRepository<Person, String> {
     @Query("select new io.skillia.dto.main.PersonDto("
         + "p.username, p.fullName, p.email, p.title, p.department)"
         + " from Person p")
-    List<PersonDto> findBy();
+    List<PersonDto> findAllPerson();
 
     @Query("select distinct p.department from Person p order by p.department asc")
     List<String> findDistinctDepartments();

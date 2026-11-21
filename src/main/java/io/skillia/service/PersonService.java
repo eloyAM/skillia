@@ -32,7 +32,7 @@ public class PersonService {
     }
 
     public List<PersonDto> findAllPerson() {
-        return personRepo.findBy();
+        return personRepo.findAllPerson();
     }
 
     public PersonDto findPersonByUsername(String username) {
