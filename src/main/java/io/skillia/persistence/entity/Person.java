@@ -44,6 +44,6 @@ public class Person {
     @Column(name = COLUMN_DEPARTMENT, length = 50, updatable = false)
     private String department;
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person") // PersonSkill.person
     private Collection<PersonSkill> personSkills;
 }

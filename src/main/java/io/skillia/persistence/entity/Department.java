@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "department")
 public class Department {
     // Column "name"
-    public static final String COLUMN_NAME = "name";
+    private static final String COLUMN_NAME = "name";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "department__id_gen")

@@ -4,14 +4,13 @@ import io.skillia.dto.main.AcquiredSkillDto;
 import io.skillia.dto.skillperson.PersonWithLevelDto;
 import io.skillia.dto.stats.SkillStatValue;
 import io.skillia.persistence.entity.PersonSkill;
-import io.skillia.persistence.entity.PersonSkillId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkillId> {
+public interface PersonSkillRepo extends JpaRepository<PersonSkill, PersonSkill.Id> {
     @Query("select new io.skillia.dto.main.AcquiredSkillDto("
         + "p.personSkillId.skillId, p.skill.name, p.level)"
         + " from PersonSkill p where p.personSkillId.personId = :personId")

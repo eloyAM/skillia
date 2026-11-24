@@ -41,7 +41,8 @@ public class Skill {
     @Column(name = "description", length = 250)
     private String description;
 
-    // Delete rule -> deleting a skill or a tag should delete the related record of the join table
+    // Deleting the owner will implicitly delete from the join table when using the existing delete methods or JPQL (is not the case for native queries)
+    // The Hibernate annotation adds the statement on the DDL, just for the owning side
     @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
     @ManyToMany(fetch = FetchType.EAGER)    // Avoid LazyInitializationException errors when doing dto mapping

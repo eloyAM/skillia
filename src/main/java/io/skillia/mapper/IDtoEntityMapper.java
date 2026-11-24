@@ -32,7 +32,7 @@ public interface IDtoEntityMapper {
     // PersonSkill <-> PersonSkillBasicDto
     // AcquiredSkillDto <- PersonSkill
     // PersonWithSkillsDto <- Person + List<PersonSkill> // List<PersonWithSkillsDto> <- List<PersonSkill>
-    // PersonSkillId <- PersonSkillIdDto
+    // PersonSkill.Id <- PersonSkillIdDto
 
     @Mapping(target = "personSkillId.personId", source = "personId")
     @Mapping(target = "personSkillId.skillId", source = "skillId")
@@ -65,7 +65,7 @@ public interface IDtoEntityMapper {
             .collect(Collectors.toList());
     }
 
-    PersonSkillId toPersonSkillId(PersonSkillIdDto personSkillIdDto);
+    PersonSkill.Id toPersonSkillId(PersonSkillIdDto personSkillIdDto);
 
     // SkillTag <-> SkillTagDto
 

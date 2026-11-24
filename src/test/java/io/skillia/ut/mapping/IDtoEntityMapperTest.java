@@ -382,7 +382,7 @@ class IDtoEntityMapperTest {
         int level = 3;
 
         PersonSkill source = new PersonSkill();
-        source.setPersonSkillId(new PersonSkillId(username, skillId));
+        source.setPersonSkillId(new PersonSkill.Id(username, skillId));
         source.setLevel(level);
 
         PersonSkillBasicDto ps = mapper.toPersonSkillBasicDto(source);

@@ -9,7 +9,6 @@ import io.skillia.dto.stats.SkillStatValue;
 import io.skillia.dto.stats.StatValue;
 import io.skillia.mapper.IDtoEntityMapper;
 import io.skillia.persistence.entity.PersonSkill;
-import io.skillia.persistence.entity.PersonSkillId;
 import io.skillia.persistence.repo.PersonSkillRepo;
 import io.skillia.service.utils.FunctionalUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -87,7 +86,7 @@ public class PersonSkillService {
     }
 
     public void deletePersonSkillById(PersonSkillIdDto idDto) {
-        PersonSkillId entityId = dtoEntityMapper.toPersonSkillId(idDto);
+        PersonSkill.Id entityId = dtoEntityMapper.toPersonSkillId(idDto);
         personSkillRepo.deleteById(entityId);
     }
 

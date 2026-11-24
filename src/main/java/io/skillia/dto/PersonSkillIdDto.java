@@ -1,7 +1,7 @@
 package io.skillia.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.skillia.persistence.entity.PersonSkillId;
+import io.skillia.persistence.entity.PersonSkill;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import java.io.Serializable;
 
 /**
- * DTO for {@link  PersonSkillId}
+ * DTO for {@link  PersonSkill.Id}
  */
 @Data
 @AllArgsConstructor
