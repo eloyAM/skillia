@@ -3,8 +3,6 @@ package io.skillia.persistence.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +24,6 @@ public class SkillGroup {
     @Column(name = "description", length = 250)
     private String description;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "skill_group_skills",
         joinColumns = @JoinColumn(name = "group_id", foreignKey = @ForeignKey(name = "FK__skill_group_skills__group_id")),

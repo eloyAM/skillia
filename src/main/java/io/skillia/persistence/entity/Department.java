@@ -3,8 +3,6 @@ package io.skillia.persistence.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,6 @@ public class Department {
     @Column(name = COLUMN_NAME, nullable = false, unique = true, updatable = false, length = 50)
     private String name;
 
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "department_skill_groups",
         joinColumns = @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "FK__department_skill_groups__department_id")),
@@ -37,7 +34,7 @@ public class Department {
     )
     private List<SkillGroup> skillGroups = new ArrayList<>();
 
-    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = Person.COLUMN_DEPARTMENT, referencedColumnName = COLUMN_NAME)
     private List<Person> people = new ArrayList<>();
 

@@ -93,9 +93,8 @@ alter table person_skill
 alter table skill_tagging
     add constraint FK__skill_tagging__tag
         foreign key (tag_id)
-            references skill_tag (id);
--- TODO adding "on delete cascade" is limited to the one side of the join
---  corresponding to the referenced type on the owning entity
+            references skill_tag (id)
+            on delete cascade;
 
 alter table skill_tagging
     add constraint FK__skill_tagging__skill
@@ -112,10 +111,8 @@ alter table skill_group_skills
 alter table skill_group_skills
     add constraint FK__skill_group_skills__group_id
         foreign key (group_id)
-            references skill_group (id);
---             on delete cascade;
--- TODO adding "on delete cascade" is limited to the one side of the join
---  corresponding to the referenced type on the owning entity
+            references skill_group (id)
+            on delete cascade;
 
 alter table department_skill_groups
     add constraint FK__department_skill_groups__department_id
@@ -126,11 +123,8 @@ alter table department_skill_groups
 alter table department_skill_groups
     add constraint FK__department_skill_groups__group_id
         foreign key (group_id)
-            references skill_group (id);
---             on delete cascade;
--- TODO adding "on delete cascade" is limited to the one side of the join
---  corresponding to the referenced type on the owning entity
-
+            references skill_group (id)
+            on delete cascade;
 
 -- VIEWS
 

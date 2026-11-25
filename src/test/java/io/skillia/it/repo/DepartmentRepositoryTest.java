@@ -1,6 +1,5 @@
 package io.skillia.it.repo;
 
-import io.skillia.it.testutils.CleanDbExtension;
 import io.skillia.persistence.entity.Department;
 import io.skillia.persistence.entity.Skill;
 import io.skillia.persistence.entity.SkillGroup;
@@ -8,17 +7,17 @@ import io.skillia.persistence.repo.DepartmentRepository;
 import io.skillia.persistence.repo.SkillGroupRepository;
 import io.skillia.persistence.repo.SkillRepo;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(CleanDbExtension.class)
-@SpringBootTest
+@DataJpaTest
+@Import(JpaTestApplication.class)
 class DepartmentRepositoryTest {
     @Autowired
     private DepartmentRepository departmentRepository;

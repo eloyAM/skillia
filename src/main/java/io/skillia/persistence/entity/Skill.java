@@ -7,8 +7,6 @@ import lombok.*;
 import lombok.experimental.Accessors;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -42,8 +40,6 @@ public class Skill {
     private String description;
 
     // Deleting the owner will implicitly delete from the join table when using the existing delete methods or JPQL (is not the case for native queries)
-    // The Hibernate annotation adds the statement on the DDL, just for the owning side
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
     @ManyToMany(fetch = FetchType.EAGER)    // Avoid LazyInitializationException errors when doing dto mapping
     @JoinTable(
